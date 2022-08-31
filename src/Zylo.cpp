@@ -9,7 +9,8 @@
 
 
 // INTERNAL DEPENDENCIES
-#include "board.h"
+#include "Board.h"
+#include "SDL_GenerateGameWindow.h"
 
 int main () {
 
