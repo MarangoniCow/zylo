@@ -7,9 +7,9 @@
 // INTERNAL INCLUDES
 
 // EXTERNAL INCLUDES
-#include<SDL2/SDL.h>
-#include<iostream>
-
+#include <SDL2/SDL.h>
+#include <iostream>
+#include <string>
 // Standard window sizes
 enum WINDOW_SIZES {WINDOW_HEIGHT = 640, WINDOW_WIDTH = 480};
 
@@ -20,28 +20,11 @@ class SDL_GenerateGameWindow
         SDL_Surface* windowSurface;
         
     public: 
-        SDL_GenerateGameWindow() {
-
-            // Generate window
-            if(SDL_Init(SDL_INIT_VIDEO) < 0)
-                std::cout << "Video initialisation error: " << SDL_GetError() << std::endl;
-            else
-            {
-                window = SDL_CreateWindow("SDL_Board_Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                        WINDOW_HEIGHT, WINDOW_WIDTH, SDL_WINDOW_SHOWN);
-            }
-            
-            // Error checking
-            if(window == NULL)
-                std::cout << "Window creation error: " << SDL_GetError() << std::endl;
-
-            windowSurface = SDL_GetWindowSurface(window);
-        }
-
-        ~SDL_GenerateGameWindow() {
+        SDL_GenerateGameWindow();                               // Constructor
+        ~SDL_GenerateGameWindow() {                             // Destructor
             SDL_DestroyWindow(window);
         }
-        
-        SDL_Window* Get_Window() {return window;};
-        SDL_Surface* Get_Surface() {return windowSurface;};
+        SDL_Window* Get_Window() {return window;};              // Return window
+        SDL_Surface* Get_Surface() {return windowSurface;};     // Return window surface
+        SDL_Surface* OptimizedSurface(std::string filePath);    // Convert a bitmap to the same surface as the desired window. 
 };
