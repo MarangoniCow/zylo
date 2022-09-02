@@ -3,6 +3,20 @@
 #include <SDL2/SDL.h>
 #include "SDL_GenerateGameWindow.h"
 
+enum
+{   
+    SQUARE_WHITE_R = 252,
+    SQUARE_WHITE_G = 245,
+    SQUARE_WHITE_B = 232,
+    SQUARE_BLACK_R = 117,
+    SQUARE_BLACK_G = 79,
+    SQUARE_BLACK_B = 18,
+    SQUARE_WIDTH = 80,
+    SQUARE_HEIGHT = 80
+};
+
+
+
 SDL_Texture* LoadTexture(std::string filePath, SDL_Renderer* renderTarget)
 {
     SDL_Texture* texture = nullptr;
@@ -38,21 +52,31 @@ void Board::method()
 
     if(renderTarget == NULL)
         std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
+
+    // Create board
     
 
+    for(int y = 0; y < 8; y++)
+    {
+        for(int x = 0; x < 8; x++)
+        {
+            SDL_Rect board_square;
+            board_square.x = x*SQUARE_WIDTH;
+            board_square.y = y*SQUARE_HEIGHT;
+            board_square.w = SQUARE_WIDTH;
+            board_square.h = SQUARE_HEIGHT;
 
-    SDL_Texture* white_pawn = nullptr;
-    SDL_Texture* white_rook = nullptr;
-    SDL_Texture* white_queen = nullptr;
+            if((x + y)%2 == 0)
+                SDL_SetRenderDrawColor(renderTarget, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
+            else
+                SDL_SetRenderDrawColor(renderTarget, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
 
-    white_pawn = LoadTexture("./res/white_pawn.bmp", renderTarget);
-    white_rook = LoadTexture("./res/white_rook.bmp", renderTarget);
-    white_queen = LoadTexture("./res/white_queen.bmp", renderTarget);
+            SDL_RenderFillRect(renderTarget, &board_square);
+            SDL_RenderPresent(renderTarget);
+        }
+    }
 
-    
 
-    
-    
     bool isRunning = true;
     SDL_Event ev;
 
@@ -64,50 +88,12 @@ void Board::method()
         while(SDL_PollEvent(&ev) != 0)
         {
             if (ev.type == SDL_QUIT)
-                isRunning = false;
-            else if (ev.type == SDL_KEYDOWN)
-            {
-                switch(ev.key.keysym.sym)
-                {
-                    case SDLK_1:
-                        currentTexture = white_pawn;
-                        break;
-                    case SDLK_2:
-                        currentTexture = white_rook;
-                        break;
-                    case SDLK_3:
-                        currentTexture = white_queen;
-                        break;
-                }
-            }
-            else if (ev.type == SDL_MOUSEMOTION)
-            {
-                if(ev.button.x < 200)
-                    currentTexture = white_pawn;
-                else if(ev.button.x < 400)
-                    currentTexture = white_rook;
-                else
-                    currentTexture = white_queen;                               
-            }
-
-            
-            
-            SDL_RenderClear(renderTarget);
-            SDL_RenderCopy(renderTarget, currentTexture, NULL, NULL);
-            SDL_RenderPresent(renderTarget); 
-            
+                isRunning = false;            
         }
     }
 
-
-    SDL_DestroyTexture(white_pawn);
-    SDL_DestroyTexture(white_rook);
-    SDL_DestroyTexture(white_queen); 
-
     SDL_DestroyWindow(boardWindow);
     SDL_Quit();
-
-
 };
 
 

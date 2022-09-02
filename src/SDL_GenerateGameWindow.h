@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 // Standard window sizes
-enum WINDOW_SIZES {WINDOW_HEIGHT = 640, WINDOW_WIDTH = 480};
+enum WINDOW_SIZES {WINDOW_HEIGHT = 640, WINDOW_WIDTH = 640};
 
 class SDL_GenerateGameWindow
 {
