@@ -7,6 +7,5 @@ class Board {
 
     public:
         void method();
-        void loadImage(SDL_Surface *targetSurface);
-
+        
 };

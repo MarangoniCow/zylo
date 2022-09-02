@@ -10,14 +10,16 @@
 
 // INTERNAL DEPENDENCIES
 #include "Board.h"
-#include "SDL_GenerateGameWindow.h"
+#include "SDL_Board.h"
+#include "SDL_EventManager.h"
 
 int main () {
 
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Welcome to Zylo!" << std::endl;
 
-    Board obj;
-    obj.method();
+    SDL_EventManager obj;
+    obj.RunGame();
+    
 
     
                 
