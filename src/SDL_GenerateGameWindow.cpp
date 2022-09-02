@@ -26,7 +26,7 @@ SDL_GenerateGameWindow::SDL_GenerateGameWindow()
             if(window == NULL)
                 std::cout << "Window creation error: " << SDL_GetError() << std::endl;
 
-            windowSurface = SDL_GetWindowSurface(window);
+            
 }
 
 SDL_Surface* SDL_GenerateGameWindow::OptimizedSurface(std::string filePath)
@@ -34,6 +34,7 @@ SDL_Surface* SDL_GenerateGameWindow::OptimizedSurface(std::string filePath)
     // Initialise image surface to null ptr, load surface from bitmap.
     SDL_Surface* optimizedSurface = nullptr;
     SDL_Surface* imageSurface = SDL_LoadBMP(filePath.c_str());
+    SDL_Surface* windowSurface = Get_Surface(); 
 
     // Standard error checking
     if(imageSurface == NULL)

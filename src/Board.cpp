@@ -3,30 +3,53 @@
 #include <SDL2/SDL.h>
 #include "SDL_GenerateGameWindow.h"
 
+SDL_Texture* LoadTexture(std::string filePath, SDL_Renderer* renderTarget)
+{
+    SDL_Texture* texture = nullptr;
+    SDL_Surface* surface = SDL_LoadBMP(filePath.c_str());
 
-void Board::method() {
+    if(surface == NULL)
+        std::cout << "Error, could not load .bmp file" << std::endl;
+    else
+    {
+        texture = SDL_CreateTextureFromSurface(renderTarget, surface);
+
+        if(texture == NULL)
+            std::cout << "Error creating texture: " << SDL_GetError() << std::endl;
+    }
+
+    return texture;
+}
+
+
+
+void Board::method()
+{
        
     // Generate window using wrapper
     SDL_GenerateGameWindow gameWindow;
 
     // Fetch pointers to window and window surface
     SDL_Window* boardWindow = gameWindow.Get_Window();
-    SDL_Surface* boardSurface = gameWindow.Get_Surface();
+    SDL_Renderer* renderTarget = nullptr;
+    SDL_Texture* currentTexture = nullptr;
 
-    SDL_Surface* white_pawn = nullptr;
-    SDL_Surface* white_rook = nullptr;
-    SDL_Surface* black_pawn = nullptr;
+    renderTarget = SDL_CreateRenderer(boardWindow, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Surface* curr_image = nullptr;
-
-    white_pawn = gameWindow.OptimizedSurface("./res/white_pawn.bmp");
-    white_rook = gameWindow.OptimizedSurface("./res/white_rook.bmp");
-    black_pawn = gameWindow.OptimizedSurface("./res/black_pawn.bmp");
-
-    curr_image = white_pawn; 
+    if(renderTarget == NULL)
+        std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
     
-    // Load a test image
-     //loadImage(boardSurface);
+
+
+    SDL_Texture* white_pawn = nullptr;
+    SDL_Texture* white_rook = nullptr;
+    SDL_Texture* white_queen = nullptr;
+
+    white_pawn = LoadTexture("./res/white_pawn.bmp", renderTarget);
+    white_rook = LoadTexture("./res/white_rook.bmp", renderTarget);
+    white_queen = LoadTexture("./res/white_queen.bmp", renderTarget);
+
+    
 
     
     
@@ -47,35 +70,39 @@ void Board::method() {
                 switch(ev.key.keysym.sym)
                 {
                     case SDLK_1:
-                        curr_image = white_pawn;
+                        currentTexture = white_pawn;
                         break;
                     case SDLK_2:
-                        curr_image = white_rook;
+                        currentTexture = white_rook;
                         break;
                     case SDLK_3:
-                        curr_image = black_pawn;
+                        currentTexture = white_queen;
                         break;
                 }
             }
             else if (ev.type == SDL_MOUSEMOTION)
             {
                 if(ev.button.x < 200)
-                    curr_image = white_pawn;
+                    currentTexture = white_pawn;
                 else if(ev.button.x < 400)
-                    curr_image = white_rook;
+                    currentTexture = white_rook;
                 else
-                    curr_image = black_pawn;                               
+                    currentTexture = white_queen;                               
             }
+
             
-            SDL_BlitSurface(curr_image, NULL, boardSurface, NULL);
-            SDL_UpdateWindowSurface(boardWindow); // Have to update every time we make a change         
+            
+            SDL_RenderClear(renderTarget);
+            SDL_RenderCopy(renderTarget, currentTexture, NULL, NULL);
+            SDL_RenderPresent(renderTarget); 
+            
         }
     }
 
 
-    SDL_FreeSurface(white_pawn);
-    SDL_FreeSurface(white_rook);
-    SDL_FreeSurface(black_pawn); 
+    SDL_DestroyTexture(white_pawn);
+    SDL_DestroyTexture(white_rook);
+    SDL_DestroyTexture(white_queen); 
 
     SDL_DestroyWindow(boardWindow);
     SDL_Quit();

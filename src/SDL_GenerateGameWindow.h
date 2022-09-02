@@ -25,6 +25,6 @@ class SDL_GenerateGameWindow
             SDL_DestroyWindow(window);
         }
         SDL_Window* Get_Window() {return window;};              // Return window
-        SDL_Surface* Get_Surface() {return windowSurface;};     // Return window surface
+        SDL_Surface* Get_Surface() {return SDL_GetWindowSurface(window);};     // Return window surface
         SDL_Surface* OptimizedSurface(std::string filePath);    // Convert a bitmap to the same surface as the desired window. 
 };
