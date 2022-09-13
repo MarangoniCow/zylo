@@ -55,8 +55,8 @@ void SDL_Board::GenerateBoard()
         for(int x = 0; x < 8; x++)
         {
             SDL_Rect board_square;
-            board_square.x = x*SQUARE_WIDTH;
-            board_square.y = y*SQUARE_HEIGHT;
+            board_square.x = BOARD_X + x*SQUARE_WIDTH;
+            board_square.y = BOARD_Y + y*SQUARE_HEIGHT;
             board_square.w = SQUARE_WIDTH;
             board_square.h = SQUARE_HEIGHT;
 

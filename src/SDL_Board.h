@@ -13,8 +13,8 @@
 // Standard window sizes
 enum WINDOW_SIZES
 {
-    WINDOW_HEIGHT = 640,
-    WINDOW_WIDTH = 640
+    WINDOW_HEIGHT = 720,
+    WINDOW_WIDTH = 720
 };
 enum BOARD_VALUES
 {   
@@ -25,7 +25,9 @@ enum BOARD_VALUES
     SQUARE_BLACK_G = 79,
     SQUARE_BLACK_B = 18,
     SQUARE_WIDTH = 80,
-    SQUARE_HEIGHT = 80
+    SQUARE_HEIGHT = 80,
+    BOARD_X = 40,
+    BOARD_Y = 40
 };
 
 class SDL_Board
