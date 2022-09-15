@@ -1,21 +1,28 @@
-/* SDL_BOARD.H
-/ Generates the game window, deals with all erorr checking etc., etc
-*/
+/***********************************************************
+ *                      SDL_BOARD.H
+ * 
+ *  Generates the board, deals with error checking, etc., etc.
+ * 
+ * 
+ ***********************************************************/
 
 #pragma once
 
 // INTERNAL INCLUDES
+// ...
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
-// Standard window sizes
+
+// ENUMERATIONS
 enum WINDOW_SIZES
 {
-    WINDOW_HEIGHT = 720,
-    WINDOW_WIDTH = 720
+    WINDOW_HEIGHT = 640,
+    WINDOW_WIDTH = 640
 };
+
 enum BOARD_VALUES
 {   
     SQUARE_WHITE_R = 252,
@@ -24,26 +31,28 @@ enum BOARD_VALUES
     SQUARE_BLACK_R = 117,
     SQUARE_BLACK_G = 79,
     SQUARE_BLACK_B = 18,
-    SQUARE_WIDTH = 80,
-    SQUARE_HEIGHT = 80,
-    BOARD_X = 40,
-    BOARD_Y = 40
+    SQUARE_WIDTH = 75,
+    SQUARE_HEIGHT = 75,
+    BOARD_X = 20,
+    BOARD_Y = 20,
+    BOARD_BORDER_R = 28,
+    BOARD_BORDER_G = 27,
+    BOARD_BORDER_B = 34
 };
 
 class SDL_Board
 {
     protected:
-        SDL_Window* window;
-        SDL_Surface* windowSurface;
+        SDL_Window* window;                     // Window handle
+        SDL_Renderer* windowRenderer;           // Window renderer 
+        int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (bottom left to top right) and x,y window coordinates of square
         
     public: 
-        SDL_Board();                    // Constructor
-        ~SDL_Board();                   // Destructor
+        SDL_Board();                            // Constructor
+        ~SDL_Board();                           // Destructor
+        
+        void GenerateBoard();                   // Handle initial board generation 
+        SDL_Texture* LoadTexture(); 
+        
 
-        void GenerateBoard();
-        SDL_Window* Get_Window() {return window;};              // Return window
-        SDL_Surface* Get_Surface() {return SDL_GetWindowSurface(window);};     // Return window surface
-        SDL_Surface* OptimizedSurface(std::string filePath);    // Convert a bitmap to the same surface as the desired window. 
-        SDL_Texture* LoadTexture(std::string filePath, SDL_Renderer* renderTarget);
-        void loadImage(SDL_Surface *targetSurface);
 };

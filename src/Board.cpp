@@ -4,17 +4,12 @@
 #include "SDL_Board.h"
 
 
-
-
-
-
-
-
-
 void Board::method()
-{
-       
-    
+{      
+
+
 };
+
+// char Board::Board_coordinates = {{'A1', 'B'
 
 

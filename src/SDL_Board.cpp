@@ -27,11 +27,31 @@ SDL_Board::SDL_Board()
     // Error checking 
     if(window == NULL)
         std::cout << "Window creation error: " << SDL_GetError() << std::endl;
+
+    // Set SDL coordinates: Define the top left hand corner of the board
+    int board_bottom_coord_x = BOARD_X; 
+    int board_bottom_coord_y = 7*SQUARE_HEIGHT + BOARD_Y;
+    
+    // Loop over and finish
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            SDL_coordinates[i][j][1] = board_bottom_coord_x + j*SQUARE_WIDTH; 
+            SDL_coordinates[i][j][2] = board_bottom_coord_y - i*SQUARE_HEIGHT; 
+        }
+    }
+
+    // Initialise renderer
+    windowRenderer = nullptr; 
+    
 }
 // Destuctor implementation
 SDL_Board::~SDL_Board()
 {
     SDL_DestroyWindow(window); 
+    SDL_DestroyRenderer(windowRenderer); 
+
 }
 
 
@@ -39,16 +59,21 @@ SDL_Board::~SDL_Board()
 // Generate game board and render
 void SDL_Board::GenerateBoard()
 {
-    // Initialise render target
-    SDL_Renderer* renderTarget = nullptr;
-
-    // Point to board window
-    renderTarget = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    // Point render target to board window
+    windowRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     // Error checking
-    if(renderTarget == NULL)
+    if(windowRenderer == NULL)
         std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
 
+    // Draw border as rectangle
+    SDL_Rect board_border = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+    
+    // Define borrder colours, fill and present. 
+    SDL_SetRenderDrawColor(windowRenderer, BOARD_BORDER_R, BOARD_BORDER_G, BOARD_BORDER_B, 255);
+    SDL_RenderFillRect(windowRenderer, &board_border);
+    SDL_RenderPresent(windowRenderer);
+    
     // Generate board
     for(int y = 0; y < 8; y++)
     {
@@ -61,81 +86,50 @@ void SDL_Board::GenerateBoard()
             board_square.h = SQUARE_HEIGHT;
 
             if((x + y)%2 == 0)
-                SDL_SetRenderDrawColor(renderTarget, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
+                SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
             else
-                SDL_SetRenderDrawColor(renderTarget, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
+                SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
 
-            SDL_RenderFillRect(renderTarget, &board_square);
-            SDL_RenderPresent(renderTarget);
+            SDL_RenderFillRect(windowRenderer, &board_square);
+            SDL_RenderPresent(windowRenderer);
         }
     }
-
-    SDL_DestroyRenderer(renderTarget);
 }
 
 
 
-// Method for returning an optimized surface (OUTDATED: USING TEXTURES; REMOVE IN FUTURE RELEASE)
-SDL_Surface* SDL_Board::OptimizedSurface(std::string filePath)
+
+
+SDL_Texture* SDL_Board::LoadTexture()
 {
-    // Initialise image surface to null ptr, load surface from bitmap.
-    SDL_Surface* optimizedSurface = nullptr;
-    SDL_Surface* imageSurface = SDL_LoadBMP(filePath.c_str());
-    SDL_Surface* windowSurface = Get_Surface(); 
 
-    // Standard error checking
-    if(imageSurface == NULL)
-        std::cout << "ERROR: Could not load image surface" << std::endl;
-    else
-    {
-        // Surface conversion, unsure of 0 flag
-        optimizedSurface = SDL_ConvertSurface(imageSurface, windowSurface->format, 0);
 
-        // Error checking
-        if(optimizedSurface == NULL)
-            std::cout << "Error in optimising surface" << std::endl;
-    }
-
-    SDL_FreeSurface(imageSurface);
-
-    return optimizedSurface;
-}
-
-// REDUNDANT CODE: TO BE REMOVE IN FUTURE RELEASE
-SDL_Texture* SDL_Board::LoadTexture(std::string filePath, SDL_Renderer* renderTarget)
-{
     SDL_Texture* texture = nullptr;
-    SDL_Surface* surface = SDL_LoadBMP(filePath.c_str());
+    SDL_Surface* surface = SDL_LoadBMP("./res/white_pawn.bmp");
 
     if(surface == NULL)
         std::cout << "Error, could not load .bmp file" << std::endl;
     else
     {
-        texture = SDL_CreateTextureFromSurface(renderTarget, surface);
+        texture = SDL_CreateTextureFromSurface(windowRenderer, surface);
 
         if(texture == NULL)
             std::cout << "Error creating texture: " << SDL_GetError() << std::endl;
     }
 
+
+    SDL_Rect targetSquare;
+    targetSquare.x = BOARD_X;
+    targetSquare.y = BOARD_Y;
+    targetSquare.w = SQUARE_WIDTH;
+    targetSquare.h = SQUARE_HEIGHT; 
+
+    //SDL_RenderClear(renderTarget);
+    SDL_RenderCopy(windowRenderer, texture, NULL, &targetSquare);
+    SDL_RenderPresent(windowRenderer);
+
+    SDL_DestroyTexture(texture); 
+    
+    
     return texture;
-}
-
-// REDUNDANT CODE: TO BE REMOVE IN FUTURE RELEASE
-void SDL_Board::loadImage(SDL_Surface *targetSurface)
-{
-    // Pointer to image surface 
-    SDL_Surface *imageSurface = nullptr;
-    
-    // Load a bitmap image
-    imageSurface = SDL_LoadBMP("./res/white_pawn.bmp");
-    
-
-    // Check for correct load
-    if(imageSurface == NULL)
-        std::cout << "Image loading error: " << SDL_GetError() << std::endl;
-    else
-    {
-        // Unsure what the NULLs do at the moment
-        SDL_BlitSurface(imageSurface, NULL, targetSurface, NULL);       
-    }
 }

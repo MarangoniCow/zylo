@@ -2,6 +2,7 @@
 
 // INTERNAL DEPENDENCIES
 #include "SDL_EventManager.h"
+#include "Board.h"
 
 // EXTERNAL DEPENDENCIES
 #include <SDL2/SDL.h>
@@ -13,9 +14,9 @@ void SDL_EventManager::RunGame() {
     // Generate board
     SDL_Board gameWindow;
     gameWindow.GenerateBoard();
+    gameWindow.LoadTexture(); 
     
-
-
+    // Run game    
     bool isRunning = true;
     SDL_Event ev;
 
@@ -29,7 +30,10 @@ void SDL_EventManager::RunGame() {
             if (ev.type == SDL_QUIT)
                 isRunning = false;            
         }
+        
     }
+    
+    
 
     SDL_Quit(); 
 };
