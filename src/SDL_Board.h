@@ -45,14 +45,19 @@ class SDL_Board
     protected:
         SDL_Window* window;                     // Window handle
         SDL_Renderer* windowRenderer;           // Window renderer 
-        int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (bottom left to top right) and x,y window coordinates of square
+        int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square
         
     public: 
         SDL_Board();                            // Constructor
         ~SDL_Board();                           // Destructor
         
+        SDL_Rect Get_BoardSquare(int x, int y); 
+
+        void method();
         void GenerateBoard();                   // Handle initial board generation 
-        SDL_Texture* LoadTexture(); 
+        void LoadTexture(int x, int y); 
+        void ClearSquare(int x, int y); 
+
         
 
 };

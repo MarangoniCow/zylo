@@ -14,7 +14,15 @@ void SDL_EventManager::RunGame() {
     // Generate board
     SDL_Board gameWindow;
     gameWindow.GenerateBoard();
-    gameWindow.LoadTexture(); 
+
+    for(int i = 0; i < 8; i++)
+    {
+        gameWindow.LoadTexture(i, 0);
+        SDL_Delay(1000);
+        gameWindow.ClearSquare(i, 0); 
+
+    }
+    
     
     // Run game    
     bool isRunning = true;
@@ -37,3 +45,4 @@ void SDL_EventManager::RunGame() {
 
     SDL_Quit(); 
 };
+

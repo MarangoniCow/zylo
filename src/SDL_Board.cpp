@@ -85,7 +85,7 @@ void SDL_Board::GenerateBoard()
             board_square.w = SQUARE_WIDTH;
             board_square.h = SQUARE_HEIGHT;
 
-            if((x + y)%2 == 0)
+            if((x + y)%2 == 1)
                 SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
             else
                 SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
@@ -100,7 +100,7 @@ void SDL_Board::GenerateBoard()
 
 
 
-SDL_Texture* SDL_Board::LoadTexture()
+void SDL_Board::LoadTexture(int x, int y)
 {
 
 
@@ -118,18 +118,34 @@ SDL_Texture* SDL_Board::LoadTexture()
     }
 
 
-    SDL_Rect targetSquare;
-    targetSquare.x = BOARD_X;
-    targetSquare.y = BOARD_Y;
-    targetSquare.w = SQUARE_WIDTH;
-    targetSquare.h = SQUARE_HEIGHT; 
+    SDL_Rect targetSquare = Get_BoardSquare(x, y);
 
     //SDL_RenderClear(renderTarget);
     SDL_RenderCopy(windowRenderer, texture, NULL, &targetSquare);
     SDL_RenderPresent(windowRenderer);
-
     SDL_DestroyTexture(texture); 
-    
-    
-    return texture;
+}
+
+void SDL_Board::ClearSquare(int x, int y)
+{
+    SDL_Rect targetSquare = Get_BoardSquare(x, y);
+
+    if((x + y)%2 == 0)
+        SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
+    else
+        SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
+
+    SDL_RenderFillRect(windowRenderer, &targetSquare);
+    SDL_RenderPresent(windowRenderer);
+}
+
+SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
+{
+    SDL_Rect targetSquare;
+    targetSquare.x = SDL_coordinates[x][y][1];
+    targetSquare.y = SDL_coordinates[x][y][2];
+    targetSquare.w = SQUARE_WIDTH;
+    targetSquare.h = SQUARE_HEIGHT;
+
+    return targetSquare; 
 }
