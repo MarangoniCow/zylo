@@ -15,7 +15,7 @@
 
 
 // TEMP
-#include "PieceTypes.h"
+#include "Piece.h"
 
 int main () {
 
@@ -24,23 +24,6 @@ int main () {
     SDL_EventManager obj;
     obj.RunGame();
 
-    Pawn* testPiece1 = new Pawn; 
-    Pawn* testPiece2 = new Pawn; 
-    Pawn* testPiece3 = new Pawn; 
-    Pawn* testPiece4 = new Pawn; 
-
-    std::cout << testPiece1->Get_Count() << std::endl;
-
-    delete(testPiece3);
-
-    std::cout << testPiece1->Get_Count() << std::endl;
-
-    std::cout << testPiece1->Get_Colour() << std::endl;
-
-    std::cout << testPiece1->Get_FilePath() << std::endl;
-    
-    std::cout << "ID 1: "<< testPiece1->Get_ID() << std::endl;
-    std::cout << "ID 4: "<< testPiece4->Get_ID() << std::endl;
 
     
     

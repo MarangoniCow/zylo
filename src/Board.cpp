@@ -2,16 +2,13 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "SDL_Board.h"
-#include "PieceTypes.h"
+#include "Piece.h"
 
 
-void Board::method()
-{      
-
+void Board::startGame()
+{
     
-
-
-};
+}
 
 // char Board::Board_coordinates = {{'A1', 'B'
 

@@ -100,12 +100,12 @@ void SDL_Board::GenerateBoard()
 
 
 
-void SDL_Board::LoadTexture(int x, int y)
+void SDL_Board::LoadTexture(int x, int y, std::string filePath)
 {
 
 
     SDL_Texture* texture = nullptr;
-    SDL_Surface* surface = SDL_LoadBMP("./res/white_pawn.bmp");
+    SDL_Surface* surface = SDL_LoadBMP(filePath.c_str());
 
     if(surface == NULL)
         std::cout << "Error, could not load .bmp file" << std::endl;
