@@ -11,6 +11,7 @@
 
 // EXTERNAL INCLUDES
 #include <string>
+#include <vector>
 
 
 struct PieceDescriptor {
@@ -22,6 +23,7 @@ struct PieceDescriptor {
 class Piece 
 {
     protected:
+        static std::vector<int> ID_list;            // Global ID list
         static int Piece_Count;                     // Global piece count
         int Piece_ID;                               // Instance specific ID
         const PieceDescriptor& descriptor;          // Sub-class specific descriptor
@@ -29,12 +31,16 @@ class Piece
     public:
         Piece(const PieceDescriptor& descriptor_) : descriptor(descriptor_) {
             Piece_Count += 1;
+            Piece_ID = ID_list.size();
+            ID_list.push_back(Piece_ID); 
         };                    
         virtual ~Piece() {
             Piece_Count -= 1; 
         }
 
         int Get_Count();
-        std::string Get_Colour() {return descriptor.pieceColour;};
-        std::string Get_FilePath()  {return descriptor.pieceFilePath;};
+        int Get_ID();
+        std::string Get_Colour();
+        std::string Get_FilePath();
+        
 };
