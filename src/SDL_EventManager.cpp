@@ -16,20 +16,12 @@ void SDL_EventManager::RunGame() {
     SDL_Board gameWindow;
     gameWindow.GenerateBoard();
 
-    
-    Pawn pawn_one(WHITE);
-    std::cout << pawn_one.Get_Colour() << std::endl;
-    std::cout << pawn_one.Get_FilePath() << std::endl;
+    Board board(&gameWindow);
+    board.initialiseBoard();
 
-    
-    for(int i = 0; i < 2; i++)
-    {
-        gameWindow.LoadTexture(i, 0, pawn_one.Get_FilePath());
-        SDL_Delay(1000);
-        gameWindow.ClearSquare(i, 0); 
 
-    }
-    
+
+        
     
     
     // Run game    
