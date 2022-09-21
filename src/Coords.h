@@ -9,15 +9,17 @@
 #pragma once
 
 // INTERNAL INCLUDES
+#include "SDL_Board.h"
 
 // EXTERNAL INCLUDES
 
+
 class Coords {
     protected:
-        static const int Coords_Arr[8][8]; 
-
-    public:
-        static int CoordsToChess(int x, int y);
-        static int CoordsToSDL(int x, int y); 
+        int x = -1;
+        int y = -1;
         
-}
+    public:
+        Coords();
+        static void SDLCoordsToBoard(int* SDL_X, int* SDL_y, int* BRD_x, int* BRD_y);
+};

@@ -37,8 +37,8 @@ SDL_Board::SDL_Board()
     {
         for(int j = 0; j < 8; j++)
         {
-            SDL_coordinates[i][j][1] = board_bottom_coord_x + j*SQUARE_WIDTH; 
-            SDL_coordinates[i][j][2] = board_bottom_coord_y - i*SQUARE_HEIGHT; 
+            SDL_coordinates[i][j][1] = board_bottom_coord_x + i*SQUARE_WIDTH; 
+            SDL_coordinates[i][j][2] = board_bottom_coord_y - j*SQUARE_HEIGHT; 
         }
     }
 
@@ -85,7 +85,7 @@ void SDL_Board::GenerateBoard()
             board_square.w = SQUARE_WIDTH;
             board_square.h = SQUARE_HEIGHT;
 
-            if((x + y)%2 == 1)
+            if((x + y)%2 == 0)
                 SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
             else
                 SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);

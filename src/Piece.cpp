@@ -43,6 +43,11 @@ std::string Piece::Get_FilePath()
     return descriptor.filePath + pieceColour + ".bmp";
 }
 
+void Piece::OutputPieceList()
+{
+    for(int i = 0; i < ID_list.size(); i++)
+        std::cout << ID_list[i] << std::endl;
+}
 
 
 /***********************************************************

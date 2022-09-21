@@ -8,6 +8,7 @@
 #pragma once
 
 // INTERNAL INCLUDES
+#include "Coords.h"
 
 // EXTERNAL INCLUDES
 #include <string>
@@ -32,6 +33,7 @@ class Piece
         int Piece_ID;                               // Instance specific ID
         const PieceDescriptor& descriptor;          // Sub-class specific descriptor
         const PIECE_COLOUR col;
+        Coords cords;
         
 
     public:
@@ -48,6 +50,7 @@ class Piece
         int Get_ID();
         PIECE_COLOUR Get_Colour();
         std::string Get_FilePath();
+        static void OutputPieceList();
         
 };
 

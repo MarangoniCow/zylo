@@ -13,14 +13,16 @@ class Board {
 
     protected: 
         SDL_Board* gameBoard;
-        std::vector<Piece> pieceList;
-        char boardCoordiantes[8][8];
+        
+
+        int boardState[8][8];
         //static char Board_coordinates[8][8];
         
         
 
     public:
         Board(SDL_Board* gameBoard_) : gameBoard(gameBoard_) {}; 
-        void initialiseBoard(); 
+        void initialiseBoard();
+        
         
 };

@@ -11,8 +11,10 @@
 #include "SDL_Board.h"
 
 
+
 class SDL_EventManager
 {
     public:
         void RunGame();
+        void MouseToBoardCoords(int* x, int* y);
 };
