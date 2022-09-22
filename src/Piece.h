@@ -21,26 +21,29 @@ enum PIECE_COLOUR {
 };
 
 struct PieceDescriptor {
+
     std::string filePath;
+    std::string Piece_type;
 };
 
 
 class Piece 
 {
     protected:
-        static std::vector<int> ID_list;            // Global ID list
+        static std::vector<int> Inst_list;            // Global ID list
         static int Piece_Count;                     // Global piece count
-        int Piece_ID;                               // Instance specific ID
+        int Inst_ID;                               // Instance specific ID
         const PieceDescriptor& descriptor;          // Sub-class specific descriptor
         const PIECE_COLOUR col;
-        Coords cords;
+        Coords pos; 
+        
         
 
     public:
-        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_) : descriptor(descriptor_), col(col_) {
+        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
             Piece_Count += 1;
-            Piece_ID = ID_list.size();
-            ID_list.push_back(Piece_ID); 
+            Inst_ID = Inst_list.size();
+            Inst_list.push_back(Inst_ID); 
         };                    
         virtual ~Piece() {
             Piece_Count -= 1; 

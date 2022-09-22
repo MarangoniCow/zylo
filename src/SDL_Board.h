@@ -40,6 +40,8 @@ enum BOARD_VALUES
     BOARD_BORDER_B = 34
 };
 
+
+
 class SDL_Board
 {
     protected:

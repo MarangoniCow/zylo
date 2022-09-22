@@ -14,12 +14,20 @@
 // EXTERNAL INCLUDES
 
 
+struct BoardPosition
+{
+    int x;
+    int y;
+};
+
 class Coords {
     protected:
-        int x = -1;
-        int y = -1;
+        BoardPosition cur_pos;
         
     public:
-        Coords();
+        Coords(int x, int y);
+        void UpdatePosition(int x, int y); 
+        bool ValidPosition(BoardPosition pos); 
+        BoardPosition Get_Position() {return cur_pos;};
         static void SDLCoordsToBoard(int* SDL_X, int* SDL_y, int* BRD_x, int* BRD_y);
 };

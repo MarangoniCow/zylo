@@ -9,17 +9,16 @@
 #include "SDL_Board.h"
 #include "Piece.h"
 
+struct State {
+    Piece* boardState[8][8];
+};
+
 class Board {
 
     protected: 
         SDL_Board* gameBoard;
-        
-
-        int boardState[8][8];
-        //static char Board_coordinates[8][8];
-        
-        
-
+        State current_state;
+        static State start_state;
     public:
         Board(SDL_Board* gameBoard_) : gameBoard(gameBoard_) {}; 
         void initialiseBoard();

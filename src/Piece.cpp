@@ -16,7 +16,7 @@
 
 // Initialise static variables
 int Piece::Piece_Count = 0;
-std::vector<int> Piece::ID_list;
+std::vector<int> Piece::Inst_list;
 
 
 int Piece::Get_Count()
@@ -25,7 +25,7 @@ int Piece::Get_Count()
 }
 int Piece::Get_ID()
 {
-    return Piece_ID;
+    return Inst_ID;
 }
 PIECE_COLOUR Piece::Get_Colour()
 {
@@ -45,17 +45,17 @@ std::string Piece::Get_FilePath()
 
 void Piece::OutputPieceList()
 {
-    for(int i = 0; i < ID_list.size(); i++)
-        std::cout << ID_list[i] << std::endl;
+    for(int i = 0; i < Inst_list.size(); i++)
+        std::cout << Inst_list[i] << std::endl;
 }
 
 
 /***********************************************************
  *                   PIECE DESCRIPTIONS
  ***********************************************************/
-PieceDescriptor Pawn::pawn_description      {"./res/pawn_"}; 
-PieceDescriptor Rook::rook_description      {"./res/rook_"}; 
-PieceDescriptor Knight::knight_description  {"./res/knight_"}; 
-PieceDescriptor Bishop::bishop_description  {"./res/bishop_"}; 
-PieceDescriptor Queen::queen_description    {"./res/queen_"}; 
-PieceDescriptor King::king_description      {"./res/king_"}; 
+PieceDescriptor Pawn::pawn_description      {"./res/pawn_", "p"}; 
+PieceDescriptor Rook::rook_description      {"./res/rook_", "r"}; 
+PieceDescriptor Knight::knight_description  {"./res/knight_", "k"}; 
+PieceDescriptor Bishop::bishop_description  {"./res/bishop_", "b"}; 
+PieceDescriptor Queen::queen_description    {"./res/queen_", "q"}; 
+PieceDescriptor King::king_description      {"./res/king_", "ki"}; 
