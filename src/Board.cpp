@@ -6,64 +6,80 @@
 #include "Piece.h"
 
 
+
+void Board::renderCurrentState()
+{
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+
+            Piece* currrent = boardState[i][j];
+            gameBoard->LoadTexture(i, j, currrent->Get_FilePath());
+        }
+    }
+            
+}
+
 void Board::initialiseBoard()
 {
 
-    Pawn pw1(WHITE), pw2(WHITE), pw3(WHITE), pw4(WHITE), pw5(WHITE), pw6(WHITE), pw7(WHITE), pw8(WHITE);
-    Pawn pb1(BLACK), pb2(BLACK), pb3(BLACK), pb4(BLACK), pb5(BLACK), pb6(BLACK), pb7(BLACK), pb8(BLACK);
+    static Pawn pw1(WHITE, 0, 1), pw2(WHITE, 1, 1), pw3(WHITE, 2, 1), pw4(WHITE, 3, 1), pw5(WHITE, 4, 1), pw6(WHITE, 5, 1), pw7(WHITE, 6, 1), pw8(WHITE, 7, 1);
+    static Pawn pb1(BLACK, 0, 6), pb2(BLACK, 1, 6), pb3(BLACK, 2, 6), pb4(BLACK, 3, 6), pb5(BLACK, 4, 6), pb6(BLACK, 5, 6), pb7(BLACK, 6, 6), pb8(BLACK, 7, 6);
 
-    Rook rw1(WHITE), rw2(WHITE), rb1(BLACK), rb2(BLACK);
-    Knight kw1(WHITE), kw2(WHITE), kb1(BLACK), kb2(BLACK);
-    Bishop bw1(WHITE), bw2(WHITE), bb1(BLACK), bb2(BLACK);
-    Queen qw1(WHITE), qb1(BLACK);
-    King kiw1(WHITE), kib1(BLACK); 
+    static Rook rw1(WHITE, 0, 0), rw2(WHITE, 0, 7), rb1(BLACK, 7, 0), rb2(BLACK, 7, 7);
+    static Knight kw1(WHITE, 1, 0), kw2(WHITE, 6, 0), kb1(BLACK, 1, 7), kb2(BLACK, 6, 7);
+    static Bishop bw1(WHITE, 2, 0), bw2(WHITE, 5, 0), bb1(BLACK, 2, 7), bb2(BLACK, 5, 7);
+    static Queen qw1(WHITE, 3, 0), qb1(BLACK, 3, 7);
+    static King kiw1(WHITE, 4, 0), kib1(BLACK, 4, 7);
 
-    // Initialise boardState
-    for(int i = 0; i < 8; i++)
-        for(int j = 0; j < 8; j++)
-            boardState[i][j] = -1;
 
-    // Update board state with piece ID
+    boardState[0][0] = &rw1;
+    boardState[1][0] = &kw1;
+    boardState[2][0] = &bw1;
+    boardState[3][0] = &qw1;
+    boardState[4][0] = &kiw1;
+    boardState[5][0] = &bw2;
+    boardState[6][0] = &kw2;
+    boardState[7][0] = &rw2;
+
+    boardState[0][1] = &pw1;
+    boardState[1][1] = &pw2;
+    boardState[2][1] = &pw3;
+    boardState[3][1] = &pw4;
+    boardState[4][1] = &pw5;
+    boardState[5][1] = &pw6;
+    boardState[6][1] = &pw7;
+    boardState[7][1] = &pw8;
+
+    boardState[0][7] = &rb1;
+    boardState[1][7] = &kb1;
+    boardState[2][7] = &bb1;
+    boardState[3][7] = &qb1;
+    boardState[4][7] = &kib1;
+    boardState[5][7] = &bb2;
+    boardState[6][7] = &kb2;
+    boardState[7][7] = &rb2;
+
+    boardState[0][6] = &pw1;
+    boardState[1][6] = &pw2;
+    boardState[2][6] = &pw3;
+    boardState[3][6] = &pw4;
+    boardState[4][6] = &pw5;
+    boardState[5][6] = &pw6;
+    boardState[6][6] = &pw7;
+    boardState[7][6] = &pw8;
+
+    for(int i = 0; i < 7; i++)
+        for(int j = 0; j < 7; j++)
+            if(boardState[i][j] != NULL)
+                boardState[i][j] = NULL;
+
+
+    
     
 
-
-
-
-    // Load pawns
-    for(int i = 0; i < 8; i++ )
-    {
-        gameBoard->LoadTexture(i, 1, pw1.Get_FilePath().c_str());
-        gameBoard->LoadTexture(i, 6, pb1.Get_FilePath().c_str());
-    }
-
-    // Load rooks
-    gameBoard->LoadTexture(0, 0, rw1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(7, 0, rw2.Get_FilePath().c_str());
-    gameBoard->LoadTexture(0, 7, rb1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(7, 7, rb2.Get_FilePath().c_str());
-    
-    // Load knights
-    gameBoard->LoadTexture(1, 0, kw1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(6, 0, kw2.Get_FilePath().c_str());
-    gameBoard->LoadTexture(1, 7, kb1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(6, 7, kb2.Get_FilePath().c_str());
-
-    // Load bishops
-    gameBoard->LoadTexture(2, 0, bw1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(5, 0, bw2.Get_FilePath().c_str());
-    gameBoard->LoadTexture(2, 7, bb1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(5, 7, bb2.Get_FilePath().c_str());
-
-    // Load queens
-    gameBoard->LoadTexture(3, 0, qw1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(3, 7, qb1.Get_FilePath().c_str());
-
-    // Load kings
-    gameBoard->LoadTexture(4, 0, kiw1.Get_FilePath().c_str());
-    gameBoard->LoadTexture(4, 7, kib1.Get_FilePath().c_str());
-
-    
         
+
+
 
 
     

@@ -68,7 +68,7 @@ class Pawn : public Piece
     private:
         static PieceDescriptor pawn_description; 
     public:
-        Pawn(PIECE_COLOUR col_) : Piece(pawn_description, col_) {};
+        Pawn(PIECE_COLOUR col_, int x, int y) : Piece(pawn_description, col_, x, y) {};
 };
 
 class Rook : public Piece
@@ -76,7 +76,7 @@ class Rook : public Piece
     private:
         static PieceDescriptor rook_description; 
     public:
-        Rook(PIECE_COLOUR col_) : Piece(rook_description, col_){};
+        Rook(PIECE_COLOUR col_, int x, int y) : Piece(rook_description, col_, x, y){};
 };
 
 class Knight : public Piece
@@ -84,7 +84,7 @@ class Knight : public Piece
     private:
         static PieceDescriptor knight_description; 
     public:
-        Knight(PIECE_COLOUR col_) : Piece(knight_description, col_) {};
+        Knight(PIECE_COLOUR col_, int x, int y) : Piece(knight_description, col_, x, y) {};
 };
 
 class Bishop : public Piece
@@ -92,7 +92,7 @@ class Bishop : public Piece
     private:
         static PieceDescriptor bishop_description; 
     public:
-        Bishop(PIECE_COLOUR col_) : Piece(bishop_description, col_) {};
+        Bishop(PIECE_COLOUR col_, int x, int y) : Piece(bishop_description, col_, x, y) {};
 };
 
 class Queen : public Piece
@@ -100,7 +100,7 @@ class Queen : public Piece
     private:
         static PieceDescriptor queen_description; 
     public:
-        Queen(PIECE_COLOUR col_) : Piece(queen_description, col_) {};
+        Queen(PIECE_COLOUR col_, int x, int y) : Piece(queen_description, col_, x, y) {};
 };
 
 class King : public Piece
@@ -108,5 +108,5 @@ class King : public Piece
     private:
         static PieceDescriptor king_description; 
     public:
-        King(PIECE_COLOUR col_) : Piece(king_description, col_) {};
+        King(PIECE_COLOUR col_, int x, int y) : Piece(king_description, col_, x, y) {};
 };

@@ -19,6 +19,7 @@ void SDL_EventManager::RunGame() {
 
     Board board(&gameWindow);
     board.initialiseBoard();
+    board.renderCurrentState();
 
     Piece::OutputPieceList();
 
