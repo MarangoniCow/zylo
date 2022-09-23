@@ -49,6 +49,18 @@ void Piece::OutputPieceList()
         std::cout << Inst_list[i] << std::endl;
 }
 
+bool Piece::updatePosition(int TAR_x, int TAR_y)
+{
+    // Simple update
+    pos.updatePosition(TAR_x, TAR_y);
+}
+
+bool Piece::updatePosition(BoardPosition newPos)
+{
+    // Simple update
+    pos.updatePosition(newPos);
+}
+
 
 /***********************************************************
  *                   PIECE DESCRIPTIONS

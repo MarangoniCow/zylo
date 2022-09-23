@@ -130,7 +130,7 @@ void SDL_Board::ClearSquare(int x, int y)
 {
     SDL_Rect targetSquare = Get_BoardSquare(x, y);
 
-    if((x + y)%2 == 0)
+    if((x + y)%2 == 1)
         SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
     else
         SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
@@ -149,3 +149,9 @@ SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
 
     return targetSquare; 
 }
+void SDL_Board::SDL_to_Coords(int* SDL_x, int* SDL_y, int* BRD_x, int* BRD_y)
+{
+    *BRD_x = (*SDL_x - BOARD_X)/SQUARE_WIDTH;
+    *BRD_y = 7 - (*SDL_y - BOARD_Y)/SQUARE_HEIGHT;
+}
+

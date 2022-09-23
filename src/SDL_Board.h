@@ -58,8 +58,7 @@ class SDL_Board
         void method();
         void GenerateBoard();                   // Handle initial board generation 
         void LoadTexture(int x, int y, std::string filePath); 
-        void ClearSquare(int x, int y); 
-
-        
+        void ClearSquare(int x, int y);
+        static void SDL_to_Coords(int* SDL_X, int* SDL_y, int* BRD_x, int* BRD_y);       
 
 };

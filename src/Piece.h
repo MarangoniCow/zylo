@@ -53,6 +53,8 @@ class Piece
         int Get_ID();
         PIECE_COLOUR Get_Colour();
         std::string Get_FilePath();
+        bool updatePosition(int TAR_x, int TAR_y); 
+        bool updatePosition(BoardPosition pos); 
         static void OutputPieceList();
         
 };
