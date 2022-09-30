@@ -35,7 +35,7 @@ class Piece
         int Inst_ID;                               // Instance specific ID
         const PieceDescriptor& descriptor;          // Sub-class specific descriptor
         const PIECE_COLOUR col;
-        Coords pos; 
+        Coords pos;
         
         
 

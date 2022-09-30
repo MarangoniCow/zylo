@@ -8,13 +8,16 @@
 
 #pragma once
 
+
 // INTERNAL INCLUDES
-// ...
+#include "Coords.h"
+
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+
 
 // ENUMERATIONS
 enum WINDOW_SIZES
@@ -40,14 +43,13 @@ enum BOARD_VALUES
     BOARD_BORDER_B = 34
 };
 
-
-
 class SDL_Board
 {
     protected:
         SDL_Window* window;                     // Window handle
         SDL_Renderer* windowRenderer;           // Window renderer 
-        int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square
+        int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square       
+        
         
     public: 
         SDL_Board();                            // Constructor
@@ -59,6 +61,8 @@ class SDL_Board
         void GenerateBoard();                   // Handle initial board generation 
         void LoadTexture(int x, int y, std::string filePath); 
         void ClearSquare(int x, int y);
-        static void SDL_to_Coords(int* SDL_X, int* SDL_y, int* BRD_x, int* BRD_y);       
+        void ClearBoard();
+        static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);
+        
 
 };

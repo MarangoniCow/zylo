@@ -5,28 +5,30 @@
 #include "Coords.h"
 Coords::Coords()
 {
-    cur_pos.x = -1;
-    cur_pos.y = -1;
+    pos.x = -1;
+    pos.y = -1;
 }
 
 Coords::Coords(int x, int y)
 {
     // Set x/y
-    cur_pos.x = x;
-    cur_pos.y = y; 
+    pos.x = x;
+    pos.y = y; 
 }
 
 void Coords::updatePosition(int TAR_x, int TAR_y)
 {
-    cur_pos.x = TAR_x;
-    cur_pos.y = TAR_y;
+    pos.x = TAR_x;
+    pos.y = TAR_y;
 }
 
 void Coords::updatePosition(BoardPosition newPos)
 {
-    cur_pos.x = newPos.x;
-    cur_pos.y = newPos.y;
+    pos.x = newPos.x;
+    pos.y = newPos.y;
 }
+
+
 
 
 

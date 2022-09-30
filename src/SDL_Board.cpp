@@ -1,13 +1,20 @@
-/* SDL_GENERATEGAMEWINDOW.CPP  */
+/***********************************************************
+ *                      SDL_BOARD.CPP
+ ***********************************************************/
 
 
-// External dependencies
+
+// INTERNAL INCLUDES
+#include "SDL_Board.h"
+#include "Coords.h"
+#include "Board.h"
+
+// EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
 
-// Internal dependencies
-#include "SDL_Board.h"
+
 
 
 
@@ -96,10 +103,6 @@ void SDL_Board::GenerateBoard()
     }
 }
 
-
-
-
-
 void SDL_Board::LoadTexture(int x, int y, std::string filePath)
 {
 
@@ -149,9 +152,21 @@ SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
 
     return targetSquare; 
 }
-void SDL_Board::SDL_to_Coords(int* SDL_x, int* SDL_y, int* BRD_x, int* BRD_y)
+
+
+BoardPosition SDL_Board::SDL_to_Coords(int SDL_x, int SDL_y)
 {
-    *BRD_x = (*SDL_x - BOARD_X)/SQUARE_WIDTH;
-    *BRD_y = 7 - (*SDL_y - BOARD_Y)/SQUARE_HEIGHT;
+    BoardPosition pos;
+    pos.x = (SDL_x - BOARD_X)/SQUARE_WIDTH;
+    pos.y = 7 - (SDL_y - BOARD_Y)/SQUARE_HEIGHT;
+    return pos;
 }
+
+void SDL_Board::ClearBoard()
+{
+    for(int i = 0; i < 8; i++)
+        for(int j = 0; j < 8; j++)
+            ClearSquare(i, j);
+}
+
 

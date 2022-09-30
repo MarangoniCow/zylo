@@ -9,7 +9,7 @@
 #pragma once
 
 // INTERNAL INCLUDES
-#include "SDL_Board.h"
+
 
 // EXTERNAL INCLUDES
 
@@ -18,18 +18,24 @@ struct BoardPosition
 {
     int x;
     int y;
+
+    BoardPosition() : x(-1), y(-1) {};
+    void ResetPosition() {
+        x = -1;
+        y = -1;
+    }
 };
 
 class Coords {
     protected:
-        BoardPosition cur_pos;
+        BoardPosition pos;
         
     public:
         Coords(); 
         Coords(int x, int y);
   
         
-        BoardPosition Get_Position() {return cur_pos;};
+        BoardPosition Get_Position() {return pos;};
         void updatePosition(int TAR_x, int TAR_y);
         void updatePosition(BoardPosition newPos);
         static bool ValidPosition(BoardPosition pos); 

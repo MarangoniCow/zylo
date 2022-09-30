@@ -6,6 +6,7 @@
 #include "Board.h"
 #include "Piece.h"
 
+
 // EXTERNAL DEPENDENCIES
 #include <SDL2/SDL.h>
 #include <iostream>
@@ -21,55 +22,31 @@ void SDL_EventManager::RunGame() {
     board.initialiseBoard();
     board.renderCurrentState();
 
-    // Piece::OutputPieceList();
-    
     // Run game    
     bool isRunning = true;
-    SDL_Event ev;
-
-    // Initialise screen coordinates for later use
-    int SDL_x, SDL_y;
-    int BRD_x, BRD_y;
-    BoardPosition curPos;
-    BoardPosition oldPos;
-
-    oldPos.x = -1;
-    oldPos.y = -1;
     
-    
-    //SDL_Delay(1000);
-    //board.movePiece(0, 1, 0, 2);
 
 
     while(isRunning)
     {
-        // Poll event checks for event
-        // Processes events each frame
-        while(SDL_PollEvent(&ev) != 0)
-        {
-            if (ev.type == SDL_QUIT)
-                isRunning = false;
-            else if(ev.type == SDL_MOUSEBUTTONDOWN) {
-                SDL_GetMouseState(&SDL_x, &SDL_y);
-                SDL_Board::SDL_to_Coords(&SDL_x, &SDL_y, &BRD_x, &BRD_y);
-                
-                curPos.x = BRD_x;
-                curPos.y = BRD_y;
-                
-                
-                
-                
-                if(oldPos.x == -1 || oldPos.y == -1) {
-                    oldPos = curPos; 
-                }
-                else {
-                    board.movePiece(oldPos, curPos);
-                    oldPos.x = -1;
-                    oldPos.y = -1; 
-                }
-                
+        /* INITIALISE NECESSARY RUNNING VARIABLES */
+        
 
-                
+        // Poll event checks for event and processes events each frame
+        while(SDL_PollEvent(&ev_cur) != 0)
+        {
+            if (ev_cur.type == SDL_QUIT)
+                isRunning = false;
+            else if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
+
+                // Save current board coordinates
+                MouseToBoardCoords();
+
+                // Check for previous board coordinates
+                if (click_location_prev.x != -1 && click_location_prev.y != -1) {
+                    board.movePiece(click_location_prev, click_location_curr);
+                    click_location_prev.ResetPosition();
+                }                
             }
         }
         
@@ -80,10 +57,18 @@ void SDL_EventManager::RunGame() {
     SDL_Quit(); 
 };
 
-void SDL_EventManager::MouseToBoardCoords(int* x, int* y)
+void SDL_EventManager::MouseToBoardCoords()
 {
 
-   std::cout << "x: " << *x << " y: " << *y << std::endl;
+        // Make sure we keep a track of old click location
+    if(click_location_prev.x == -1 || click_location_prev.y == -1)
+        click_location_prev = click_location_curr;
+    
+    // Fetch screen coordinates and translate into board coordinates
+    int SDL_x, SDL_y;
+    SDL_GetMouseState(&SDL_x, &SDL_y);
+    click_location_curr = SDL_Board::SDL_to_Coords(SDL_x, SDL_y);
+    std::cout << std::endl;
 
 
 }

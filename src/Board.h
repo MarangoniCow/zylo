@@ -8,6 +8,7 @@
 // Internal includes
 #include "SDL_Board.h"
 #include "Piece.h"
+#include "Coords.h"
 
 
 
