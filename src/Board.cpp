@@ -9,8 +9,6 @@
 
 void Board::renderCurrentState()
 {
-
-    
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++) {
 
@@ -18,9 +16,7 @@ void Board::renderCurrentState()
             if (current != NULL)
                 gameBoard->LoadTexture(i, j, current->Get_FilePath());
         }
-    }
-    
-            
+    }            
 }
 
 void Board::initialiseBoard()
@@ -79,6 +75,11 @@ void Board::initialiseBoard()
 void Board::movePiece(BoardPosition oldPos, BoardPosition newPos)
 {
 
+    // Check for valid move
+    if (!validMove(oldPos, newPos))
+        return;
+    
+
     // Determine the piece
     Piece* currentPiece = boardState[oldPos.x][oldPos.y];
 
@@ -111,4 +112,21 @@ void Board::movePiece(BoardPosition oldPos, BoardPosition newPos)
     // Render piece into new position.
     gameBoard->LoadTexture(newPos.x, newPos.y, currentPiece->Get_FilePath());
 
+}
+
+bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
+{
+    // Determine the piece
+    Piece* currentPiece = boardState[oldPos.x][oldPos.y];
+
+    if (currentPiece == NULL)
+        return 1;
+    
+    // Check for a piece in the new position
+    Piece* targetPiece = boardState[newPos.x][newPos.y];
+
+    if(targetPiece->Get_Colour() == currentPiece->Get_Colour())
+        return 0;
+    else
+        return 1;
 }

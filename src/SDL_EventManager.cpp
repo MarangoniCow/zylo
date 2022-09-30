@@ -22,6 +22,11 @@ void SDL_EventManager::RunGame() {
     board.initialiseBoard();
     board.renderCurrentState();
 
+    SDL_Delay(1000);
+    gameWindow.ClearBoard();
+    SDL_Delay(1000);
+    board.renderCurrentState();
+
     // Run game    
     bool isRunning = true;
     

@@ -29,6 +29,7 @@ class Board {
         void initialiseBoard();
         void renderCurrentState();
         void movePiece(BoardPosition oldPos, BoardPosition newPos);
+        bool validMove(BoardPosition oldPos, BoardPosition newPos);
         
         
 };
