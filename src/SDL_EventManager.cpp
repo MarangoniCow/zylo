@@ -10,6 +10,7 @@
 // EXTERNAL DEPENDENCIES
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <queue>
 
 
 void SDL_EventManager::RunGame() {
@@ -22,10 +23,11 @@ void SDL_EventManager::RunGame() {
     board.initialiseBoard();
     board.renderCurrentState();
 
-    SDL_Delay(1000);
-    gameWindow.ClearBoard();
-    SDL_Delay(1000);
-    board.renderCurrentState();
+   
+
+     
+    
+    
 
     // Run game    
     bool isRunning = true;
@@ -44,14 +46,15 @@ void SDL_EventManager::RunGame() {
                 isRunning = false;
             else if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
 
-                // Save current board coordinates
+                // Fetch current board coordinates
                 MouseToBoardCoords();
 
                 // Check for previous board coordinates
-                if (click_location_prev.x != -1 && click_location_prev.y != -1) {
+                if(click_location_prev.validPosition()) {
+                    std::cout << "MOVE PIECE \n" << std::endl; 
                     board.movePiece(click_location_prev, click_location_curr);
                     click_location_prev.ResetPosition();
-                }                
+                }
             }
         }
         
@@ -64,16 +67,23 @@ void SDL_EventManager::RunGame() {
 
 void SDL_EventManager::MouseToBoardCoords()
 {
-
-        // Make sure we keep a track of old click location
-    if(click_location_prev.x == -1 || click_location_prev.y == -1)
+    std::cout << "MOUSE CLICK" << std::endl;
+    std::cout << "Prev: " << click_location_prev.x << ", " << click_location_prev.y << std::endl;
+    std::cout << "Curr: " << click_location_curr.x << ", " << click_location_curr.y << std::endl;
+    
+    // Check for previous click, if no previous click, save current click as prev
+    if(!click_location_prev.validPosition())
         click_location_prev = click_location_curr;
+    
     
     // Fetch screen coordinates and translate into board coordinates
     int SDL_x, SDL_y;
     SDL_GetMouseState(&SDL_x, &SDL_y);
     click_location_curr = SDL_Board::SDL_to_Coords(SDL_x, SDL_y);
-    std::cout << std::endl;
 
 
+    std::cout << "UPDATE" << std::endl;
+    std::cout << "Prev: " << click_location_prev.x << ", " << click_location_prev.y << std::endl;
+    std::cout << "Curr: " << click_location_curr.x << ", " << click_location_curr.y << std::endl;
+    std::cout << "\n";
 }

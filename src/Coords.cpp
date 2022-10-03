@@ -30,5 +30,22 @@ void Coords::updatePosition(BoardPosition newPos)
 
 
 
+bool Coords::validUpdate(int i, int j)
+{
+    BoardPosition newPos = pos;
+    newPos.x += i;
+    newPos.y += j;
+    return newPos.validPosition();
+}
+
+BoardPosition Coords::returnUpdate(int i, int j)
+{   
+    BoardPosition newPos;
+    newPos.x = pos.x + i;
+    newPos.y = pos.y + j;
+    return newPos;
+}
+
+
 
 
