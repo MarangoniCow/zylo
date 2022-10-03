@@ -1,7 +1,11 @@
 /***********************************************************
  *                      PIECE.H
  * 
- *  Class to handle all pieces
+ *  Class to handle all pieces and movement ranges
+ *      - file path
+ *      - colour
+ *      - piece type
+ *      - Global piece list & ID
  * 
  * 
  ***********************************************************/
@@ -34,14 +38,16 @@ class Piece
         static std::vector<int> Piece_Vector;          // Global ID list
         static int Piece_Count;                        // Global piece count
 
+        // CLASS SPECFIC FUNCTIONALITY
+        const PieceDescriptor& descriptor;              // Sub-class specific descriptor
+
         // INSTANCE SPECIFIC FUNCTIONALITY
         int Piece_ID;                                   // Unique Piece ID
         const PIECE_COLOUR col;                         // Enumerated colour
         bool flag_move;                                  // Movement flag
         Coords pos;                                     // Current position
 
-        // CLASS SPECFIC FUNCTIONALITY
-        const PieceDescriptor& descriptor;              // Sub-class specific descriptor
+
         
     public:
         Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {

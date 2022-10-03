@@ -1,8 +1,10 @@
 /***********************************************************
  *                      SDL_BOARD.H
  * 
- *  Generates the board, deals with error checking, etc., etc.
- * 
+ *  Deals with all rendering tasks:
+ *      - Background
+ *      - Updating and moving pieces
+ *      - Transparent overlay 
  * 
  ***********************************************************/
 
@@ -59,10 +61,8 @@ class SDL_Board
 
         void method();
         void GenerateBoard();                   // Handle initial board generation 
-        void LoadTexture(int x, int y, std::string filePath); 
+        void RenderPiece(int x, int y, std::string filePath); 
         void ClearSquare(int x, int y);
         void ClearBoard();
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);
-        
-
 };

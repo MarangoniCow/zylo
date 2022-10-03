@@ -1,10 +1,17 @@
+/***********************************************************
+ *                      BOARD IMPLEMENTATION
+ ***********************************************************/
+
+// INTERNAL INCLUDES
 #include "Board.h"
+#include "SDL_Board.h"
+#include "Piece.h"
+
+// EXTERNAL INCLUDES
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <vector>
 #include <queue>
-#include "SDL_Board.h"
-#include "Piece.h"
 
 
 
@@ -15,7 +22,7 @@ void Board::renderCurrentState()
 
             Piece* current = boardState[i][j];
             if (current != NULL)
-                gameBoard->LoadTexture(i, j, current->Get_FilePath());
+                gameBoard->RenderPiece(i, j, current->Get_FilePath());
         }
     }            
 }
@@ -85,17 +92,12 @@ void Board::movePiece(BoardPosition oldPos, BoardPosition newPos)
     if (!validMove(oldPos, newPos))
         return;
 
-    std::cout << "valid move" << std::endl;
-    
-
     // Determine the piece
     Piece* currentPiece = boardState[oldPos.x][oldPos.y];
 
     if (currentPiece == NULL)
         return;
 
-    std::cout << "null piece" << std::endl;
-    
     // Check for a piece in the new position
     Piece* targetPiece = boardState[newPos.x][newPos.y];
 
@@ -117,13 +119,8 @@ void Board::movePiece(BoardPosition oldPos, BoardPosition newPos)
     if(targetPiece != NULL)
         gameBoard->ClearSquare(newPos.x, newPos.y);
 
-    std::cout << "clear square" << std::endl;
-
     // Render piece into new position.
-    gameBoard->LoadTexture(newPos.x, newPos.y, currentPiece->Get_FilePath());
-
-    std::cout << "load texture" << std::endl;
-
+    gameBoard->RenderPiece(newPos.x, newPos.y, currentPiece->Get_FilePath());
 }
 
 bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
@@ -131,12 +128,8 @@ bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
     // Determine the piece in the old position
     Piece* currentPiece = boardState[oldPos.x][oldPos.y];
 
-    std::cout << "determine current piece" << std::endl;
-
     if (currentPiece == NULL)
         return 0;
-
-    std::cout << "piece to move" << std::endl;
 
     // Check that movement is within move range
     std::queue<BoardPosition> moveQueue = currentPiece->moveRange();
@@ -161,15 +154,9 @@ bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
     // Check for a piece in the new position
     Piece* targetPiece = boardState[newPos.x][newPos.y];
 
-    if(targetPiece != NULL && (targetPiece->Get_Colour() == currentPiece->Get_Colour())) {
-
-    
-        std::cout << "invalid: piece of same colour" << std::endl;
+    if(targetPiece != NULL && (targetPiece->Get_Colour() == currentPiece->Get_Colour())) 
         return 0;
-    }
     else
-    {
-        std::cout << "valid move" << std::endl;
         return 1;
-    }
+    
 }

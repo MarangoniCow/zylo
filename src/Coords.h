@@ -1,18 +1,19 @@
 /***********************************************************
  *                      COORDS.H
  * 
- *  Global coordinate class
+ * Global coordinate class, contains a BoardPosition struct
+ * for global use, as well as a class with methods.
  * 
+ * Default constructor for BoardPosition sets (x, y) as (-1, -1)
+ * as an 'invalid' position. 
  * 
+ * Board coordinates are defined using a zero-index notation
+ * with the bottom-left coordinate defined as 0,0 and the top-right
+ * coordinate defined as 7-7, where white is always defined to be
+ * along the bottom. 
  ***********************************************************/
 
 #pragma once
-
-// INTERNAL INCLUDES
-
-
-// EXTERNAL INCLUDES
-
 
 struct BoardPosition
 {

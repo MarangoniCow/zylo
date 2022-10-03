@@ -1,14 +1,29 @@
-// board.h
+/***********************************************************
+ *                      BOARD.h
+ * 
+ *  Handles all board logic:
+ *      - Keeping track of board state
+ *      - Moving pieces in board state
+ *      - Telling SDL_Board to update screen #### POSSIBLY NOT THE BEST PLACE FOR THIS
+ * 
+ * 
+ * 
+ ***********************************************************/
+
 #pragma once
 
-// External includes
-#include <SDL2/SDL.h>
-#include <vector>
-
-// Internal includes
-#include "SDL_Board.h"
+// INTERNAL INCLUDES
+#include "SDL_Board.h"              // POSSIBLY NOT BEST PLACE FOR BOARD
 #include "Piece.h"
 #include "Coords.h"
+
+// EXTERNAL INCLUDES
+#include <SDL2/SDL.h>
+
+/*      COMMENTS AND TO DO      
+*   Not sure if Board really needs the game board. Would it not be better to output the boardstate?
+*   Why should Board have to deal with renderState?
+*/
 
 
 

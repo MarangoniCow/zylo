@@ -1,8 +1,8 @@
-/* SDL_EVENTMANAGER.H
-/ Manages all game events
-/
-/ 
-/                               */
+/***********************************************************
+ *                   SDL_EVENTMANAGER.H
+ * 
+ * Handles all game events, clicks, keyboard strokes, etc etc
+ ***********************************************************/
 
 
 #pragma once
@@ -27,6 +27,5 @@ class SDL_EventManager
         void MouseToBoardCoords();
         void MouseEvents();
         void KeyboardEvents();
-        
-        
+
 };

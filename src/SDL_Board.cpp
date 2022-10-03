@@ -1,5 +1,5 @@
 /***********************************************************
- *                      SDL_BOARD.CPP
+ *                 SDL_BOARD IMPLEMENTATION
  ***********************************************************/
 
 
@@ -103,7 +103,7 @@ void SDL_Board::GenerateBoard()
     }
 }
 
-void SDL_Board::LoadTexture(int x, int y, std::string filePath)
+void SDL_Board::RenderPiece(int x, int y, std::string filePath)
 {
 
 

@@ -1,9 +1,5 @@
 /***********************************************************
- *                      PIECE.CPP
- * 
- *  Code implementation
- * 
- * 
+ *                      PIECE IMPLEMENTATION
  ***********************************************************/
 
 // INTERNAL INCLUDES
@@ -18,6 +14,7 @@
 int Piece::Piece_Count = 0;
 std::vector<int> Piece::Piece_Vector;
 
+/*******    GETTER METHODS    *******/
 
 int Piece::Get_Count()
 {
@@ -43,11 +40,6 @@ std::string Piece::Get_FilePath()
     return descriptor.filePath + pieceColour + ".bmp";
 }
 
-void Piece::OutputPieceList()
-{
-    for(int i = 0; i < Piece_Vector.size(); i++)
-        std::cout << Piece_Vector[i] << std::endl;
-}
 
 void Piece::updatePosition(BoardPosition newPos)
 {
@@ -121,16 +113,15 @@ std::queue<BoardPosition> Rook::moveRange()
         moveQueue.push(pos.returnUpdate(0, j));
         j--;
     }
-
-
-
-    return moveQueue;
     
+    return moveQueue;
 }
+
 std::queue<BoardPosition> Knight::moveRange()
 {
     std::queue<BoardPosition> moveQueue;
 
+    // Binary permutations of {1,2,-1,-2}
     if(pos.validUpdate(1, 2)) moveQueue.push(pos.returnUpdate(1, 2));
     if(pos.validUpdate(2, 1)) moveQueue.push(pos.returnUpdate(2, 1));
 
@@ -146,6 +137,7 @@ std::queue<BoardPosition> Knight::moveRange()
     return moveQueue;
     
 }
+
 std::queue<BoardPosition> Bishop::moveRange()
 {
     std::queue<BoardPosition> moveQueue;
@@ -189,6 +181,7 @@ std::queue<BoardPosition> Bishop::moveRange()
     return moveQueue;
     
 }
+
 std::queue<BoardPosition> Queen::moveRange()
 {
     std::queue<BoardPosition> moveQueue;
@@ -260,10 +253,12 @@ std::queue<BoardPosition> Queen::moveRange()
     return moveQueue;
     
 }
+
 std::queue<BoardPosition> King::moveRange()
 {
     std::queue<BoardPosition> moveQueue;
 
+    // Permutations of {0, 1, -1}
     if(pos.validUpdate(1, 0))   moveQueue.push(pos.returnUpdate(1, 0));
     if(pos.validUpdate(1, 1))   moveQueue.push(pos.returnUpdate(1, 1));
     if(pos.validUpdate(0, 1))   moveQueue.push(pos.returnUpdate(0, 1));
@@ -272,9 +267,7 @@ std::queue<BoardPosition> King::moveRange()
     if(pos.validUpdate(0, -1))  moveQueue.push(pos.returnUpdate(0, -1));
     if(pos.validUpdate(1, -1))  moveQueue.push(pos.returnUpdate(1, -1));
     if(pos.validUpdate(-1, 1))  moveQueue.push(pos.returnUpdate(-1, 1));
-    BoardPosition test;
-    moveQueue.push(test);
-
+    
     return moveQueue;
     
 }
