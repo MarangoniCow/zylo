@@ -47,6 +47,7 @@ void SDL_EventManager::RunGame() {
                 if(click_location_prev.validPosition()) {
                     board.movePiece(click_location_prev, click_location_curr);
                     click_location_prev.ResetPosition();
+                    click_location_prev.ResetPosition();
                 }
             }
         }
