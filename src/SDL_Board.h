@@ -13,7 +13,7 @@
 
 // INTERNAL INCLUDES
 #include "Coords.h"
-
+#include "Board.h"
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
@@ -61,8 +61,11 @@ class SDL_Board
 
         void method();
         void GenerateBoard();                   // Handle initial board generation 
-        void RenderPiece(int x, int y, std::string filePath); 
+        void RenderPiece(int x, int y, std::string filePath);
+        void renderCurrentState(BoardState state);
+        void renderNewState(BoardState state);
         void ClearSquare(int x, int y);
         void ClearBoard();
+        
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);
 };

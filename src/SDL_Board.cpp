@@ -170,3 +170,46 @@ void SDL_Board::ClearBoard()
 }
 
 
+void SDL_Board::renderNewState(BoardState state)
+{
+    // Compare differences between new and old state
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++)
+        {
+            if(state.piecesCurr[i][j] != state.piecesPrev[i][j]) {
+
+                // Clear the current square
+                ClearSquare(i, j);
+
+                // Check for a new piece and render if necessary
+                Piece* currentPiece = state.piecesCurr[i][j];
+                if (currentPiece != NULL)
+                    RenderPiece(i, j, state.piecesCurr[i][j]->Get_FilePath());
+            }
+        }
+    }
+}
+
+void SDL_Board::renderCurrentState(BoardState state)
+{
+    ClearBoard();
+    
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
+            
+            
+            Piece* current = state.piecesCurr[i][j];
+            if (current != NULL) {
+                if (i == 7 && j == 7) 
+                {
+                    std::cout << "rook piece" << std::endl;
+                    std::cout << "filepath: " << current->Get_FilePath() << std::endl;
+                }
+                RenderPiece(i, j, current->Get_FilePath());
+            }
+        }
+    }         
+    
+}
+
+

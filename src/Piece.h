@@ -24,10 +24,19 @@ enum PIECE_COLOUR {
     BLACK = 1
 };
 
+enum PIECE_TYPE {
+    PAWN = 0,
+    ROOK = 1,
+    KNIGHT = 2,
+    BISHOP = 3,
+    QUEEN = 4,
+    KING = 5
+};
+
 struct PieceDescriptor {
 
     std::string filePath;
-    std::string Piece_type;
+    PIECE_TYPE type;
 };
 
 
@@ -65,9 +74,10 @@ class Piece
         static void OutputPieceList();
 
         // GETTER METHODS        
-        int Get_ID();
+        PieceDescriptor Get_Descriptor() {return descriptor;};
         PIECE_COLOUR Get_Colour();
         std::string Get_FilePath();
+        bool hasMoved() {return flag_move;};
 
         // SETTER METHODS
         void updatePosition(BoardPosition pos); 

@@ -13,39 +13,39 @@
 #pragma once
 
 // INTERNAL INCLUDES
-#include "SDL_Board.h"              // POSSIBLY NOT BEST PLACE FOR BOARD
 #include "Piece.h"
 #include "Coords.h"
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
 
-/*      COMMENTS AND TO DO      
-*   Not sure if Board really needs the game board. Would it not be better to output the boardstate?
-*   Why should Board have to deal with renderState?
-*/
 
+struct BoardState {
+    Piece* piecesCurr[8][8];
+    Piece* piecesPrev[8][8];
 
+    BoardState() {
+    for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                piecesCurr[i][j] = NULL;
+                piecesPrev[i][j] = NULL; 
+            };
+        };
+    };
+};
 
 class Board {
 
     protected: 
-        SDL_Board* gameBoard;
-        Piece* boardState[8][8];
+        BoardState state;
         
     public:
-        Board(SDL_Board* gameBoard_) : gameBoard(gameBoard_) {
-            for(int i = 0; i < 8; i++) {
-                for(int j = 0; j < 8; j++) {
-                    boardState[i][j] = NULL; 
-                };
-            }
-        }; 
+        Board() {};
         void initialiseBoard();
-        void renderCurrentState();
         void movePiece(BoardPosition oldPos, BoardPosition newPos);
         bool validMove(BoardPosition oldPos, BoardPosition newPos);
-        Piece* returnState(int i, int j);
+        std::queue<BoardPosition> generateValidMoves(BoardPosition oldPos);
+        BoardState returnState() {return state;};
         
         
 };

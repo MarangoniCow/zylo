@@ -22,9 +22,9 @@ void SDL_EventManager::RunGame() {
     gameWindow.GenerateBoard();
 
     // Initialise board logic class
-    Board board(&gameWindow);
+    Board board;
     board.initialiseBoard();
-    board.renderCurrentState();
+    gameWindow.renderCurrentState(board.returnState());
 
     // Game bool
     bool isRunning = true;
@@ -39,6 +39,7 @@ void SDL_EventManager::RunGame() {
             if (ev_cur.type == SDL_QUIT)
                 isRunning = false;
             else if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
+                
 
                 // Fetch current board coordinates
                 MouseToBoardCoords();
@@ -46,9 +47,15 @@ void SDL_EventManager::RunGame() {
                 // Check for previous board coordinates
                 if(click_location_prev.validPosition()) {
                     board.movePiece(click_location_prev, click_location_curr);
-                    click_location_prev.ResetPosition();
+                    gameWindow.renderNewState(board.returnState());
+
+                    click_location_curr.ResetPosition();
                     click_location_prev.ResetPosition();
                 }
+                
+
+                
+                
             }
         }
         
@@ -61,14 +68,25 @@ void SDL_EventManager::RunGame() {
 
 void SDL_EventManager::MouseToBoardCoords()
 {
-    // Check for previous click, if no previous click, save current click as prev
-    if(!click_location_prev.validPosition())
-        click_location_prev = click_location_curr;
-    
-    
+    BoardPosition tempPos;  
     // Fetch screen coordinates and translate into board coordinates
     int SDL_x, SDL_y;
     SDL_GetMouseState(&SDL_x, &SDL_y);
-    click_location_curr = SDL_Board::SDL_to_Coords(SDL_x, SDL_y);
+    tempPos = SDL_Board::SDL_to_Coords(SDL_x, SDL_y);
+
+    // If a valid location...
+    if(tempPos.validPosition())     
+    {
+        
+        // Check for a current click, if no previous click, save current click as prev
+        if(click_location_curr.validPosition())
+        {
+            
+            click_location_prev = click_location_curr;
+        }
+        click_location_curr = tempPos;
+    }
+
+    // Can have an else here for any clicks outside of the board coordinates
     
 };

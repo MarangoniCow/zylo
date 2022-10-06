@@ -21,6 +21,7 @@ struct BoardPosition
     int y;
 
     BoardPosition() : x(-1), y(-1) {};
+    BoardPosition(int i, int j) : x(i), y(j) {};
     void ResetPosition() {
         x = -1;
         y = -1;
@@ -31,6 +32,18 @@ struct BoardPosition
         return 1;
     else
         return 0;
+    }
+    bool validUpdate(int i, int j)
+    {
+    if(x + i < 8 && x + i >= 0 && y + j < 8 && y + j >= 0)
+        return 1;
+    else
+        return 0;
+    }
+    BoardPosition returnUpdate(int i, int j)
+    {
+        BoardPosition newPos(x + i, y + j);
+        return newPos;
     }
     
     bool operator == (const BoardPosition& rhs)

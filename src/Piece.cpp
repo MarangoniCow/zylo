@@ -20,10 +20,7 @@ int Piece::Get_Count()
 {
     return Piece_Count;
 }
-int Piece::Get_ID()
-{
-    return Piece_ID;
-}
+
 PIECE_COLOUR Piece::Get_Colour()
 {
     return col;
@@ -54,12 +51,12 @@ void Piece::updatePosition(BoardPosition newPos)
 /***********************************************************
  *                   PIECE DESCRIPTIONS
  ***********************************************************/
-PieceDescriptor Pawn::pawn_description      {"./res/pawn_", "p"}; 
-PieceDescriptor Rook::rook_description      {"./res/rook_", "r"}; 
-PieceDescriptor Knight::knight_description  {"./res/knight_", "k"}; 
-PieceDescriptor Bishop::bishop_description  {"./res/bishop_", "b"}; 
-PieceDescriptor Queen::queen_description    {"./res/queen_", "q"}; 
-PieceDescriptor King::king_description      {"./res/king_", "ki"}; 
+PieceDescriptor Pawn::pawn_description      {"./res/pawn_", PAWN}; 
+PieceDescriptor Rook::rook_description      {"./res/rook_", ROOK}; 
+PieceDescriptor Knight::knight_description  {"./res/knight_", KNIGHT}; 
+PieceDescriptor Bishop::bishop_description  {"./res/bishop_", BISHOP}; 
+PieceDescriptor Queen::queen_description    {"./res/queen_", QUEEN}; 
+PieceDescriptor King::king_description      {"./res/king_", KING}; 
 
 /***********************************************************
  *                      MOVE RANGES

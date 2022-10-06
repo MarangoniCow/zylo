@@ -15,22 +15,8 @@
 
 
 
-void Board::renderCurrentState()
-{
-    for(int i = 0; i < 8; i++) {
-        for(int j = 0; j < 8; j++) {
 
-            Piece* current = boardState[i][j];
-            if (current != NULL)
-                gameBoard->RenderPiece(i, j, current->Get_FilePath());
-        }
-    }            
-}
 
-Piece* Board::returnState(int i, int j)
-{
-    return boardState[i][j];
-}
 
 void Board::initialiseBoard()
 {
@@ -43,120 +29,176 @@ void Board::initialiseBoard()
     static Bishop bw1(WHITE, 2, 0), bw2(WHITE, 5, 0), bb1(BLACK, 2, 7), bb2(BLACK, 5, 7);
     static Queen qw1(WHITE, 3, 0), qb1(BLACK, 3, 7);
     static King kiw1(WHITE, 4, 0), kib1(BLACK, 4, 7);
+   
 
-    
+    state.piecesCurr[0][0] = &rw1;
+    state.piecesCurr[1][0] = &kw1;
+    state.piecesCurr[2][0] = &bw1;
+    state.piecesCurr[3][0] = &qw1;
+    state.piecesCurr[4][0] = &kiw1;
+    state.piecesCurr[5][0] = &bw2;
+    state.piecesCurr[6][0] = &kw2;
+    state.piecesCurr[7][0] = &rw2;   
 
-    boardState[0][0] = &rw1;
-    boardState[1][0] = &kw1;
-    boardState[2][0] = &bw1;
-    boardState[3][0] = &qw1;
-    boardState[4][0] = &kiw1;
-    boardState[5][0] = &bw2;
-    boardState[6][0] = &kw2;
-    boardState[7][0] = &rw2;   
+    state.piecesCurr[0][1] = &pw1;
+    state.piecesCurr[1][1] = &pw2;
+    state.piecesCurr[2][1] = &pw3;
+    state.piecesCurr[3][1] = &pw4;
+    state.piecesCurr[4][1] = &pw5;
+    state.piecesCurr[5][1] = &pw6;
+    state.piecesCurr[6][1] = &pw7;
+    state.piecesCurr[7][1] = &pw8;
 
-    boardState[0][1] = &pw1;
-    boardState[1][1] = &pw2;
-    boardState[2][1] = &pw3;
-    boardState[3][1] = &pw4;
-    boardState[4][1] = &pw5;
-    boardState[5][1] = &pw6;
-    boardState[6][1] = &pw7;
-    boardState[7][1] = &pw8;
+    state.piecesCurr[0][7] = &rb1;
+    state.piecesCurr[1][7] = &kb1;
+    state.piecesCurr[2][7] = &bb1;
+    state.piecesCurr[3][7] = &qb1;
+    state.piecesCurr[4][7] = &kib1;
+    state.piecesCurr[5][7] = &bb2;
+    state.piecesCurr[6][7] = &kb2;
+    state.piecesCurr[7][7] = &rb2;
 
-    boardState[0][7] = &rb1;
-    boardState[1][7] = &kb1;
-    boardState[2][7] = &bb1;
-    boardState[3][7] = &qb1;
-    boardState[4][7] = &kib1;
-    boardState[5][7] = &bb2;
-    boardState[6][7] = &kb2;
-    boardState[7][7] = &rb2;
-
-    boardState[0][6] = &pb1;
-    boardState[1][6] = &pb2;
-    boardState[2][6] = &pb3;
-    boardState[3][6] = &pb4;
-    boardState[4][6] = &pb5;
-    boardState[5][6] = &pb6;
-    boardState[6][6] = &pb7;
-    boardState[7][6] = &pb8;
+    state.piecesCurr[0][6] = &pb1;
+    state.piecesCurr[1][6] = &pb2;
+    state.piecesCurr[2][6] = &pb3;
+    state.piecesCurr[3][6] = &pb4;
+    state.piecesCurr[4][6] = &pb5;
+    state.piecesCurr[5][6] = &pb6;
+    state.piecesCurr[6][6] = &pb7;
+    state.piecesCurr[7][6] = &pb8;
     
     
 }
 
-void Board::movePiece(BoardPosition oldPos, BoardPosition newPos)
+void Board::movePiece(BoardPosition currPos, BoardPosition tarPos)
 {
-    
-    // Check for valid move
-    if (!validMove(oldPos, newPos))
-        return;
-
-    // Determine the piece
-    Piece* currentPiece = boardState[oldPos.x][oldPos.y];
-
+    // Determine the target piece
+    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
     if (currentPiece == NULL)
         return;
+    
+    // Check for valid move
+    if (!validMove(currPos, tarPos))
+        return;
 
-    // Check for a piece in the new position
-    Piece* targetPiece = boardState[newPos.x][newPos.y];
-
-    /* IF VALID: ADD IN LATER */
-
-    // Update old position
-    boardState[oldPos.x][oldPos.y] = NULL;
-    // Update the new position
-    boardState[newPos.x][newPos.y] = currentPiece; 
+    // Update old state
+    memcpy(state.piecesPrev, state.piecesCurr, sizeof(state.piecesCurr));
+  
+    // Update current position in state as null
+    state.piecesCurr[currPos.x][currPos.y] = NULL;
+    // Update the target position in state with the current piece
+    state.piecesCurr[tarPos.x][tarPos.y] = currentPiece; 
 
     // Update the piece position
-    currentPiece->updatePosition(newPos); 
-
-      
-
-    // Clear current square and new square
-    gameBoard->ClearSquare(oldPos.x, oldPos.y);
-
-    if(targetPiece != NULL)
-        gameBoard->ClearSquare(newPos.x, newPos.y);
-
-    // Render piece into new position.
-    gameBoard->RenderPiece(newPos.x, newPos.y, currentPiece->Get_FilePath());
+    currentPiece->updatePosition(tarPos); 
 }
 
 bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
 {
+    
+    std::queue<BoardPosition> moveQueue = generateValidMoves(oldPos);
+    
     // Determine the piece in the old position
-    Piece* currentPiece = boardState[oldPos.x][oldPos.y];
+    Piece* currentPiece = state.piecesCurr[oldPos.x][oldPos.y];
 
-    if (currentPiece == NULL)
+    // Check for empty queue
+    if(moveQueue.empty())
         return 0;
 
-    // Check that movement is within move range
-    std::queue<BoardPosition> moveQueue = currentPiece->moveRange();
-
-    bool validMove = 0;
     
+    bool isValid = 0;
+    
+    // Iterate through queue
     while(!moveQueue.empty())
     {
         BoardPosition temp;
         temp = moveQueue.front();
         moveQueue.pop();
+
+        // Check if requested move is in move list
         if (temp == newPos) {
-            validMove = 1;
+            isValid = 1;
             break;
         }
     }
 
-    if(!validMove) return 0;
+    if(!isValid) return 0;
 
     
     
     // Check for a piece in the new position
-    Piece* targetPiece = boardState[newPos.x][newPos.y];
+    Piece* targetPiece = state.piecesCurr[newPos.x][newPos.y];
 
     if(targetPiece != NULL && (targetPiece->Get_Colour() == currentPiece->Get_Colour())) 
         return 0;
     else
         return 1;
     
+}
+
+std::queue<BoardPosition> Board::generateValidMoves(BoardPosition oldPos)
+{
+    std::queue<BoardPosition> moveQueue;
+
+    // Determine the piece in the old position
+    Piece* currentPiece = state.piecesCurr[oldPos.x][oldPos.y];
+
+    if (currentPiece == NULL)
+        return moveQueue;
+
+    // Generate move range
+    moveQueue = currentPiece->moveRange();
+
+    // Special moves list
+    switch(currentPiece->Get_Descriptor().type) {
+        case PAWN:
+        {
+            if(currentPiece->Get_Colour() == WHITE)
+            {
+                
+                if(oldPos.validUpdate(1, 1))
+                {
+                    BoardPosition temp = oldPos.returnUpdate(1, 1);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
+                        moveQueue.push(temp);
+                }
+                if(oldPos.validUpdate(-1, 1))
+                {
+                    BoardPosition temp = oldPos.returnUpdate(-1, 1);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
+                        moveQueue.push(temp);
+                }
+            }
+            else
+            {
+                if(oldPos.validUpdate(1, -1))
+                {
+                    BoardPosition temp = oldPos.returnUpdate(1, -1);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
+                        moveQueue.push(temp);
+                }
+                if(oldPos.validUpdate(-1, -1))
+                {
+                    BoardPosition temp = oldPos.returnUpdate(-1, -1);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->Get_Colour() == WHITE)
+                        moveQueue.push(temp);
+                }
+
+            }
+        }
+        default:
+        {};
+    }
+
+    return moveQueue;
+        
+
 }
