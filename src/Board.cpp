@@ -4,7 +4,6 @@
 
 // INTERNAL INCLUDES
 #include "Board.h"
-#include "SDL_Board.h"
 #include "Piece.h"
 
 // EXTERNAL INCLUDES
@@ -12,10 +11,6 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <queue>
-
-
-
-
 
 
 void Board::initialiseBoard()
@@ -93,13 +88,13 @@ void Board::movePiece(BoardPosition currPos, BoardPosition tarPos)
     currentPiece->updatePosition(tarPos); 
 }
 
-bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
+bool Board::validMove(BoardPosition currPos, BoardPosition tarPos)
 {
     
-    std::queue<BoardPosition> moveQueue = generateValidMoves(oldPos);
+    std::queue<BoardPosition> moveQueue = generateValidMoves(currPos);
     
     // Determine the piece in the old position
-    Piece* currentPiece = state.piecesCurr[oldPos.x][oldPos.y];
+    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
 
     // Check for empty queue
     if(moveQueue.empty())
@@ -116,7 +111,7 @@ bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
         moveQueue.pop();
 
         // Check if requested move is in move list
-        if (temp == newPos) {
+        if (temp == tarPos) {
             isValid = 1;
             break;
         }
@@ -127,7 +122,7 @@ bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
     
     
     // Check for a piece in the new position
-    Piece* targetPiece = state.piecesCurr[newPos.x][newPos.y];
+    Piece* targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
 
     if(targetPiece != NULL && (targetPiece->Get_Colour() == currentPiece->Get_Colour())) 
         return 0;
@@ -136,12 +131,12 @@ bool Board::validMove(BoardPosition oldPos, BoardPosition newPos)
     
 }
 
-std::queue<BoardPosition> Board::generateValidMoves(BoardPosition oldPos)
+std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
 {
     std::queue<BoardPosition> moveQueue;
 
     // Determine the piece in the old position
-    Piece* currentPiece = state.piecesCurr[oldPos.x][oldPos.y];
+    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
 
     if (currentPiece == NULL)
         return moveQueue;
@@ -155,43 +150,81 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition oldPos)
         {
             if(currentPiece->Get_Colour() == WHITE)
             {
-                
-                if(oldPos.validUpdate(1, 1))
-                {
-                    BoardPosition temp = oldPos.returnUpdate(1, 1);
-                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                    
-                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
-                        moveQueue.push(temp);
+                // CHECK FOR PIECES TO TAKE
+                for(int i = -1; i <= 1; i += 2) {
+                    if(currPos.validUpdate(i, 1))
+                    {
+                        BoardPosition temp = currPos.returnUpdate(i, 1);
+                        Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                        
+                        if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
+                            moveQueue.push(temp);
+                    }
                 }
-                if(oldPos.validUpdate(-1, 1))
+                
+                // CHECK FOR EN-PASSANT
+                if(currPos.y == 4)
                 {
-                    BoardPosition temp = oldPos.returnUpdate(-1, 1);
-                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    Piece* targetPawn;
+                    // LEFT MOVEMENT: CHECK FOR A PAWN & PREVIOUS MOVE
+
+                    for(int i = -1; i <= 1; i += 2) {
+                        if(currPos.validUpdate(i, 0)) 
+                        {
+                            targetPawn = state.piecesCurr[currPos.x + i][4];
+                        }
+                        else
+                            continue;
                     
-                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
-                        moveQueue.push(temp);
+                        bool pawnAdjacent = (targetPawn != NULL && targetPawn->Get_Descriptor().type == PAWN && targetPawn->Get_Colour() == BLACK) ? 1 : 0;
+                        bool adjacentLastMove = (targetPawn == state.piecesPrev[currPos.x + i][4]) ? 1 : 0;
+                    
+                        if(pawnAdjacent && adjacentLastMove)
+                            moveQueue.push(currPos.returnUpdate(i, 1));
+                    }
                 }
             }
             else
             {
-                if(oldPos.validUpdate(1, -1))
+                for(int i = -1; i <= 1; i += 2)
                 {
-                    BoardPosition temp = oldPos.returnUpdate(1, -1);
-                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                    
-                    if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
-                        moveQueue.push(temp);
-                }
-                if(oldPos.validUpdate(-1, -1))
-                {
-                    BoardPosition temp = oldPos.returnUpdate(-1, -1);
-                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                    
-                    if(targetPiece != NULL && targetPiece->Get_Colour() == WHITE)
-                        moveQueue.push(temp);
-                }
+                    // CHECK FOR PIECES TO TAKE
+                    if(currPos.validUpdate(i, -1))
+                    {
+                        BoardPosition temp = currPos.returnUpdate(i, -1);
+                        Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                        
+                        if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
+                            moveQueue.push(temp);
+                    }
 
+                    Piece* temp;
+                    // CHECK FOR EN-PASSANT
+                    if(currPos.validUpdate(i, 0)) 
+                    {
+                        temp = state.piecesCurr[currPos.x + i][3];
+                    }
+                    else
+                        continue;
+                
+                    bool pawnAdjacent = (temp != NULL && temp->Get_Descriptor().type == PAWN && temp->Get_Colour() == WHITE) ? 1 : 0;
+                
+                    if(pawnAdjacent)
+                        moveQueue.push(currPos.returnUpdate(i, -1));
+                }
+            }
+        }
+        case KING:
+        {
+            if(!currentPiece->hasMoved())
+            {
+                Piece* targetRookRight = state.piecesCurr[7][currPos.y];
+                Piece* targetRookLeft  = state.piecesCurr[0][currPos.y];
+
+                if(targetRookRight->Get_Descriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->Get_Colour() == currentPiece->Get_Colour())
+                    moveQueue.push(currPos.returnUpdate(2, 0));
+                if(targetRookLeft->Get_Descriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->Get_Colour() == currentPiece->Get_Colour())
+                    moveQueue.push(currPos.returnUpdate(-2, 0));
             }
         }
         default:

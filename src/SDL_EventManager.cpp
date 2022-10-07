@@ -52,10 +52,6 @@ void SDL_EventManager::RunGame() {
                     click_location_curr.ResetPosition();
                     click_location_prev.ResetPosition();
                 }
-                
-
-                
-                
             }
         }
         

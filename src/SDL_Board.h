@@ -49,7 +49,7 @@ class SDL_Board
 {
     protected:
         SDL_Window* window;                     // Window handle
-        SDL_Renderer* windowRenderer;           // Window renderer 
+        SDL_Renderer* windowRenderer;           // Window renderer
         int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square       
         
         
