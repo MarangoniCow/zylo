@@ -14,11 +14,6 @@
 #include <iostream>
 #include <string>
 
-
-
-
-
-
 // Constructor implementation
 SDL_Board::SDL_Board()
 {
@@ -184,7 +179,7 @@ void SDL_Board::renderNewState(BoardState state)
                 // Check for a new piece and render if necessary
                 Piece* currentPiece = state.piecesCurr[i][j];
                 if (currentPiece != NULL)
-                    RenderPiece(i, j, state.piecesCurr[i][j]->Get_FilePath());
+                    RenderPiece(i, j, state.piecesCurr[i][j]->returnPath());
             }
         }
     }
@@ -200,7 +195,7 @@ void SDL_Board::renderCurrentState(BoardState state)
             
             Piece* current = state.piecesCurr[i][j];
             if (current != NULL) {
-                RenderPiece(i, j, current->Get_FilePath());
+                RenderPiece(i, j, current->returnPath());
             }
         }
     }         

@@ -44,8 +44,8 @@ class Piece
 {
     protected:
         // STATIC MEMBERS FOR GLOBAL FUNCTIONALITY
-        static std::vector<int> Piece_Vector;          // Global ID list
-        static int Piece_Count;                        // Global piece count
+        static std::vector<Piece*> Piece_instanceList;          // Global ID list
+        static int Piece_count;                        // Global piece count
 
         // CLASS SPECFIC FUNCTIONALITY
         const PieceDescriptor& descriptor;              // Sub-class specific descriptor
@@ -60,28 +60,31 @@ class Piece
         
     public:
         Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
-            Piece_Count += 1;
-            Piece_ID = Piece_Vector.size();
-            Piece_Vector.push_back(Piece_ID); 
+            Piece_count += 1;
+            Piece_ID = Piece_instanceList.size();
+            Piece_instanceList.push_back(this); 
             flag_move = 0; 
         };                    
         virtual ~Piece() {
-            Piece_Count -= 1; 
+            Piece_count -= 1;
+            Piece_instanceList[Piece_ID] = nullptr;
         }
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
-        static int Get_Count();
-        static void OutputPieceList();
+        static int returnCount() {return Piece_count;};
+        static std::vector<Piece*> returnInstanceList() {return Piece_instanceList;};
 
-        // GETTER METHODS        
-        PieceDescriptor Get_Descriptor() {return descriptor;};
-        PIECE_COLOUR Get_Colour();
-        std::string Get_FilePath();
+        // NON-STATIC RETURNS
+        PieceDescriptor returnDescriptor() {return descriptor;};
+        std::string returnPath(); 
+        PIECE_COLOUR returnColour() {return col;};
+        BoardPosition returnPosition() {return pos;};
+
+        // FLAGS
         bool hasMoved() {return flag_move;};
 
         // SETTER METHODS
         void updatePosition(BoardPosition pos);
-        BoardPosition returnPosition() {return pos;};
         
         // FUNCTIONALITY METHODS
         virtual std::queue<BoardPosition> moveRange() = 0; 

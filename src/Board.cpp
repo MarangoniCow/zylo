@@ -25,47 +25,20 @@ void Board::initialiseBoard()
     static Queen qw1(WHITE, 3, 0), qb1(BLACK, 3, 7);
     static King kiw1(WHITE, 4, 0), kib1(BLACK, 4, 7);
    
+    std::vector<Piece*> pieceList = Piece::returnInstanceList();
+    for(auto it = pieceList.begin(); it != pieceList.end(); it++)
+    {
+        Piece* temp = *it;
 
-    state.piecesCurr[0][0] = &rw1;
-    state.piecesCurr[1][0] = &kw1;
-    state.piecesCurr[2][0] = &bw1;
-    state.piecesCurr[3][0] = &qw1;
-    state.piecesCurr[4][0] = &kiw1;
-    state.piecesCurr[5][0] = &bw2;
-    state.piecesCurr[6][0] = &kw2;
-    state.piecesCurr[7][0] = &rw2;   
-
-    state.piecesCurr[0][1] = &pw1;
-    state.piecesCurr[1][1] = &pw2;
-    state.piecesCurr[2][1] = &pw3;
-    state.piecesCurr[3][1] = &pw4;
-    state.piecesCurr[4][1] = &pw5;
-    state.piecesCurr[5][1] = &pw6;
-    state.piecesCurr[6][1] = &pw7;
-    state.piecesCurr[7][1] = &pw8;
-
-    state.piecesCurr[0][7] = &rb1;
-    state.piecesCurr[1][7] = &kb1;
-    state.piecesCurr[2][7] = &bb1;
-    state.piecesCurr[3][7] = &qb1;
-    state.piecesCurr[4][7] = &kib1;
-    state.piecesCurr[5][7] = &bb2;
-    state.piecesCurr[6][7] = &kb2;
-    state.piecesCurr[7][7] = &rb2;
-
-    state.piecesCurr[0][6] = &pb1;
-    state.piecesCurr[1][6] = &pb2;
-    state.piecesCurr[2][6] = &pb3;
-    state.piecesCurr[3][6] = &pb4;
-    state.piecesCurr[4][6] = &pb5;
-    state.piecesCurr[5][6] = &pb6;
-    state.piecesCurr[6][6] = &pb7;
-    state.piecesCurr[7][6] = &pb8;
+        if(temp != NULL)
+            state.piecesCurr[temp->returnPosition().x][temp->returnPosition().y] = temp;
+    }
+    
     
     
 }
 
-void Board::addPiece(Piece* piece)
+void Board::addPieceToState(Piece* piece)
 {
 
     if(piece == NULL) {
@@ -139,7 +112,7 @@ bool Board::validMove(BoardPosition currPos, BoardPosition tarPos)
     // Check for a piece in the new position
     Piece* targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
 
-    if(targetPiece != NULL && (targetPiece->Get_Colour() == currentPiece->Get_Colour())) 
+    if(targetPiece != NULL && (targetPiece->returnColour() == currentPiece->returnColour())) 
         return 0;
     else
         return 1;
@@ -160,7 +133,7 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
     moveQueue = currentPiece->moveRange();
 
     // Special moves list
-    switch(currentPiece->Get_Descriptor().type)
+    switch(currentPiece->returnDescriptor().type)
     {
         case PAWN:
         {
@@ -169,7 +142,7 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
             int enpassantRow;
             int forward;
 
-            if(currentPiece->Get_Colour() == WHITE)
+            if(currentPiece->returnColour() == WHITE)
             {
                 oppositeCol = BLACK;
                 enpassantRow = 4;
@@ -191,7 +164,7 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
                     BoardPosition temp = currPos.returnUpdate(i, forward);
                     Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
                     
-                    if(targetPiece != NULL && targetPiece->Get_Colour() == oppositeCol)
+                    if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
                         moveQueue.push(temp);
                 }
 
@@ -202,7 +175,7 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
                     targetPiece = state.piecesCurr[currPos.x + i][enpassantRow];
                     
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece != NULL && targetPiece->Get_Descriptor().type == PAWN && targetPiece->Get_Colour() == oppositeCol) ? 1 : 0;
+                    bool pawnAdjacent = (targetPiece != NULL && targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
                     // Check that if it was there last move (needs to be an updated move)
                     bool adjacentLastMove = (targetPiece == state.piecesPrev[currPos.x + i][enpassantRow]) ? 1 : 0;
                     
@@ -218,9 +191,9 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
                 Piece* targetRookRight = state.piecesCurr[7][currPos.y];
                 Piece* targetRookLeft  = state.piecesCurr[0][currPos.y];
 
-                if(targetRookRight->Get_Descriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->Get_Colour() == currentPiece->Get_Colour())
+                if(targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->returnColour() == currentPiece->returnColour())
                     moveQueue.push(currPos.returnUpdate(2, 0));
-                if(targetRookLeft->Get_Descriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->Get_Colour() == currentPiece->Get_Colour())
+                if(targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->returnColour() == currentPiece->returnColour())
                     moveQueue.push(currPos.returnUpdate(-2, 0));
             }
         }

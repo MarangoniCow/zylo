@@ -11,31 +11,17 @@
 #include <vector>
 
 // Initialise static variables
-int Piece::Piece_Count = 0;
-std::vector<int> Piece::Piece_Vector;
+int Piece::Piece_count = 0;
+std::vector<Piece*> Piece::Piece_instanceList;
 
 /*******    GETTER METHODS    *******/
-
-int Piece::Get_Count()
-{
-    return Piece_Count;
-}
-
-PIECE_COLOUR Piece::Get_Colour()
-{
-    return col;
-}
-std::string Piece::Get_FilePath()
+std::string Piece::returnPath()
 {   
-    std::string pieceColour;
-
-    if(col)
-       pieceColour = "black";
-    else
-        pieceColour = "white";
-
-    return descriptor.filePath + pieceColour + ".bmp";
+    std::string colStr = (col) ? "black" : "white";
+    return descriptor.filePath + colStr + ".bmp";
 }
+
+
 void Piece::updatePosition(BoardPosition newPos)
 {
     // Check flag
@@ -73,9 +59,7 @@ std::queue<BoardPosition> Pawn::moveRange()
         if(pos.validUpdate(0, -1)) moveQueue.push(pos.returnUpdate(0, -1));
         if(!flag_move && pos.validUpdate(0, -2)) moveQueue.push(pos.returnUpdate(0, -2));
     }  
-    
     return moveQueue;
-    
 }
 
 std::queue<BoardPosition> Rook::moveRange()
@@ -175,7 +159,6 @@ std::queue<BoardPosition> Bishop::moveRange()
     }
 
     return moveQueue;
-    
 }
 
 std::queue<BoardPosition> Queen::moveRange()

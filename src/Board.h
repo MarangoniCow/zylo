@@ -43,7 +43,7 @@ class Board {
         Board() {};
         void initialiseBoard();
         void movePiece(BoardPosition oldPos, BoardPosition newPos);
-        void addPiece(Piece* newPiece);
+        void addPieceToState(Piece* newPiece);
         bool validMove(BoardPosition oldPos, BoardPosition newPos);
         std::queue<BoardPosition> generateValidMoves(BoardPosition oldPos);
         BoardState returnState() {return state;};
