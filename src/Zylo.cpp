@@ -9,8 +9,6 @@
 
 
 // INTERNAL DEPENDENCIES
-#include "Board.h"
-#include "SDL_Board.h"
 #include "SDL_EventManager.h"
 
 

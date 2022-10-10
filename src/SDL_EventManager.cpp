@@ -4,6 +4,7 @@
 
 // INTERNAL DEPENDENCIES
 #include "SDL_EventManager.h"
+#include "SDL_Board.h"
 #include "Coords.h"
 #include "Board.h"
 #include "Piece.h"

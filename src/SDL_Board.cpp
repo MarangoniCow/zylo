@@ -27,7 +27,7 @@ SDL_Board::SDL_Board()
         std::cout << "Video initialisation error: " << SDL_GetError() << std::endl;
     else
     {
-                window = SDL_CreateWindow("SDL_Board_Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                window = SDL_CreateWindow("Zylo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                         WINDOW_HEIGHT, WINDOW_WIDTH, SDL_WINDOW_SHOWN);
     }
             
@@ -44,8 +44,8 @@ SDL_Board::SDL_Board()
     {
         for(int j = 0; j < 8; j++)
         {
-            SDL_coordinates[i][j][1] = board_bottom_coord_x + i*SQUARE_WIDTH; 
-            SDL_coordinates[i][j][2] = board_bottom_coord_y - j*SQUARE_HEIGHT; 
+            SDL_coordinates[i][j][0] = board_bottom_coord_x + i*SQUARE_WIDTH; 
+            SDL_coordinates[i][j][1] = board_bottom_coord_y - j*SQUARE_HEIGHT; 
         }
     }
 
@@ -145,8 +145,8 @@ void SDL_Board::ClearSquare(int x, int y)
 SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
 {
     SDL_Rect targetSquare;
-    targetSquare.x = SDL_coordinates[x][y][1];
-    targetSquare.y = SDL_coordinates[x][y][2];
+    targetSquare.x = SDL_coordinates[x][y][0];
+    targetSquare.y = SDL_coordinates[x][y][1];
     targetSquare.w = SQUARE_WIDTH;
     targetSquare.h = SQUARE_HEIGHT;
 
