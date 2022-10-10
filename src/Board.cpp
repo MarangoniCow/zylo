@@ -145,74 +145,56 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
     moveQueue = currentPiece->moveRange();
 
     // Special moves list
-    switch(currentPiece->Get_Descriptor().type) {
+    switch(currentPiece->Get_Descriptor().type)
+    {
         case PAWN:
         {
+            // Initialise
+            PIECE_COLOUR oppositeCol;
+            int enpassantRow;
+            int forward;
+
             if(currentPiece->Get_Colour() == WHITE)
             {
-                // CHECK FOR PIECES TO TAKE
-                for(int i = -1; i <= 1; i += 2) {
-                    if(currPos.validUpdate(i, 1))
-                    {
-                        BoardPosition temp = currPos.returnUpdate(i, 1);
-                        Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                        
-                        if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
-                            moveQueue.push(temp);
-                    }
-                }
-                
-                // CHECK FOR EN-PASSANT
-                if(currPos.y == 4)
-                {
-                    Piece* targetPawn;
-                    // LEFT MOVEMENT: CHECK FOR A PAWN & PREVIOUS MOVE
-
-                    for(int i = -1; i <= 1; i += 2) {
-                        if(currPos.validUpdate(i, 0)) 
-                        {
-                            targetPawn = state.piecesCurr[currPos.x + i][4];
-                        }
-                        else
-                            continue;
-                    
-                        bool pawnAdjacent = (targetPawn != NULL && targetPawn->Get_Descriptor().type == PAWN && targetPawn->Get_Colour() == BLACK) ? 1 : 0;
-                        bool adjacentLastMove = (targetPawn == state.piecesPrev[currPos.x + i][4]) ? 1 : 0;
-                    
-                        if(pawnAdjacent && adjacentLastMove)
-                            moveQueue.push(currPos.returnUpdate(i, 1));
-                    }
-                }
+                oppositeCol = BLACK;
+                enpassantRow = 4;
+                forward = 1;               
             }
             else
             {
-                for(int i = -1; i <= 1; i += 2)
-                {
-                    // CHECK FOR PIECES TO TAKE
-                    if(currPos.validUpdate(i, -1))
-                    {
-                        BoardPosition temp = currPos.returnUpdate(i, -1);
-                        Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                        
-                        if(targetPiece != NULL && targetPiece->Get_Colour() == BLACK)
-                            moveQueue.push(temp);
-                    }
-
-                    Piece* temp;
-                    // CHECK FOR EN-PASSANT
-                    if(currPos.validUpdate(i, 0)) 
-                    {
-                        temp = state.piecesCurr[currPos.x + i][3];
-                    }
-                    else
-                        continue;
-                
-                    bool pawnAdjacent = (temp != NULL && temp->Get_Descriptor().type == PAWN && temp->Get_Colour() == WHITE) ? 1 : 0;
-                
-                    if(pawnAdjacent)
-                        moveQueue.push(currPos.returnUpdate(i, -1));
-                }
+                oppositeCol = WHITE;
+                enpassantRow = 3;
+                forward = -1;                
             }
+
+            // GENERATE TAKE & EN-PASSANT: For loop repeats move queue for left/right instructions
+            for(int i = -1; i <= 1; i += 2)
+            {
+                // CHECK FOR TAKE: Check if we're at the edge or not
+                if(currPos.validUpdate(i, forward))
+                {
+                    BoardPosition temp = currPos.returnUpdate(i, forward);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->Get_Colour() == oppositeCol)
+                        moveQueue.push(temp);
+                }
+
+                    // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
+                if(currPos.y == enpassantRow && currPos.validUpdate(i, 0))
+                {
+                    Piece* targetPiece;
+                    targetPiece = state.piecesCurr[currPos.x + i][enpassantRow];
+                    
+                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
+                    bool pawnAdjacent = (targetPiece != NULL && targetPiece->Get_Descriptor().type == PAWN && targetPiece->Get_Colour() == oppositeCol) ? 1 : 0;
+                    // Check that if it was there last move (needs to be an updated move)
+                    bool adjacentLastMove = (targetPiece == state.piecesPrev[currPos.x + i][enpassantRow]) ? 1 : 0;
+                    
+                    if(pawnAdjacent && !adjacentLastMove)
+                        moveQueue.push(currPos.returnUpdate(i, forward));
+                }
+            }     
         }
         case KING:
         {
@@ -232,6 +214,4 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
     }
 
     return moveQueue;
-        
-
 }

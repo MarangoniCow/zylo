@@ -200,11 +200,6 @@ void SDL_Board::renderCurrentState(BoardState state)
             
             Piece* current = state.piecesCurr[i][j];
             if (current != NULL) {
-                if (i == 7 && j == 7) 
-                {
-                    std::cout << "rook piece" << std::endl;
-                    std::cout << "filepath: " << current->Get_FilePath() << std::endl;
-                }
                 RenderPiece(i, j, current->Get_FilePath());
             }
         }
