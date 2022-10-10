@@ -36,8 +36,6 @@ std::string Piece::Get_FilePath()
 
     return descriptor.filePath + pieceColour + ".bmp";
 }
-
-
 void Piece::updatePosition(BoardPosition newPos)
 {
     // Check flag
@@ -46,6 +44,7 @@ void Piece::updatePosition(BoardPosition newPos)
     
     pos.updatePosition(newPos);
 }
+
 
 
 /***********************************************************

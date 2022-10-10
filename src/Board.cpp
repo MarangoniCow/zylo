@@ -65,6 +65,21 @@ void Board::initialiseBoard()
     
 }
 
+void Board::addPiece(Piece* piece)
+{
+
+    if(piece == NULL) {
+        std::cout << "Cannot add piece: null ptr" << std::endl;
+        return;
+    }
+        
+    BoardPosition pos = piece->returnPosition();
+    if(pos.validPosition())
+        state.piecesCurr[pos.x][pos.y] = piece;
+    else
+        std::cout << "Cannot add piece: invalid position" << std::endl;
+}
+
 void Board::movePiece(BoardPosition currPos, BoardPosition tarPos)
 {
     // Determine the target piece

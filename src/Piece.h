@@ -54,7 +54,7 @@ class Piece
         int Piece_ID;                                   // Unique Piece ID
         const PIECE_COLOUR col;                         // Enumerated colour
         bool flag_move;                                  // Movement flag
-        Coords pos;                                     // Current position
+        BoardPosition pos;                                     // Current position
 
 
         
@@ -80,7 +80,8 @@ class Piece
         bool hasMoved() {return flag_move;};
 
         // SETTER METHODS
-        void updatePosition(BoardPosition pos); 
+        void updatePosition(BoardPosition pos);
+        BoardPosition returnPosition() {return pos;};
         
         // FUNCTIONALITY METHODS
         virtual std::queue<BoardPosition> moveRange() = 0; 

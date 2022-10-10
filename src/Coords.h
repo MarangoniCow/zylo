@@ -40,12 +40,21 @@ struct BoardPosition
     else
         return 0;
     }
+    void updatePosition(BoardPosition newPos)
+    {
+        x = newPos.x;
+        y = newPos.y;
+    }
+    void updatePosition(int i, int j)
+    {
+        x = i;
+        y = j;
+    }
     BoardPosition returnUpdate(int i, int j)
     {
         BoardPosition newPos(x + i, y + j);
         return newPos;
     }
-    
     bool operator == (const BoardPosition& rhs)
     {   
     if (x == rhs.x && y == rhs.y)
@@ -53,23 +62,4 @@ struct BoardPosition
     else
         return 0;
     }
-    
-};
-
-
-
-class Coords {
-    protected:
-        BoardPosition pos;
-        
-    public:
-        Coords(); 
-        Coords(int x, int y);
-  
-        
-        BoardPosition Get_Position() {return pos;};
-        void updatePosition(int TAR_x, int TAR_y);
-        void updatePosition(BoardPosition newPos);
-        bool validUpdate(int i, int j);
-        BoardPosition returnUpdate(int i, int j);
 };
