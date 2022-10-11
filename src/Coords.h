@@ -15,6 +15,11 @@
 
 #pragma once
 
+enum RELPOS
+{
+    SAME, LEFT, RIGHT, DOWN, UP, LEFTUP, LEFTDOWN, RIGHTUP, RIGHTDOWN
+};
+
 struct BoardPosition
 {
     int x;
@@ -64,11 +69,40 @@ struct BoardPosition
         BoardPosition newPos(x + i, y + j);
         return newPos;
     }
+    RELPOS returnRelPos(BoardPosition tarPos)
+    {
+        // LEFT
+        if(y == tarPos.y && tarPos.x < x)
+            return LEFT;
+        else if(y == tarPos.y && tarPos.x > x)
+            return RIGHT;
+        else if(y > tarPos.y && tarPos.x == x)
+            return DOWN;
+        else if(y < tarPos.y && tarPos.x == x)
+            return UP;
+        else if(y > tarPos.y && tarPos.x < x)
+            return LEFTDOWN;
+        else if(y > tarPos.y && tarPos.x > x)
+            return RIGHTDOWN;
+        else if(y < tarPos.y && tarPos.x < x)
+            return LEFTUP;
+        else if(y < tarPos.y && tarPos.x > x)
+            return RIGHTUP;
+        else
+            return SAME;   
+    }
     bool operator == (const BoardPosition& rhs)
     {   
         if (x == rhs.x && y == rhs.y)
             return 1;
         else
             return 0;
+    }
+    bool operator != (const BoardPosition& rhs)
+    {   
+    if (x == rhs.x && y == rhs.y)
+        return 0;
+    else
+        return 1;
     }
 };

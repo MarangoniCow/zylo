@@ -19,6 +19,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+#include <queue>
 
 
 // ENUMERATIONS
@@ -61,6 +62,7 @@ class SDL_Board
         void loadPiece(int x, int y, std::string filePath);
         void loadBoard(BoardState state);
         void loadSquare(int x, int y);
+        void loadOverlay(int x, int y);
         void clearBoard();
         SDL_Rect returnSquare(int x, int y);
         
@@ -71,9 +73,11 @@ class SDL_Board
         
         // PUBLIC RENDER METHODS
         void renderBackground();
-        void renderNewBoard(BoardState state);
+        void renderBoard(BoardState state);
         void renderBoardUpdate(BoardState state);
-        void renderOverlay(int x, int y);
+        void renderOverlay(std::queue<BoardPosition> moveQueue);
+
+        
     
         
         // STATIC METHODS

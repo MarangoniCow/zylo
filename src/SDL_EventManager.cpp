@@ -28,8 +28,8 @@ void SDL_EventManager::RunGame() {
 
     // Initialise board class
     SDL_Board gameWindow;
-    gameWindow.renderNewBoard(board.returnState());
-    gameWindow.renderOverlay(1, 1);
+    gameWindow.renderBoard(board.returnState());
+    
     
 
     // Game bool
@@ -50,10 +50,12 @@ void SDL_EventManager::RunGame() {
                 // Fetch current board coordinates
                 MouseToBoardCoords();
 
+                gameWindow.renderOverlay(board.generateValidMoves(click_location_curr));
+
                 // Check for previous board coordinates
                 if(click_location_prev.validPosition()) {
                     board.movePiece(click_location_prev, click_location_curr);
-                    gameWindow.renderNewBoard(board.returnState());
+                    gameWindow.renderBoard(board.returnState());
 
                     click_location_curr.ResetPosition();
                     click_location_prev.ResetPosition();

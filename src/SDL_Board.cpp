@@ -13,6 +13,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+#include <queue>
 
 // Constructor implementation
 SDL_Board::SDL_Board()
@@ -147,7 +148,22 @@ void SDL_Board::loadBoard(BoardState state)
         }
     }         
 }
+ 
+void SDL_Board::loadOverlay(int x, int y)
+{
+    // Set blend mode & load relevant square
+    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_BLEND);
+    SDL_Rect targetSquare = returnSquare(x, y);
+
+    // Set draw colour and fill rectangle
+    SDL_SetRenderDrawColor(windowRenderer, SQUARE_GREEN_R, SQUARE_GREEN_G, SQUARE_GREEN_B, 80);
+    SDL_RenderFillRect(windowRenderer, &targetSquare);
+
+    // Restore blend mode
+    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_NONE);
     
+
+}   
 void SDL_Board::clearBoard()
 {
     for(int i = 0; i < 8; i++)
@@ -178,7 +194,7 @@ void SDL_Board::renderBackground()
     SDL_RenderPresent(windowRenderer);
 }
 
-void SDL_Board::renderNewBoard(BoardState state)
+void SDL_Board::renderBoard(BoardState state)
 {
     SDL_RenderClear(windowRenderer);
     loadBackground();
@@ -206,19 +222,18 @@ void SDL_Board::renderBoardUpdate(BoardState state)
     }
 }
 
-void SDL_Board::renderOverlay(int x, int y)
+void SDL_Board::renderOverlay(std::queue<BoardPosition> moveQueue)
 {
-    SDL_Rect targetSquare = returnSquare(x, y);
 
-    SDL_SetRenderDrawColor(windowRenderer, SQUARE_GREEN_R, SQUARE_GREEN_G, SQUARE_GREEN_B, 80);
-    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_BLEND);
-    SDL_RenderFillRect(windowRenderer, &targetSquare);
+    // Iterate through movement queue and load overlays
+    while(!moveQueue.empty())
+    {
+        BoardPosition targetSquare = moveQueue.front();
+        moveQueue.pop();
+        loadOverlay(targetSquare.x, targetSquare.y);
+    }
     SDL_RenderPresent(windowRenderer);
-    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_NONE);
-    
-
 }
-
 /****************************************************/
 /*      STATIC METHODS: Additional functionality    */
 /***************************************************/
