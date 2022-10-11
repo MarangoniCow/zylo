@@ -45,7 +45,14 @@ SDL_Board::SDL_Board()
     }
 
     // Initialise renderer
-    windowRenderer = nullptr; 
+    windowRenderer = nullptr;
+
+     // Point render target to board window
+    windowRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    // Error checking
+    if(windowRenderer == NULL)
+        std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
     
 }
 // Destuctor implementation
@@ -56,25 +63,19 @@ SDL_Board::~SDL_Board()
 
 }
 
+/****************************************************/
+/*   PRIVATE METHODS: LOAD TO RENDERER TO SCREEN    */
+/****************************************************/
 
-
-// Generate game board and render
-void SDL_Board::GenerateBoard()
+void SDL_Board::loadBackground()
 {
-    // Point render target to board window
-    windowRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-    // Error checking
-    if(windowRenderer == NULL)
-        std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
-
-    // Draw border as rectangle
+   
+   // Draw border as rectangle
     SDL_Rect board_border = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
     
     // Define borrder colours, fill and present. 
     SDL_SetRenderDrawColor(windowRenderer, BOARD_BORDER_R, BOARD_BORDER_G, BOARD_BORDER_B, 255);
     SDL_RenderFillRect(windowRenderer, &board_border);
-    SDL_RenderPresent(windowRenderer);
     
     // Generate board
     for(int y = 0; y < 8; y++)
@@ -93,12 +94,11 @@ void SDL_Board::GenerateBoard()
                 SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
 
             SDL_RenderFillRect(windowRenderer, &board_square);
-            SDL_RenderPresent(windowRenderer);
         }
     }
 }
 
-void SDL_Board::RenderPiece(int x, int y, std::string filePath)
+void SDL_Board::loadPiece(int x, int y, std::string filePath)
 {
 
 
@@ -114,19 +114,16 @@ void SDL_Board::RenderPiece(int x, int y, std::string filePath)
         if(texture == NULL)
             std::cout << "Error creating texture: " << SDL_GetError() << std::endl;
     }
-
-
-    SDL_Rect targetSquare = Get_BoardSquare(x, y);
+    SDL_Rect targetSquare = returnSquare(x, y);
 
     //SDL_RenderClear(renderTarget);
     SDL_RenderCopy(windowRenderer, texture, NULL, &targetSquare);
-    SDL_RenderPresent(windowRenderer);
     SDL_DestroyTexture(texture); 
 }
 
-void SDL_Board::ClearSquare(int x, int y)
+void SDL_Board::loadSquare(int x, int y)
 {
-    SDL_Rect targetSquare = Get_BoardSquare(x, y);
+    SDL_Rect targetSquare = returnSquare(x, y);
 
     if((x + y)%2 == 1)
         SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
@@ -134,10 +131,31 @@ void SDL_Board::ClearSquare(int x, int y)
         SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
 
     SDL_RenderFillRect(windowRenderer, &targetSquare);
-    SDL_RenderPresent(windowRenderer);
 }
 
-SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
+void SDL_Board::loadBoard(BoardState state)
+{
+    clearBoard();
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
+            
+            
+            Piece* current = state.piecesCurr[i][j];
+            if (current != NULL) {
+                loadPiece(i, j, current->returnPath());
+            }
+        }
+    }         
+}
+    
+void SDL_Board::clearBoard()
+{
+    for(int i = 0; i < 8; i++)
+        for(int j = 0; j < 8; j++)
+            loadSquare(i, j);
+}
+
+SDL_Rect SDL_Board::returnSquare(int x, int y)
 {
     SDL_Rect targetSquare;
     targetSquare.x = SDL_coordinates[x][y][0];
@@ -149,23 +167,26 @@ SDL_Rect SDL_Board::Get_BoardSquare(int x, int y)
 }
 
 
-BoardPosition SDL_Board::SDL_to_Coords(int SDL_x, int SDL_y)
+
+/****************************************************/
+/*          PUBLIC METHODS: PRESENT RENDERER        */
+/****************************************************/
+
+void SDL_Board::renderBackground()
 {
-    BoardPosition pos;
-    pos.x = (SDL_x - BOARD_X)/SQUARE_WIDTH;
-    pos.y = 7 - (SDL_y - BOARD_Y)/SQUARE_HEIGHT;
-    return pos;
+    loadBackground();
+    SDL_RenderPresent(windowRenderer);
 }
 
-void SDL_Board::ClearBoard()
+void SDL_Board::renderNewBoard(BoardState state)
 {
-    for(int i = 0; i < 8; i++)
-        for(int j = 0; j < 8; j++)
-            ClearSquare(i, j);
+    SDL_RenderClear(windowRenderer);
+    loadBackground();
+    loadBoard(state);
+    SDL_RenderPresent(windowRenderer);
 }
 
-
-void SDL_Board::renderNewState(BoardState state)
+void SDL_Board::renderBoardUpdate(BoardState state)
 {
     // Compare differences between new and old state
     for(int i = 0; i < 8; i++) {
@@ -174,32 +195,42 @@ void SDL_Board::renderNewState(BoardState state)
             if(state.piecesCurr[i][j] != state.piecesPrev[i][j]) {
 
                 // Clear the current square
-                ClearSquare(i, j);
+                loadSquare(i, j);
 
                 // Check for a new piece and render if necessary
                 Piece* currentPiece = state.piecesCurr[i][j];
                 if (currentPiece != NULL)
-                    RenderPiece(i, j, state.piecesCurr[i][j]->returnPath());
+                    loadPiece(i, j, state.piecesCurr[i][j]->returnPath());
             }
         }
     }
 }
 
-void SDL_Board::renderCurrentState(BoardState state)
+void SDL_Board::renderOverlay(int x, int y)
 {
-    ClearBoard();
+    SDL_Rect targetSquare = returnSquare(x, y);
+
+    SDL_SetRenderDrawColor(windowRenderer, SQUARE_GREEN_R, SQUARE_GREEN_G, SQUARE_GREEN_B, 80);
+    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(windowRenderer, &targetSquare);
+    SDL_RenderPresent(windowRenderer);
+    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_NONE);
     
-    for(int i = 0; i < 8; i++) {
-        for(int j = 0; j < 8; j++) {
-            
-            
-            Piece* current = state.piecesCurr[i][j];
-            if (current != NULL) {
-                RenderPiece(i, j, current->returnPath());
-            }
-        }
-    }         
-    
+
 }
+
+/****************************************************/
+/*      STATIC METHODS: Additional functionality    */
+/***************************************************/
+
+BoardPosition SDL_Board::SDL_to_Coords(int SDL_x, int SDL_y)
+{
+    BoardPosition pos;
+    pos.x = (SDL_x - BOARD_X)/SQUARE_WIDTH;
+    pos.y = 7 - (SDL_y - BOARD_Y)/SQUARE_HEIGHT;
+    return pos;
+}
+
+
 
 

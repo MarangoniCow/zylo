@@ -18,14 +18,19 @@
 
 void SDL_EventManager::RunGame() {
 
-    // Generate board
-    SDL_Board gameWindow;
-    gameWindow.GenerateBoard();
+    
+    
+    
 
     // Initialise board logic class
     Board board;
     board.initialiseBoard();
-    gameWindow.renderCurrentState(board.returnState());
+
+    // Initialise board class
+    SDL_Board gameWindow;
+    gameWindow.renderNewBoard(board.returnState());
+    gameWindow.renderOverlay(1, 1);
+    
 
     // Game bool
     bool isRunning = true;
@@ -48,7 +53,7 @@ void SDL_EventManager::RunGame() {
                 // Check for previous board coordinates
                 if(click_location_prev.validPosition()) {
                     board.movePiece(click_location_prev, click_location_curr);
-                    gameWindow.renderNewState(board.returnState());
+                    gameWindow.renderNewBoard(board.returnState());
 
                     click_location_curr.ResetPosition();
                     click_location_prev.ResetPosition();
