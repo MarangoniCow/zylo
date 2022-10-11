@@ -5,6 +5,7 @@
 
 // EXTERNAL DEPENDENCIES                                
 #include <iostream>
+#define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
 
@@ -22,15 +23,6 @@ int main () {
     SDL_EventManager obj;
     obj.RunGame();
 
-
-    
-    
-
-    
-                
-
-    
-    
 
 
     return 0;
