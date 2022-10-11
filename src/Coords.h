@@ -28,17 +28,26 @@ struct BoardPosition
     }
     bool validPosition()
     {
-    if(x < 8 && x >= 0 && y < 8 && y >= 0)
-        return 1;
-    else
-        return 0;
+        if(x < 8 && x >= 0 && y < 8 && y >= 0)
+            return 1;
+        else
+            return 0;
     }
     bool validUpdate(int i, int j)
     {
-    if(x + i < 8 && x + i >= 0 && y + j < 8 && y + j >= 0)
-        return 1;
-    else
-        return 0;
+        if(x + i < 8 && x + i >= 0 && y + j < 8 && y + j >= 0)
+            return 1;
+        else
+            return 0;
+    }
+    bool validUpdate(BoardPosition newPos)
+    {
+        int i = newPos.x;
+        int j = newPos.y;
+        if(x + i < 8 && x + i >= 0 && y + j < 8 && y + j >= 0)
+            return 1;
+        else
+            return 0;
     }
     void updatePosition(BoardPosition newPos)
     {
@@ -57,9 +66,9 @@ struct BoardPosition
     }
     bool operator == (const BoardPosition& rhs)
     {   
-    if (x == rhs.x && y == rhs.y)
-        return 1;
-    else
-        return 0;
+        if (x == rhs.x && y == rhs.y)
+            return 1;
+        else
+            return 0;
     }
 };

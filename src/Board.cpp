@@ -203,3 +203,33 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
 
     return moveQueue;
 }
+
+bool Board::updatePiecePosition(int Piece_ID, BoardPosition newPos)
+{
+    // 1) UPDATE PIECE WITHIN PIECE CLASS
+    Piece* targetPiece = Piece::returnInstanceList()[Piece_ID];
+
+    if(targetPiece->returnPosition().validUpdate(newPos))
+        targetPiece->updatePosition(newPos);
+    else
+        return 0;
+
+    // 2) UPDATE STATE
+    state.piecesCurr[targetPiece->returnPosition().x][targetPiece->returnPosition().y] = targetPiece;
+    return 1;
+}
+
+void Board::removePiece(int Piece_ID)
+{
+    Piece* targetPiece = Piece::returnInstanceList()[Piece_ID];
+    
+    //  1) UPDATE STATE
+    state.piecesCurr[targetPiece->returnPosition().x][targetPiece->returnPosition().y] = nullptr;
+
+    // 2) DELETE PIECE
+    delete(targetPiece);
+
+    
+
+
+}

@@ -47,6 +47,9 @@ class Board {
         bool validMove(BoardPosition oldPos, BoardPosition newPos);
         std::queue<BoardPosition> generateValidMoves(BoardPosition oldPos);
         BoardState returnState() {return state;};
+
+        bool updatePiecePosition(int Piece_ID, BoardPosition newPos);
+        void removePiece(int Piece_ID);
         
         
 };
