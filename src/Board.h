@@ -38,6 +38,9 @@ class Board {
 
     protected: 
         BoardState state;
+        std::queue<BoardPosition> validMoves;
+        std::queue<BoardPosition> takeMoves;
+        std::queue<BoardPosition> invalidMoves;
         
     public:
         Board() {};
@@ -45,8 +48,14 @@ class Board {
         void movePiece(BoardPosition oldPos, BoardPosition newPos);
         void addPieceToState(Piece* newPiece);
         bool validMove(BoardPosition oldPos, BoardPosition newPos);
-        std::queue<BoardPosition> generateValidMoves(BoardPosition oldPos);
+        void generateMovementRange(BoardPosition oldPos);
+        void processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition curPiecePos);
         BoardState returnState() {return state;};
+
+        std::queue<BoardPosition> returnValidMoves()    {return validMoves;};
+        std::queue<BoardPosition> returnTakeMoves()     {return takeMoves;};
+        std::queue<BoardPosition> returnInvalidMoves()  {return invalidMoves;};
+
 
         bool updatePiecePosition(int Piece_ID, BoardPosition newPos);
         void removePiece(int Piece_ID);

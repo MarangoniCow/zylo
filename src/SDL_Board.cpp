@@ -149,14 +149,20 @@ void SDL_Board::loadBoard(BoardState state)
     }         
 }
  
-void SDL_Board::loadOverlay(int x, int y)
+void SDL_Board::loadOverlay(int x, int y, OVERLAY_COL col)
 {
     // Set blend mode & load relevant square
     SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_BLEND);
     SDL_Rect targetSquare = returnSquare(x, y);
 
     // Set draw colour and fill rectangle
-    SDL_SetRenderDrawColor(windowRenderer, SQUARE_GREEN_R, SQUARE_GREEN_G, SQUARE_GREEN_B, 80);
+    if(col == OVERLAY_RED)
+        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_RED_R, OVERLAY_RED_G, OVERLAY_RED_B, 80);
+    else if (col == OVERLAY_GREEN)
+        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_GREEN_R, OVERLAY_GREEN_G, OVERLAY_GREEN_B, 80);
+    else
+        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_WHITE_R, OVERLAY_WHITE_G, OVERLAY_WHITE_B, 80);
+    
     SDL_RenderFillRect(windowRenderer, &targetSquare);
 
     // Restore blend mode
@@ -222,15 +228,27 @@ void SDL_Board::renderBoardUpdate(BoardState state)
     }
 }
 
-void SDL_Board::renderOverlay(std::queue<BoardPosition> moveQueue)
+void SDL_Board::renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue)
 {
 
     // Iterate through movement queue and load overlays
-    while(!moveQueue.empty())
+    while(!validQueue.empty())
     {
-        BoardPosition targetSquare = moveQueue.front();
-        moveQueue.pop();
-        loadOverlay(targetSquare.x, targetSquare.y);
+        BoardPosition targetSquare = validQueue.front();
+        validQueue.pop();
+        loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_GREEN);
+    }
+    while(!takeQueue.empty())
+    {
+        BoardPosition targetSquare = takeQueue.front();
+        takeQueue.pop();
+        loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_RED);
+    }
+    while(!invalidQueue.empty())
+    {
+        BoardPosition targetSquare = invalidQueue.front();
+        invalidQueue.pop();
+        loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_WHITE);
     }
     SDL_RenderPresent(windowRenderer);
 }

@@ -99,8 +99,9 @@ std::queue<BoardPosition> Rook::moveRange()
 
 std::queue<BoardPosition> Knight::moveRange()
 {
+    std::cout << "Movement range for knight" << std::endl;
     std::queue<BoardPosition> moveQueue;
-
+    
     // Binary permutations of {1,2,-1,-2}
     if(pos.validUpdate(1, 2)) moveQueue.push(pos.returnUpdate(1, 2));
     if(pos.validUpdate(2, 1)) moveQueue.push(pos.returnUpdate(2, 1));

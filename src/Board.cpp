@@ -53,22 +53,42 @@ void Board::addPieceToState(Piece* piece)
         std::cout << "Cannot add piece: invalid position" << std::endl;
 }
 
-void Board::movePiece(BoardPosition currPos, BoardPosition tarPos)
+void Board::movePiece(BoardPosition curPos, BoardPosition tarPos)
 {
     // Determine the target piece
-    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
+    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
+
+    // If there isn't anything to be found, we don't do anything.
     if (currentPiece == NULL)
         return;
+
+    bool found = 0;
     
-    // Check for valid move
-    if (!validMove(currPos, tarPos))
+    while(!takeMoves.empty())
+    {
+        validMoves.push(takeMoves.front());
+        takeMoves.pop();
+    }
+    
+    while(!validMoves.empty() && !found)
+    {
+        BoardPosition temp = validMoves.front();
+        validMoves.pop();        
+        if(temp == tarPos)
+        {
+            found = 1;
+        }
+            
+    }
+    
+    if(!found)
         return;
 
     // Update old state
     memcpy(state.piecesPrev, state.piecesCurr, sizeof(state.piecesCurr));
   
     // Update current position in state as null
-    state.piecesCurr[currPos.x][currPos.y] = NULL;
+    state.piecesCurr[curPos.x][curPos.y] = NULL;
     // Update the target position in state with the current piece
     state.piecesCurr[tarPos.x][tarPos.y] = currentPiece; 
 
@@ -76,63 +96,164 @@ void Board::movePiece(BoardPosition currPos, BoardPosition tarPos)
     currentPiece->updatePosition(tarPos); 
 }
 
-bool Board::validMove(BoardPosition currPos, BoardPosition tarPos)
+void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition curPos)
 {
-    
-    std::queue<BoardPosition> moveQueue = generateValidMoves(currPos);
-    
-    // Determine the piece in the old position
-    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
-
-    // Check for empty queue
-    if(moveQueue.empty())
-        return 0;
+    // Helper functions, clean up later
+    RELPOS relpos_curr = SAME;
+    RELPOS relpos_prev = SAME;
 
     
-    bool isValid = 0;
     
-    // Iterate through queue
+
+    // Preinitialise helper variables
+    BoardPosition tarPos;
+    Piece* targetPiece;
+
+    // Bool to check pieces
+    bool pieceInPrev = 1;
+
+    // Shorthand for current piece
+    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
+
+    // Knight algorithm: Special case, don't need to think about all the other bits
+    if(currentPiece != NULL && currentPiece->returnDescriptor().type == KNIGHT)
+    {
+        while(!moveQueue.empty())
+        {
+            // Fetch target position and piece
+            tarPos = moveQueue.front();
+            moveQueue.pop();
+            targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
+
+            if(targetPiece != NULL)
+                std::cout << "Target piece colour: " << targetPiece->returnColour() << std::endl;
+            
+
+            // Check if the target piece exists, and check its colour
+            if (targetPiece == NULL)
+            {
+                validMoves.push(tarPos);
+            }
+            else if (targetPiece->returnColour() == currentPiece->returnColour())
+            {
+                invalidMoves.push(tarPos);
+            }
+            else
+            {
+                takeMoves.push(tarPos);
+            }
+        }
+        return;
+    }
+
+    
+    std::cout << "NON-KNIGHT PIECE PROCESS QUEUE" << std::endl;
     while(!moveQueue.empty())
     {
-        BoardPosition temp;
-        temp = moveQueue.front();
+        // Fetch the target position
+        tarPos = moveQueue.front();
         moveQueue.pop();
+        std::cout << "TARGET POSITION: " << tarPos.x << ", " << tarPos.y << std::endl;
+        
+        // Update relative position
+        relpos_prev = relpos_curr;   
+        relpos_curr = BoardPosition::returnRelPos(curPos, tarPos);
+        std::cout << "POST: REL_POS_CURR: " << relpos_curr << ", REL_POS_PREV: " << relpos_prev << std::endl;
 
-        // Check if requested move is in move list
-        if (temp == tarPos) {
-            isValid = 1;
-            break;
+        
+
+        
+        
+        
+        // If we added a piece last time and we haven't changed the relative direction, we need to continue to the next item in the queue.
+        // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
+        if(relpos_prev != SAME && pieceInPrev && relpos_curr == relpos_prev)
+        {
+            
+            invalidMoves.push(tarPos);
+            continue;
+        }
+
+        // Otherwise, fetch the piece in the currently targetted position
+        targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
+
+        // Check for a piece in the current state
+        if(targetPiece == NULL)
+        {
+            // If there's nothing there, the move is valid. We can push it to the valid move list and continue as normal.
+            validMoves.push(tarPos);
+            // There's no piece, so our if condition at the beginning won't fail.
+            pieceInPrev = 0;
+
+        }
+        // If it isn't null, that means there's something there. We need to check if it's the same colour.
+        else 
+        {
+                       
+            if (targetPiece->returnColour() != currentPiece->returnColour())
+            {
+                // If it's a pawn, we can't take forward
+                if(currentPiece->returnDescriptor().type == PAWN)
+                    invalidMoves.push(tarPos);
+                else
+                    takeMoves.push(tarPos);
+            }
+            else
+            {
+                invalidMoves.push(tarPos);
+            }
+            // Regardless, we know that there's a piece in the previous location we looked. Back to the start.
+            pieceInPrev = 1;
         }
     }
 
-    if(!isValid) return 0;
-
-    
-    
-    // Check for a piece in the new position
-    Piece* targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
-
-    if(targetPiece != NULL && (targetPiece->returnColour() == currentPiece->returnColour())) 
-        return 0;
-    else
-        return 1;
-    
 }
 
-std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
-{
+void Board::generateMovementRange(BoardPosition curPos) {
+
+    std::cout << "Generate movement range" << std::endl;
+
+    
+    // Initialise movement queue
     std::queue<BoardPosition> moveQueue;
 
+    std::cout << "Empty move list" << std::endl;
+
+    // Empty the move queues
+    validMoves = moveQueue;
+    takeMoves = moveQueue;
+    invalidMoves = moveQueue;
+
+    std::cout << "Determine piece" << std::endl;
+    
     // Determine the piece in the old position
-    Piece* currentPiece = state.piecesCurr[currPos.x][currPos.y];
+    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
 
-    if (currentPiece == NULL)
-        return moveQueue;
+    std::cout << "Check that current piece isn't null" << std::endl;
+    std::cout << currentPiece << std::endl;
 
+    if (currentPiece == nullptr)
+        return;
+
+   
     // Generate move range
+    std::cout << "Call move range" << std::endl;
     moveQueue = currentPiece->moveRange();
 
-    // Special moves list
+    std::cout << "Call process move queue" << std::endl;
+    // Process the movement range from the current position
+    processMoveQueue(moveQueue, curPos);
+
+
+                    
+    
+
+    
+
+
+
+    
+        // Special moves list
     switch(currentPiece->returnDescriptor().type)
     {
         case PAWN:
@@ -159,28 +280,28 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
             for(int i = -1; i <= 1; i += 2)
             {
                 // CHECK FOR TAKE: Check if we're at the edge or not
-                if(currPos.validUpdate(i, forward))
+                if(curPos.validUpdate(i, forward))
                 {
-                    BoardPosition temp = currPos.returnUpdate(i, forward);
+                    BoardPosition temp = curPos.returnUpdate(i, forward);
                     Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
                     
                     if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
-                        moveQueue.push(temp);
+                        takeMoves.push(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
-                if(currPos.y == enpassantRow && currPos.validUpdate(i, 0))
+                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0))
                 {
                     Piece* targetPiece;
-                    targetPiece = state.piecesCurr[currPos.x + i][enpassantRow];
+                    targetPiece = state.piecesCurr[curPos.x + i][enpassantRow];
                     
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
                     bool pawnAdjacent = (targetPiece != NULL && targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
                     // Check that if it was there last move (needs to be an updated move)
-                    bool adjacentLastMove = (targetPiece == state.piecesPrev[currPos.x + i][enpassantRow]) ? 1 : 0;
+                    bool adjacentLastMove = (targetPiece == state.piecesPrev[curPos.x + i][enpassantRow]) ? 1 : 0;
                     
                     if(pawnAdjacent && !adjacentLastMove)
-                        moveQueue.push(currPos.returnUpdate(i, forward));
+                        takeMoves.push(curPos.returnUpdate(i, forward));
                 }
             }     
         }
@@ -188,20 +309,20 @@ std::queue<BoardPosition> Board::generateValidMoves(BoardPosition currPos)
         {
             if(!currentPiece->hasMoved())
             {
-                Piece* targetRookRight = state.piecesCurr[7][currPos.y];
-                Piece* targetRookLeft  = state.piecesCurr[0][currPos.y];
+                Piece* targetRookRight = state.piecesCurr[7][curPos.y];
+                Piece* targetRookLeft  = state.piecesCurr[0][curPos.y];
 
                 if(targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->returnColour() == currentPiece->returnColour())
-                    moveQueue.push(currPos.returnUpdate(2, 0));
+                    validMoves.push(curPos.returnUpdate(2, 0));
                 if(targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->returnColour() == currentPiece->returnColour())
-                    moveQueue.push(currPos.returnUpdate(-2, 0));
+                    validMoves.push(curPos.returnUpdate(-2, 0));
             }
         }
         default:
         {};
     }
-
-    return moveQueue;
+    
+    
 }
 
 bool Board::updatePiecePosition(int Piece_ID, BoardPosition newPos)
