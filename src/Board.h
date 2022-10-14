@@ -14,7 +14,7 @@
 
 // INTERNAL INCLUDES
 #include "Piece.h"
-#include "Coords.h"
+#include "BoardPosition.h"
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
@@ -36,29 +36,40 @@ struct BoardState {
 
 class Board {
 
-    protected: 
+    protected:
+        // MEMBER VARIABLES
         BoardState state;
         std::queue<BoardPosition> validMoves;
         std::queue<BoardPosition> takeMoves;
         std::queue<BoardPosition> invalidMoves;
-        
+
+        // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
+        void movePiece(Piece* curPiece, BoardPosition newPos);
+        void takePiece(Piece* curPiece, BoardPosition newPos);
+        void removePiece(Piece* pieceToDelete);
+
     public:
+        // CONSTRUCTORS
         Board() {};
         void initialiseBoard();
-        void movePiece(BoardPosition oldPos, BoardPosition newPos);
+        
+        // STATE-RELATED FUNCTIONS
         void addPieceToState(Piece* newPiece);
-        bool validMove(BoardPosition oldPos, BoardPosition newPos);
+        void processClick(BoardPosition oldPos, BoardPosition newPos);
+        
+        // MOVEMENT-RELATED FUNCTIONS
         void generateMovementRange(BoardPosition oldPos);
         void processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition curPiecePos);
-        BoardState returnState() {return state;};
+        
 
+        // RETURNS
+        BoardState returnState() {return state;};
         std::queue<BoardPosition> returnValidMoves()    {return validMoves;};
         std::queue<BoardPosition> returnTakeMoves()     {return takeMoves;};
         std::queue<BoardPosition> returnInvalidMoves()  {return invalidMoves;};
 
 
-        bool updatePiecePosition(int Piece_ID, BoardPosition newPos);
-        void removePiece(int Piece_ID);
+       
         
         
 };

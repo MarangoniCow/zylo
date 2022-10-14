@@ -1,8 +1,8 @@
 /***********************************************************
- *                      COORDS.H
+ *                      BOARDPOSITION.H
  * 
  * Global coordinate class, contains a BoardPosition struct
- * for global use, as well as a class with methods.
+ * for global use.
  * 
  * Default constructor for BoardPosition sets (x, y) as (-1, -1)
  * as an 'invalid' position. 
@@ -14,6 +14,8 @@
  ***********************************************************/
 
 #pragma once
+
+
 
 enum RELPOS
 {

@@ -6,7 +6,7 @@
 
 // INTERNAL INCLUDES
 #include "SDL_Board.h"
-#include "Coords.h"
+#include "BoardPosition.h"
 #include "Board.h"
 
 // EXTERNAL INCLUDES
@@ -15,7 +15,9 @@
 #include <string>
 #include <queue>
 
-// Constructor implementation
+/****************************************************/
+/*                  CONSTRUCTORS                    */
+/****************************************************/
 SDL_Board::SDL_Board()
 {
     // Generate game window
@@ -56,12 +58,10 @@ SDL_Board::SDL_Board()
         std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
     
 }
-// Destuctor implementation
 SDL_Board::~SDL_Board()
 {
     SDL_DestroyWindow(window); 
     SDL_DestroyRenderer(windowRenderer); 
-
 }
 
 /****************************************************/
@@ -70,7 +70,6 @@ SDL_Board::~SDL_Board()
 
 void SDL_Board::loadBackground()
 {
-   
    // Draw border as rectangle
     SDL_Rect board_border = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
     
@@ -79,33 +78,20 @@ void SDL_Board::loadBackground()
     SDL_RenderFillRect(windowRenderer, &board_border);
     
     // Generate board
-    for(int y = 0; y < 8; y++)
-    {
-        for(int x = 0; x < 8; x++)
-        {
-            SDL_Rect board_square;
-            board_square.x = BOARD_X + x*SQUARE_WIDTH;
-            board_square.y = BOARD_Y + y*SQUARE_HEIGHT;
-            board_square.w = SQUARE_WIDTH;
-            board_square.h = SQUARE_HEIGHT;
-
-            if((x + y)%2 == 0)
-                SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
-            else
-                SDL_SetRenderDrawColor(windowRenderer, SQUARE_BLACK_R, SQUARE_BLACK_G, SQUARE_BLACK_B, 255);
-
-            SDL_RenderFillRect(windowRenderer, &board_square);
+    for(int y = 0; y < 8; y++) {
+        for(int x = 0; x < 8; x++) {
+           loadSquare(x, y);
         }
     }
 }
 
-void SDL_Board::loadPiece(int x, int y, std::string filePath)
+void SDL_Board::loadPiece(int x, int y, std::string bmpPath)
 {
-
-
+    // Initialise texture and surface
     SDL_Texture* texture = nullptr;
-    SDL_Surface* surface = SDL_LoadBMP(filePath.c_str());
+    SDL_Surface* surface = SDL_LoadBMP(bmpPath.c_str());
 
+    // Error checking etc., etc
     if(surface == NULL)
         std::cout << "Error, could not load .bmp file" << std::endl;
     else
@@ -115,17 +101,18 @@ void SDL_Board::loadPiece(int x, int y, std::string filePath)
         if(texture == NULL)
             std::cout << "Error creating texture: " << SDL_GetError() << std::endl;
     }
-    SDL_Rect targetSquare = returnSquare(x, y);
 
-    //SDL_RenderClear(renderTarget);
+    // Load the appropriate square and copy the piece texture to that target. Clean-up.
+    SDL_Rect targetSquare = returnSDLSquare(x, y);
     SDL_RenderCopy(windowRenderer, texture, NULL, &targetSquare);
     SDL_DestroyTexture(texture); 
 }
 
 void SDL_Board::loadSquare(int x, int y)
 {
-    SDL_Rect targetSquare = returnSquare(x, y);
+    SDL_Rect targetSquare = returnSDLSquare(x, y);
 
+    // Set the colour, opacity, and send to renderer.
     if((x + y)%2 == 1)
         SDL_SetRenderDrawColor(windowRenderer, SQUARE_WHITE_R, SQUARE_WHITE_G, SQUARE_WHITE_B, 255);
     else
@@ -134,7 +121,7 @@ void SDL_Board::loadSquare(int x, int y)
     SDL_RenderFillRect(windowRenderer, &targetSquare);
 }
 
-void SDL_Board::loadBoard(BoardState state)
+void SDL_Board::loadState(BoardState state)
 {
     clearBoard();
     for(int i = 0; i < 8; i++) {
@@ -153,7 +140,7 @@ void SDL_Board::loadOverlay(int x, int y, OVERLAY_COL col)
 {
     // Set blend mode & load relevant square
     SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_BLEND);
-    SDL_Rect targetSquare = returnSquare(x, y);
+    SDL_Rect targetSquare = returnSDLSquare(x, y);
 
     // Set draw colour and fill rectangle
     if(col == OVERLAY_RED)
@@ -177,7 +164,7 @@ void SDL_Board::clearBoard()
             loadSquare(i, j);
 }
 
-SDL_Rect SDL_Board::returnSquare(int x, int y)
+SDL_Rect SDL_Board::returnSDLSquare(int x, int y)
 {
     SDL_Rect targetSquare;
     targetSquare.x = SDL_coordinates[x][y][0];
@@ -204,7 +191,7 @@ void SDL_Board::renderBoard(BoardState state)
 {
     SDL_RenderClear(windowRenderer);
     loadBackground();
-    loadBoard(state);
+    loadState(state);
     SDL_RenderPresent(windowRenderer);
 }
 
@@ -226,6 +213,7 @@ void SDL_Board::renderBoardUpdate(BoardState state)
             }
         }
     }
+    SDL_RenderPresent(windowRenderer);
 }
 
 void SDL_Board::renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue)
@@ -252,9 +240,11 @@ void SDL_Board::renderOverlay(std::queue<BoardPosition> validQueue, std::queue<B
     }
     SDL_RenderPresent(windowRenderer);
 }
+
+
 /****************************************************/
 /*      STATIC METHODS: Additional functionality    */
-/***************************************************/
+/****************************************************/
 
 BoardPosition SDL_Board::SDL_to_Coords(int SDL_x, int SDL_y)
 {

@@ -12,7 +12,7 @@
 
 
 // INTERNAL INCLUDES
-#include "Coords.h"
+#include "BoardPosition.h"
 #include "Board.h"
 
 // EXTERNAL INCLUDES
@@ -78,17 +78,18 @@ class SDL_Board
 
         // INTERNAL LOADING METHODS
         void loadBackground();                   
-        void loadPiece(int x, int y, std::string filePath);
-        void loadBoard(BoardState state);
+        void loadPiece(int x, int y, std::string bmpPath);
+        void loadState(BoardState state);
         void loadSquare(int x, int y);
         void loadOverlay(int x, int y, OVERLAY_COL col);
         void clearBoard();
-        SDL_Rect returnSquare(int x, int y);
+        SDL_Rect returnSDLSquare(int x, int y);
         
                 
-    public: 
-        SDL_Board();                            // Constructor
-        ~SDL_Board();                           // Destructor
+    public:
+        // CONSTRUCTORS
+        SDL_Board();                            
+        ~SDL_Board();                           
         
         // PUBLIC RENDER METHODS
         void renderBackground();
@@ -96,9 +97,6 @@ class SDL_Board
         void renderBoardUpdate(BoardState state);
         void renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue);
 
-        
-    
-        
         // STATIC METHODS
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);
 };
