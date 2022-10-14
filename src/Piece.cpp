@@ -18,7 +18,7 @@ std::vector<Piece*> Piece::Piece_instanceList;
 std::string Piece::returnPath()
 {   
     std::string colStr = (col) ? "black" : "white";
-    return descriptor.filePath + colStr + ".bmp";
+    return descriptor.bmpPath + colStr + ".bmp";
 }
 
 
@@ -36,15 +36,21 @@ void Piece::updatePosition(BoardPosition newPos)
 /***********************************************************
  *                   PIECE DESCRIPTIONS
  ***********************************************************/
-PieceDescriptor Pawn::pawn_description      {"./res/pawn_", PAWN}; 
-PieceDescriptor Rook::rook_description      {"./res/rook_", ROOK}; 
-PieceDescriptor Knight::knight_description  {"./res/knight_", KNIGHT}; 
-PieceDescriptor Bishop::bishop_description  {"./res/bishop_", BISHOP}; 
-PieceDescriptor Queen::queen_description    {"./res/queen_", QUEEN}; 
-PieceDescriptor King::king_description      {"./res/king_", KING}; 
+PieceDescriptor Pawn::descriptor   {"./res/pawn_", PAWN}; 
+PieceDescriptor Rook::descriptor   {"./res/rook_", ROOK}; 
+PieceDescriptor Knight::descriptor {"./res/knight_", KNIGHT}; 
+PieceDescriptor Bishop::descriptor {"./res/bishop_", BISHOP}; 
+PieceDescriptor Queen::descriptor  {"./res/queen_", QUEEN}; 
+PieceDescriptor King::descriptor   {"./res/king_", KING}; 
 
 /***********************************************************
  *                      MOVE RANGES
+ * 
+ * All movement ranges are defined such that all movements in
+ * a particular axis are sequentially defined. This allows 
+ * methods in-built to Board to check all the movements in one
+ * direction sequentially, saving a lot of hassle!
+ * 
  ***********************************************************/
 std::queue<BoardPosition> Pawn::moveRange()
 {
@@ -99,9 +105,10 @@ std::queue<BoardPosition> Rook::moveRange()
 
 std::queue<BoardPosition> Knight::moveRange()
 {
+    std::cout << "Movement range for knight" << std::endl;
     std::queue<BoardPosition> moveQueue;
-
-    // Binary permutations of {1,2,-1,-2}
+    
+    // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
     if(pos.validUpdate(1, 2)) moveQueue.push(pos.returnUpdate(1, 2));
     if(pos.validUpdate(2, 1)) moveQueue.push(pos.returnUpdate(2, 1));
 

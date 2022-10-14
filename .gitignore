@@ -10,8 +10,13 @@
 # Ignore object and dependency files
 *.d
 *.o
+*.exe
 
 # Ignore VSCode file
 .vscode*
+
+# Ignore debug
+./Debug
+
 
 

@@ -12,7 +12,7 @@
 
 
 // INTERNAL INCLUDES
-#include "Coords.h"
+#include "BoardPosition.h"
 #include "Board.h"
 
 // EXTERNAL INCLUDES
@@ -31,15 +31,6 @@ enum WINDOW_SIZES
 
 enum BOARD_VALUES
 {   
-    SQUARE_WHITE_R = 252,
-    SQUARE_WHITE_G = 245,
-    SQUARE_WHITE_B = 232,
-    SQUARE_BLACK_R = 117,
-    SQUARE_BLACK_G = 79,
-    SQUARE_BLACK_B = 18,
-    SQUARE_GREEN_R = 130,
-    SQUARE_GREEN_G = 180,
-    SQUARE_GREEN_B = 126,
     SQUARE_WIDTH = 75,
     SQUARE_HEIGHT = 75,
     BOARD_X = 20,
@@ -47,6 +38,34 @@ enum BOARD_VALUES
     BOARD_BORDER_R = 28,
     BOARD_BORDER_G = 27,
     BOARD_BORDER_B = 34
+};
+
+enum BOARD_BACKGROUND
+{
+    SQUARE_WHITE_R = 252,
+    SQUARE_WHITE_G = 245,
+    SQUARE_WHITE_B = 232,
+    SQUARE_BLACK_R = 117,
+    SQUARE_BLACK_G = 79,
+    SQUARE_BLACK_B = 18
+};
+
+enum BOARD_OVERLAY
+{
+    OVERLAY_GREEN_R = 130,
+    OVERLAY_GREEN_G = 180,  
+    OVERLAY_GREEN_B = 126,
+    OVERLAY_RED_R = 234,
+    OVERLAY_RED_G = 10,
+    OVERLAY_RED_B = 43,
+    OVERLAY_WHITE_R = 40,
+    OVERLAY_WHITE_G = 40,
+    OVERLAY_WHITE_B = 40
+};
+
+enum OVERLAY_COL
+{
+    OVERLAY_GREEN, OVERLAY_RED, OVERLAY_WHITE
 };
 
 class SDL_Board
@@ -59,27 +78,25 @@ class SDL_Board
 
         // INTERNAL LOADING METHODS
         void loadBackground();                   
-        void loadPiece(int x, int y, std::string filePath);
-        void loadBoard(BoardState state);
+        void loadPiece(int x, int y, std::string bmpPath);
+        void loadState(BoardState state);
         void loadSquare(int x, int y);
-        void loadOverlay(int x, int y);
+        void loadOverlay(int x, int y, OVERLAY_COL col);
         void clearBoard();
-        SDL_Rect returnSquare(int x, int y);
+        SDL_Rect returnSDLSquare(int x, int y);
         
                 
-    public: 
-        SDL_Board();                            // Constructor
-        ~SDL_Board();                           // Destructor
+    public:
+        // CONSTRUCTORS
+        SDL_Board();                            
+        ~SDL_Board();                           
         
         // PUBLIC RENDER METHODS
         void renderBackground();
         void renderBoard(BoardState state);
         void renderBoardUpdate(BoardState state);
-        void renderOverlay(std::queue<BoardPosition> moveQueue);
+        void renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue);
 
-        
-    
-        
         // STATIC METHODS
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);
 };
