@@ -106,7 +106,8 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
         // Update old state
         memcpy(state.piecesPrev, state.piecesCurr, sizeof(state.piecesCurr));
         movePiece(currentPiece, tarPos);
-    } 
+    }
+        
     else
         return;
 
@@ -322,6 +323,21 @@ void Board::generateMovementRange(BoardPosition curPos) {
 
     
     // Determine the piece in the old position
+    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
+
+    if (currentPiece == nullptr)
+        return;
+   
+    // Generate move range
+    moveQueue = currentPiece->moveRange();
+
+    // Process the movement range from the current position
+    processMoveQueue(moveQueue, curPos);
+
+    // Special moves list
+    switch(currentPiece->returnDescriptor().type)
+    {
+        case PAWN:
         {
             // Initialise
             PIECE_COLOUR oppositeCol;
