@@ -223,11 +223,7 @@ MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition cur
             // Fetch target position and piece
             tarPos = moveRange.front();
             moveRange.pop();
-            targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
-
-            if(targetPiece != NULL)
-                std::cout << "Target piece colour: " << targetPiece->returnColour() << std::endl;
-            
+            targetPiece = state.piecesCurr[tarPos.x][tarPos.y];          
 
             // Check if the target piece exists, and check its colour
             if (targetPiece == NULL)
@@ -396,7 +392,7 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
         }
         case KING:
         {
-            if(!currentPiece->hasMoved() || !isChecked(currentPiece->returnID())
+            if(!currentPiece->hasMoved())
             {
                 
 
@@ -417,6 +413,7 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
                     validMoves.push(curPos.returnUpdate(2, 0));
                 if (leftRookConditions && clearLeft)
                     validMoves.push(curPos.returnUpdate(-2, 0));
+                    //  && canCastle(currentPiece->returnID(), LEFT)
             }
             break;
         }
@@ -434,9 +431,114 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
 /*           MOVEMENT-RELATED FUNCTIONS             */
 /****************************************************/
 
+/* METHOD ONE FOR CASTLING:
+* 1) Generate the movement queues of ALL pieces
+* 2) Check if the king is being checked by anything
+* 3) Add as conditional
+*/
 
-std::queue<PIECE_ID> pieceChecks(Piece* piecePtr)
+
+IDQueue Board::pieceChecks(PIECE_ID ID)
 {
-    std::queue<PIECE_ID> checkQueue;
-    return checkQueue;
+    IDQueue checkedPieces;
+    Piece* piecePtr = Piece::returnIDPtr(ID);
+    MovementQueue moveQueue = generateMovementRange(piecePtr->returnPosition());
+
+    while(!moveQueue.validTakes.empty())
+    {
+        BoardPosition targetPos = moveQueue.validTakes.front();
+        moveQueue.validTakes.pop();
+        checkedPieces.push(state.piecesCurr[targetPos.x][targetPos.y]->returnID());
     }
+    return checkedPieces;
+}
+
+IDQueue Board::generateCheckedList(PIECE_COLOUR col)
+{
+    // Initialise return
+    IDQueue checkedQueue;
+
+    // Iterate over all board positions
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            IDQueue tempQueue;
+
+            // Collect the current piece from state
+            Piece* piecePtr = state.piecesCurr[i][j];
+
+            // Skip over it if it's null or it's a different colour
+            if(piecePtr == NULL || piecePtr->returnColour() != col)
+                continue;
+            else
+                tempQueue = pieceChecks(piecePtr->returnID());
+
+            while(!tempQueue.empty())
+            {
+                checkedQueue.push(tempQueue.front());
+                tempQueue.pop();
+            }                
+        }
+    }
+    return checkedQueue;
+}
+
+bool Board::isChecked(PIECE_ID ID)
+{
+
+    /*          CODING FLAW FOUND           
+    * When iterating through all the pieces to generate their movements, I inevitably call a king.
+    * When I call a king, I run 'isChecked'.
+    * This means I generate my movement list again, and hence I create an infinite loop.
+    * 
+    * There are few workarounds:
+    * 1) I can change when 'isChecked' is called, that way I won't run into a loop
+    * 2) I can omit kings from 'isChecked', since a king can't check someone. I don't like this.
+    * 3) I can add a vector describing all the checked pieces and make sure I only iterate through it once.
+    * 
+    * How frustrating.
+    * 
+    */
+
+    // Retrieve pointer of interest
+    Piece* piecePtr = Piece::returnIDPtr(ID);
+
+    // Fetch the list of pieces checked by the opposite colour
+    PIECE_COLOUR col = (col == WHITE) ? BLACK : WHITE;
+    IDQueue checkedQueue = generateCheckedList(col);
+
+    bool found = 0;
+    while(!checkedQueue.empty() && !found)
+    {
+        found = (ID == checkedQueue.front()) ? 1 : 0;
+        checkedQueue.pop();
+    }
+    return found;
+}
+
+bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
+{
+    /* POTENTIAL CODING DESIGN FLAW */
+    // Modifying the 'current state' struct and returning it. Potential for going wrong, but seems a neat trick....
+
+    BoardState stateToRestore = state;
+    BoardPosition kingPos = Piece::returnIDPtr(ID)->returnPosition();
+    Piece* kingPtr = state.piecesCurr[kingPos.x][kingPos.y];
+    
+    // // Decide if we're castling right or left
+    // int castlingDirection = (relpos == RIGHT) ? 1 : -1;
+
+    // // Temporarily add the king to the new positions
+    // state.piecesCurr[kingPos.x + castlingDirection][kingPos.y] = kingPtr;
+    // state.piecesCurr[kingPos.x + 2*castlingDirection][kingPos.y] = kingPtr;
+
+    // Run is checked!
+    bool inCheck = isChecked(ID);
+
+    // Restore the state...
+    state = stateToRestore;
+
+    // Done :)
+    return inCheck;
+}

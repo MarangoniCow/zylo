@@ -105,7 +105,6 @@ PositionQueue Rook::moveRange()
 
 PositionQueue Knight::moveRange()
 {
-    std::cout << "Movement range for knight" << std::endl;
     PositionQueue moveQueue;
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.

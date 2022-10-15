@@ -20,6 +20,7 @@
 #include <SDL2/SDL.h>
 
 typedef std::queue<BoardPosition> PositionQueue;
+typedef std::queue<PIECE_ID> IDQueue;
 
 struct BoardState {
     Piece* piecesCurr[8][8];
@@ -64,6 +65,7 @@ class Board {
     public:
         // CONSTRUCTORS
         Board() {};
+        ~Board() {};
         void initialiseBoard();
         
         // STATE-RELATED FUNCTIONS
@@ -75,7 +77,10 @@ class Board {
         MovementQueue processMoveRange(PositionQueue moveRange, BoardPosition curPiecePos);
         
         // CHECK-RELATED FUNCTIONS
-        std::queue<PIECE_ID> pieceChecks(Piece* piecePtr);
+        IDQueue pieceChecks(PIECE_ID ID);
+        IDQueue generateCheckedList(PIECE_COLOUR col);
+        bool isChecked(PIECE_ID ID);
+        bool canCastle(PIECE_ID ID, RELPOS relpos);
 
         // RETURNS
         BoardState returnState() {return state;};       

@@ -83,6 +83,7 @@ class Piece
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
         static int returnCount() {return Piece_count;};
         static std::vector<Piece*> returnInstanceList() {return Piece_instanceList;};
+        static Piece* returnIDPtr(PIECE_ID ID_) {return Piece_instanceList[ID_];}; 
 
         // NON-STATIC RETURNS
         PieceDescriptor returnDescriptor() {return descriptor;};
