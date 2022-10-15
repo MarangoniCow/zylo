@@ -396,16 +396,26 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
         }
         case KING:
         {
-            if(!currentPiece->hasMoved())
+            if(!currentPiece->hasMoved() || !isChecked(currentPiece->returnID())
             {
+                
+
                 Piece* targetRookRight = state.piecesCurr[7][curPos.y];
                 Piece* targetRookLeft  = state.piecesCurr[0][curPos.y];
 
+                bool rightRookConditions = (targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() 
+                    && targetRookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                bool leftRookConditions = (targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved()
+                    && targetRookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+
+                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
+                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
+
                 if(targetRookLeft == NULL || targetRookRight == NULL)
                     break;
-                else if(targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->returnColour() == currentPiece->returnColour())
+                if (rightRookConditions && clearRight)
                     validMoves.push(curPos.returnUpdate(2, 0));
-                if(targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->returnColour() == currentPiece->returnColour())
+                if (leftRookConditions && clearLeft)
                     validMoves.push(curPos.returnUpdate(-2, 0));
             }
             break;
