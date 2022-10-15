@@ -82,6 +82,7 @@ class Piece
         std::string returnPath(); 
         PIECE_COLOUR returnColour() {return col;};
         BoardPosition returnPosition() {return pos;};
+        int returnID() {return Piece_ID;};
 
         // FLAGS
         bool hasMoved() {return flag_move;};

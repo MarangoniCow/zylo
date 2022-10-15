@@ -375,16 +375,24 @@ void Board::generateMovementRange(BoardPosition curPos) {
                 {
                     Piece* targetPiece;
                     targetPiece = state.piecesCurr[curPos.x + i][enpassantRow];
+                    if(targetPiece == NULL)
+                        continue;
                     
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece != NULL && targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
-                    // Check that if it was there last move (needs to be an updated move)
-                    bool adjacentLastMove = (targetPiece == state.piecesPrev[curPos.x + i][enpassantRow]) ? 1 : 0;
+                    bool pawnAdjacent = (targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
+
+                    // Check to see if it was on the home row last move
+                    Piece* targetPiecePrev = state.piecesPrev[curPos.x + i][enpassantRow + 2*forward];
+                    if(targetPiecePrev == NULL)
+                        continue;
+
+                    bool lastOnHomeRow = (targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
                     
-                    if(pawnAdjacent && !adjacentLastMove)
+                    if(pawnAdjacent && lastOnHomeRow)
                         takeMoves.push(curPos.returnUpdate(i, forward));
                 }
-            }     
+            }
+            break;     
         }
         case KING:
         {
@@ -393,14 +401,18 @@ void Board::generateMovementRange(BoardPosition curPos) {
                 Piece* targetRookRight = state.piecesCurr[7][curPos.y];
                 Piece* targetRookLeft  = state.piecesCurr[0][curPos.y];
 
-                if(targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->returnColour() == currentPiece->returnColour())
+                if(targetRookLeft == NULL || targetRookRight == NULL)
+                    break;
+                else if(targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() && targetRookRight->returnColour() == currentPiece->returnColour())
                     validMoves.push(curPos.returnUpdate(2, 0));
                 if(targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved() && targetRookLeft->returnColour() == currentPiece->returnColour())
                     validMoves.push(curPos.returnUpdate(-2, 0));
             }
+            break;
         }
-        default:
-        {};
+        default: {
+            break;
+        };
     }
     
     
