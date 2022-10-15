@@ -6,6 +6,7 @@
 
 // INTERNAL INCLUDES
 #include "SDL_Board.h"
+#include "SDL_Pieces.h"
 #include "BoardPosition.h"
 #include "Board.h"
 
@@ -56,6 +57,9 @@ SDL_Board::SDL_Board()
     // Error checking
     if(windowRenderer == NULL)
         std::cout << "Error creating render target: " << SDL_GetError() << std::endl;
+
+    pieceGraphics.initialiseGraphicsObjs(windowRenderer);
+    
     
 }
 SDL_Board::~SDL_Board()
@@ -85,27 +89,15 @@ void SDL_Board::loadBackground()
     }
 }
 
-void SDL_Board::loadPiece(int x, int y, std::string bmpPath)
+void SDL_Board::loadPiece(int x, int y, PIECE_TYPE type, PIECE_COLOUR col)
 {
-    // Initialise texture and surface
-    SDL_Texture* texture = nullptr;
-    SDL_Surface* surface = SDL_LoadBMP(bmpPath.c_str());
-
-    // Error checking etc., etc
-    if(surface == NULL)
-        std::cout << "Error, could not load .bmp file" << std::endl;
-    else
-    {
-        texture = SDL_CreateTextureFromSurface(windowRenderer, surface);
-
-        if(texture == NULL)
-            std::cout << "Error creating texture: " << SDL_GetError() << std::endl;
-    }
+    // Load texture from graphics holder    
+    SDL_Texture* pieceTexture = pieceGraphics.returnTexture(type, col);
 
     // Load the appropriate square and copy the piece texture to that target. Clean-up.
     SDL_Rect targetSquare = returnSDLSquare(x, y);
-    SDL_RenderCopy(windowRenderer, texture, NULL, &targetSquare);
-    SDL_DestroyTexture(texture); 
+    SDL_RenderCopy(windowRenderer, pieceTexture, NULL, &targetSquare);
+    
 }
 
 void SDL_Board::loadSquare(int x, int y)
@@ -130,7 +122,7 @@ void SDL_Board::loadState(BoardState state)
             
             Piece* current = state.piecesCurr[i][j];
             if (current != NULL) {
-                loadPiece(i, j, current->returnPath());
+                loadPiece(i, j, current->returnDescriptor().type, current->returnColour());
             }
         }
     }         
@@ -209,7 +201,7 @@ void SDL_Board::renderBoardUpdate(BoardState state)
                 // Check for a new piece and render if necessary
                 Piece* currentPiece = state.piecesCurr[i][j];
                 if (currentPiece != NULL)
-                    loadPiece(i, j, state.piecesCurr[i][j]->returnPath());
+                    loadPiece(i, j, currentPiece->returnDescriptor().type, currentPiece->returnColour());
             }
         }
     }

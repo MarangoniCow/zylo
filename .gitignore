@@ -16,7 +16,7 @@
 .vscode*
 
 # Ignore debug
-./Debug
+/Debug/
 
 
 

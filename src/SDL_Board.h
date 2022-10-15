@@ -14,6 +14,7 @@
 // INTERNAL INCLUDES
 #include "BoardPosition.h"
 #include "Board.h"
+#include "SDL_Pieces.h"
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
@@ -72,13 +73,14 @@ class SDL_Board
 {
     protected:
         // MEMBER VARIABLES
+        SDL_Pieces pieceGraphics;
         SDL_Window* window;                     // Window handle
         SDL_Renderer* windowRenderer;           // Window renderer
         int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square
 
         // INTERNAL LOADING METHODS
         void loadBackground();                   
-        void loadPiece(int x, int y, std::string bmpPath);
+        void loadPiece(int x, int y, PIECE_TYPE type, PIECE_COLOUR col);
         void loadState(BoardState state);
         void loadSquare(int x, int y);
         void loadOverlay(int x, int y, OVERLAY_COL col);
