@@ -19,6 +19,7 @@
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
 
+typedef std::queue<BoardPosition> PositionQueue;
 
 struct BoardState {
     Piece* piecesCurr[8][8];
@@ -34,14 +35,26 @@ struct BoardState {
     };
 };
 
+
+
+struct MovementQueue {
+    PositionQueue validMoves;
+    PositionQueue validTakes;
+    PositionQueue invalidMoves;
+    PositionQueue invalidTakes;
+
+    MovementQueue() {};
+    MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, 
+                    PositionQueue invalidMoves_, PositionQueue invalidTakes_)
+        :   validMoves(validMoves_), validTakes(validTakes_),
+            invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
+};
+
 class Board {
 
     protected:
         // MEMBER VARIABLES
         BoardState state;
-        std::queue<BoardPosition> validMoves;
-        std::queue<BoardPosition> takeMoves;
-        std::queue<BoardPosition> invalidMoves;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
         void movePiece(Piece* curPiece, BoardPosition newPos);
@@ -58,18 +71,14 @@ class Board {
         void processClick(BoardPosition oldPos, BoardPosition newPos);
         
         // MOVEMENT-RELATED FUNCTIONS
-        void generateMovementRange(BoardPosition oldPos);
-        void processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition curPiecePos);
+        MovementQueue generateMovementRange(BoardPosition oldPos);
+        MovementQueue processMoveRange(PositionQueue moveRange, BoardPosition curPiecePos);
         
+        // CHECK-RELATED FUNCTIONS
+        std::queue<PIECE_ID> pieceChecks(Piece* piecePtr);
 
         // RETURNS
-        BoardState returnState() {return state;};
-        std::queue<BoardPosition> returnValidMoves()    {return validMoves;};
-        std::queue<BoardPosition> returnTakeMoves()     {return takeMoves;};
-        std::queue<BoardPosition> returnInvalidMoves()  {return invalidMoves;};
-
-
-       
+        BoardState returnState() {return state;};       
         
         
 };

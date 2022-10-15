@@ -65,8 +65,8 @@ void SDL_EventManager::RunGame() {
                 else
                 {
                     // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
-                    board.generateMovementRange(curBoardCoord);
-                    gameWindow.renderOverlay(board.returnValidMoves(), board.returnTakeMoves(), board.returnInvalidMoves());
+                    MovementQueue moveQueue = board.generateMovementRange(curBoardCoord);
+                    gameWindow.renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
                 }    
             }
         }

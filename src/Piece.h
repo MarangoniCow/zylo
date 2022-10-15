@@ -19,6 +19,10 @@
 #include <vector>
 #include <queue>
 
+
+typedef unsigned int PIECE_ID;
+typedef std::queue<BoardPosition> PositionQueue;
+
 enum PIECE_COLOUR {
     WHITE = 0,
     BLACK = 1
@@ -33,12 +37,15 @@ enum PIECE_TYPE {
     KING = 5
 };
 
+/*      PIECE DESCRIPTOR
+* A means to provide static data to subclasses.
+* This is now redundant, as I've changed the implementation of graphic objects.
+* However, I've not removed it yet because it's a cute method which I'd like to keep around :)
+*/
 
-/*      PIECE DESCRIPTOR    */
-// A means to provide static data to subclasses.
 struct PieceDescriptor {
 
-    std::string bmpPath;
+    std::string bmpPath;        // REDUNDANT: TO BE REMOVED
     PIECE_TYPE type;
 };
 
@@ -54,7 +61,7 @@ class Piece
         const PieceDescriptor& descriptor;                      // Sub-class specific descriptor
 
         // INSTANCE SPECIFIC FUNCTIONALITY
-        int Piece_ID;                                           // Unique Piece ID
+        PIECE_ID ID;                                           // Unique Piece ID
         const PIECE_COLOUR col;                                 // Enumerated colour
         BoardPosition pos;                                     // Current position
         bool flag_move;                                         // Movement flag
@@ -64,13 +71,13 @@ class Piece
     public:
         Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
             Piece_count += 1;
-            Piece_ID = Piece_instanceList.size();
+            ID = Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             flag_move = 0; 
         };                    
         virtual ~Piece() {
             Piece_count -= 1;
-            Piece_instanceList[Piece_ID] = nullptr;
+            Piece_instanceList[ID] = nullptr;
         }
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
@@ -80,9 +87,11 @@ class Piece
         // NON-STATIC RETURNS
         PieceDescriptor returnDescriptor() {return descriptor;};
         std::string returnPath(); 
-        PIECE_COLOUR returnColour() {return col;};
         BoardPosition returnPosition() {return pos;};
-        int returnID() {return Piece_ID;};
+        PIECE_COLOUR returnColour() {return col;};
+        PIECE_ID returnID() {return ID;};
+        
+        
 
         // FLAGS
         bool hasMoved() {return flag_move;};
@@ -91,7 +100,7 @@ class Piece
         void updatePosition(BoardPosition pos);
         
         // FUNCTIONALITY METHODS
-        virtual std::queue<BoardPosition> moveRange() = 0; 
+        virtual PositionQueue moveRange() = 0; 
 
 
         
@@ -109,7 +118,7 @@ class Pawn : public Piece
         static PieceDescriptor descriptor; 
     public:
         Pawn(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };
 
 class Rook : public Piece
@@ -118,7 +127,7 @@ class Rook : public Piece
         static PieceDescriptor descriptor; 
     public:
         Rook(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y){};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };
 
 class Knight : public Piece
@@ -127,7 +136,7 @@ class Knight : public Piece
         static PieceDescriptor descriptor; 
     public:
         Knight(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };
 
 class Bishop : public Piece
@@ -136,7 +145,7 @@ class Bishop : public Piece
         static PieceDescriptor descriptor; 
     public:
         Bishop(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };
 
 class Queen : public Piece
@@ -145,7 +154,7 @@ class Queen : public Piece
         static PieceDescriptor descriptor; 
     public:
         Queen(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };
 
 class King : public Piece
@@ -154,5 +163,5 @@ class King : public Piece
         static PieceDescriptor descriptor; 
     public:
         King(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        std::queue<BoardPosition> moveRange();
+        PositionQueue moveRange();
 };

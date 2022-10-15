@@ -208,7 +208,7 @@ void SDL_Board::renderBoardUpdate(BoardState state)
     SDL_RenderPresent(windowRenderer);
 }
 
-void SDL_Board::renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue)
+void SDL_Board::renderOverlay(PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue)
 {
 
     // Iterate through movement queue and load overlays

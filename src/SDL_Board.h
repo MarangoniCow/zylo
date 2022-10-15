@@ -97,7 +97,7 @@ class SDL_Board
         void renderBackground();
         void renderBoard(BoardState state);
         void renderBoardUpdate(BoardState state);
-        void renderOverlay(std::queue<BoardPosition> validQueue, std::queue<BoardPosition> takeQueue, std::queue<BoardPosition> invalidQueue);
+        void renderOverlay(PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue);
 
         // STATIC METHODS
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);

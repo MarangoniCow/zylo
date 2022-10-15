@@ -52,9 +52,9 @@ PieceDescriptor King::descriptor   {"./res/king_", KING};
  * direction sequentially, saving a lot of hassle!
  * 
  ***********************************************************/
-std::queue<BoardPosition> Pawn::moveRange()
+PositionQueue Pawn::moveRange()
 {
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
 
     // WHITE = 0, BLACK = 1
     if(!col) {
@@ -68,9 +68,9 @@ std::queue<BoardPosition> Pawn::moveRange()
     return moveQueue;
 }
 
-std::queue<BoardPosition> Rook::moveRange()
+PositionQueue Rook::moveRange()
 {
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
 
     // Moving right
     int i = 1;
@@ -103,10 +103,10 @@ std::queue<BoardPosition> Rook::moveRange()
     return moveQueue;
 }
 
-std::queue<BoardPosition> Knight::moveRange()
+PositionQueue Knight::moveRange()
 {
     std::cout << "Movement range for knight" << std::endl;
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
     if(pos.validUpdate(1, 2)) moveQueue.push(pos.returnUpdate(1, 2));
@@ -125,9 +125,9 @@ std::queue<BoardPosition> Knight::moveRange()
     
 }
 
-std::queue<BoardPosition> Bishop::moveRange()
+PositionQueue Bishop::moveRange()
 {
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
 
     // Moving diagonal right
     int i = 1;
@@ -168,9 +168,9 @@ std::queue<BoardPosition> Bishop::moveRange()
     return moveQueue;
 }
 
-std::queue<BoardPosition> Queen::moveRange()
+PositionQueue Queen::moveRange()
 {
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
 
     // Moving right
     int i = 1;
@@ -240,9 +240,9 @@ std::queue<BoardPosition> Queen::moveRange()
     
 }
 
-std::queue<BoardPosition> King::moveRange()
+PositionQueue King::moveRange()
 {
-    std::queue<BoardPosition> moveQueue;
+    PositionQueue moveQueue;
 
     // Permutations of {0, 1, -1}
     if(pos.validUpdate(1, 0))   moveQueue.push(pos.returnUpdate(1, 0));

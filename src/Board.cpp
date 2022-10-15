@@ -67,20 +67,21 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
     if (currentPiece == NULL)
         return;
 
-    
 
     
     /* CODE-ARCHITECTURE FLAW: 
-    * This requires us to have already generated the movement range for the piece at curPos.
+    * I'm generating the same movement queue twice. I could just pass it as a new argument?
     */
+
+    MovementQueue moveQueue = generateMovementRange(currentPiece->returnPosition());
 
     // Otherwise, iterate through the current list of moves for that piece.
     bool found = 0;
     
-    while(!takeMoves.empty() && !found)
+    while(!moveQueue.validTakes.empty() && !found)
     {
-        BoardPosition temp = takeMoves.front();
-        takeMoves.pop();        
+        BoardPosition temp = moveQueue.validTakes.front();
+        moveQueue.validTakes.pop();        
         if(temp == tarPos)
             found = 1;
     }
@@ -93,10 +94,10 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
     }
         
     
-    while(!validMoves.empty() && !found)
+    while(!moveQueue.validMoves.empty() && !found)
     {
-        BoardPosition temp = validMoves.front();
-        validMoves.pop();        
+        BoardPosition temp = moveQueue.validMoves.front();
+        moveQueue.validMoves.pop();        
         if(temp == tarPos)
             found = 1;
     }
@@ -109,14 +110,7 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
     }
         
     else
-        return;
-
-    
-  
-    
-    
-
-    
+        return;    
 }
 
 /****************************************************/
@@ -199,11 +193,16 @@ void Board::removePiece(Piece* pieceToDelete)
 
 
 
-void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition curPos)
+MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition curPos)
 {
-    // Helper functions, clean up later
+    // Helper/local variable names.
     RELPOS relpos_curr = SAME;
-    RELPOS relpos_prev = SAME;   
+    RELPOS relpos_prev = SAME;  
+
+    PositionQueue validMoves;
+    PositionQueue validTakes;
+    PositionQueue invalidMoves;
+    PositionQueue invalidTakes;
     
 
     // Preinitialise helper variables
@@ -219,11 +218,11 @@ void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition 
     // Knight algorithm: Special case, don't need to think about all the other bits
     if(currentPiece != NULL && currentPiece->returnDescriptor().type == KNIGHT)
     {
-        while(!moveQueue.empty())
+        while(!moveRange.empty())
         {
             // Fetch target position and piece
-            tarPos = moveQueue.front();
-            moveQueue.pop();
+            tarPos = moveRange.front();
+            moveRange.pop();
             targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
 
             if(targetPiece != NULL)
@@ -241,37 +240,35 @@ void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition 
             }
             else
             {
-                takeMoves.push(tarPos);
+                validTakes.push(tarPos);
             }
         }
-        return;
+        
+        MovementQueue proceesedQueue(validMoves, validTakes, invalidMoves, invalidTakes);
+        return proceesedQueue;  
     }
 
-    
-    std::cout << "NON-KNIGHT PIECE PROCESS QUEUE" << std::endl;
-    while(!moveQueue.empty())
+    while(!moveRange.empty())
     {
         // Fetch the target position
-        tarPos = moveQueue.front();
-        moveQueue.pop();
-        std::cout << "TARGET POSITION: " << tarPos.x << ", " << tarPos.y << std::endl;
+        tarPos = moveRange.front();
+        moveRange.pop();
         
         // Update relative position
         relpos_prev = relpos_curr;   
         relpos_curr = BoardPosition::returnRelPos(curPos, tarPos);
-        std::cout << "POST: REL_POS_CURR: " << relpos_curr << ", REL_POS_PREV: " << relpos_prev << std::endl;
-
-        
-
-        
-        
         
         // If we added a piece last time and we haven't changed the relative direction, we need to continue to the next item in the queue.
         // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
         if(relpos_prev != SAME && pieceInPrev && relpos_curr == relpos_prev)
         {
-            
-            invalidMoves.push(tarPos);
+            targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
+
+            if(targetPiece != NULL && currentPiece->returnColour() != targetPiece->returnColour())
+                invalidTakes.push(tarPos);
+            else
+                invalidMoves.push(tarPos);
+
             continue;
         }
 
@@ -297,7 +294,7 @@ void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition 
                 if(currentPiece->returnDescriptor().type == PAWN)
                     invalidMoves.push(tarPos);
                 else
-                    takeMoves.push(tarPos);
+                    validTakes.push(tarPos);
             }
             else
             {
@@ -308,31 +305,34 @@ void Board::processMoveQueue(std::queue<BoardPosition> moveQueue, BoardPosition 
         }
     }
 
+    MovementQueue proceesedQueue(validMoves, validTakes, invalidMoves, invalidTakes);
+    return proceesedQueue;  
+
 }
 
-void Board::generateMovementRange(BoardPosition curPos) {
+MovementQueue Board::generateMovementRange(BoardPosition curPos) {
 
       
-    // Initialise movement queue
-    std::queue<BoardPosition> moveQueue;
+    // Initialise local movement queue variables. Slightly lazy as I introduced MovementQueue after I created the multiple queue implementation.
+    PositionQueue moveRange;
+    MovementQueue processedQueue;
 
-    // Empty the move queues
-    validMoves = moveQueue;
-    takeMoves = moveQueue;
-    invalidMoves = moveQueue;
-
-    
     // Determine the piece in the old position
     Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
 
     if (currentPiece == nullptr)
-        return;
+        return processedQueue;
    
     // Generate move range
-    moveQueue = currentPiece->moveRange();
+    moveRange = currentPiece->moveRange();
 
     // Process the movement range from the current position
-    processMoveQueue(moveQueue, curPos);
+    processedQueue = processMoveRange(moveRange, curPos);
+
+    PositionQueue validMoves = processedQueue.validMoves;
+    PositionQueue validTakes = processedQueue.validTakes;
+    PositionQueue invalidMoves = processedQueue.invalidMoves;
+    PositionQueue invalidTakes = processedQueue.invalidTakes;
 
     // Special moves list
     switch(currentPiece->returnDescriptor().type)
@@ -367,7 +367,7 @@ void Board::generateMovementRange(BoardPosition curPos) {
                     Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
                     
                     if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
-                        takeMoves.push(temp);
+                        validTakes.push(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
@@ -386,10 +386,10 @@ void Board::generateMovementRange(BoardPosition curPos) {
                     if(targetPiecePrev == NULL)
                         continue;
 
-                    bool lastOnHomeRow = (targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
+                    bool lastOnHomeRow = ( targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
                     
                     if(pawnAdjacent && lastOnHomeRow)
-                        takeMoves.push(curPos.returnUpdate(i, forward));
+                        validTakes.push(curPos.returnUpdate(i, forward));
                 }
             }
             break;     
@@ -415,6 +415,18 @@ void Board::generateMovementRange(BoardPosition curPos) {
         };
     }
     
-    
+    // Put all the queues into a struct and return.
+    MovementQueue moveQueue(validMoves, validTakes, invalidMoves, invalidTakes);
+    return moveQueue;   
 }
 
+/****************************************************/
+/*           MOVEMENT-RELATED FUNCTIONS             */
+/****************************************************/
+
+
+std::queue<PIECE_ID> pieceChecks(Piece* piecePtr)
+{
+    std::queue<PIECE_ID> checkQueue;
+    return checkQueue;
+    }
