@@ -223,11 +223,7 @@ MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition cur
             // Fetch target position and piece
             tarPos = moveRange.front();
             moveRange.pop();
-<<<<<<< HEAD
-            targetPiece = state.piecesCurr[tarPos.x][tarPos.y];          
-=======
             targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
->>>>>>> main
 
             // Check if the target piece exists, and check its colour
             if (targetPiece == NULL)
