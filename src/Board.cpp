@@ -188,10 +188,10 @@ void Board::removePiece(Piece* pieceToDelete)
     state.piecesCurr[pos.x][pos.y] = NULL;
 
     // Delete the piece, destructor will take care of the rest
+
+    /* BUG: DESTRUCTOR FOR DERIVED CLASS NOT PROPERLY CALLED */
     // delete(pieceToDelete);
 }
-
-
 
 MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition curPos)
 {
@@ -224,10 +224,6 @@ MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition cur
             tarPos = moveRange.front();
             moveRange.pop();
             targetPiece = state.piecesCurr[tarPos.x][tarPos.y];
-
-            if(targetPiece != NULL)
-                std::cout << "Target piece colour: " << targetPiece->returnColour() << std::endl;
-            
 
             // Check if the target piece exists, and check its colour
             if (targetPiece == NULL)
@@ -328,11 +324,72 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
 
     // Process the movement range from the current position
     processedQueue = processMoveRange(moveRange, curPos);
+    
+    // Add special moves & takes
+    addSpecialMoves(currentPiece, &processedQueue.validMoves);
+    addSpecialTakes(currentPiece, &processedQueue.validTakes);
 
-    PositionQueue validMoves = processedQueue.validMoves;
-    PositionQueue validTakes = processedQueue.validTakes;
-    PositionQueue invalidMoves = processedQueue.invalidMoves;
-    PositionQueue invalidTakes = processedQueue.invalidTakes;
+    return processedQueue;   
+}
+
+void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
+{
+    if(currentPiece == NULL)
+        return;
+    
+    BoardPosition curPos = currentPiece->returnPosition();
+    
+
+    // Special moves list
+    switch(currentPiece->returnDescriptor().type)
+    {
+        case PAWN:
+        {
+            // Promotion will go here
+        }
+        case KING:
+        {
+            if(!currentPiece->hasMoved())
+            {
+                
+
+                Piece* rookRight = state.piecesCurr[7][curPos.y];
+                Piece* rookLeft  = state.piecesCurr[0][curPos.y];
+
+                
+
+                bool rightRookConditions = (rookRight != NULL && rookRight->returnDescriptor().type == ROOK && !rookRight->hasMoved() 
+                    && rookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                bool leftRookConditions = (rookLeft != NULL && rookLeft->returnDescriptor().type == ROOK && !rookLeft->hasMoved()
+                    && rookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+
+                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
+                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
+
+                if(rookLeft == NULL || rookRight == NULL)
+                    break;
+                if (rightRookConditions && clearRight)
+                    validMoves->push(curPos.returnUpdate(2, 0));
+                if (leftRookConditions && clearLeft)
+                    validMoves->push(curPos.returnUpdate(-2, 0));
+            }
+            break;
+        }
+        default: {
+            break;
+        };
+    }
+    
+
+}
+
+void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
+{
+    if(currentPiece == NULL)
+        return;
+    
+    BoardPosition curPos = currentPiece->returnPosition();
+    
 
     // Special moves list
     switch(currentPiece->returnDescriptor().type)
@@ -367,7 +424,7 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
                     Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
                     
                     if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
-                        validTakes.push(temp);
+                        validTakes->push(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
@@ -389,46 +446,24 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
                     bool lastOnHomeRow = ( targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
                     
                     if(pawnAdjacent && lastOnHomeRow)
-                        validTakes.push(curPos.returnUpdate(i, forward));
+                        validTakes->push(curPos.returnUpdate(i, forward));
                 }
             }
             break;     
-        }
-        case KING:
-        {
-            if(!currentPiece->hasMoved() || !isChecked(currentPiece->returnID())
-            {
-                
-
-                Piece* targetRookRight = state.piecesCurr[7][curPos.y];
-                Piece* targetRookLeft  = state.piecesCurr[0][curPos.y];
-
-                bool rightRookConditions = (targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() 
-                    && targetRookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-                bool leftRookConditions = (targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved()
-                    && targetRookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-
-                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
-                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
-
-                if(targetRookLeft == NULL || targetRookRight == NULL)
-                    break;
-                if (rightRookConditions && clearRight)
-                    validMoves.push(curPos.returnUpdate(2, 0));
-                if (leftRookConditions && clearLeft)
-                    validMoves.push(curPos.returnUpdate(-2, 0));
-            }
-            break;
         }
         default: {
             break;
         };
     }
-    
-    // Put all the queues into a struct and return.
-    MovementQueue moveQueue(validMoves, validTakes, invalidMoves, invalidTakes);
-    return moveQueue;   
 }
+
+
+
+
+
+
+
+
 
 /****************************************************/
 /*           MOVEMENT-RELATED FUNCTIONS             */

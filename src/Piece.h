@@ -118,6 +118,7 @@ class Pawn : public Piece
         static PieceDescriptor descriptor; 
     public:
         Pawn(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        ~Pawn() {};
         PositionQueue moveRange();
 };
 
@@ -127,6 +128,7 @@ class Rook : public Piece
         static PieceDescriptor descriptor; 
     public:
         Rook(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y){};
+        ~Rook() {};
         PositionQueue moveRange();
 };
 
@@ -136,6 +138,7 @@ class Knight : public Piece
         static PieceDescriptor descriptor; 
     public:
         Knight(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        ~Knight() {};
         PositionQueue moveRange();
 };
 
@@ -145,6 +148,7 @@ class Bishop : public Piece
         static PieceDescriptor descriptor; 
     public:
         Bishop(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        ~Bishop() {};
         PositionQueue moveRange();
 };
 
@@ -154,6 +158,7 @@ class Queen : public Piece
         static PieceDescriptor descriptor; 
     public:
         Queen(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        ~Queen() {};
         PositionQueue moveRange();
 };
 
@@ -163,5 +168,6 @@ class King : public Piece
         static PieceDescriptor descriptor; 
     public:
         King(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        ~King() {};
         PositionQueue moveRange();
 };
