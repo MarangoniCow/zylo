@@ -11,6 +11,9 @@
 
 // INTERNAL DEPENDENCIES
 #include "SDL_EventManager.h"
+#include "SDL_Board.h"
+#include "Board.h"
+
 
 
 // TEMP
@@ -20,8 +23,21 @@ int main () {
 
     std::cout << "Welcome to Zylo!" << std::endl;
 
-    SDL_EventManager obj;
-    obj.RunGame();
+    // Initalise board and board logic
+    Board board;
+    board.initialiseBoard();
+
+    // Initialise a game window and render the current state
+    SDL_Board gameWindow;
+    gameWindow.renderBoard(board.returnState());
+
+    // Gamne boolean
+    
+    
+
+    SDL_EventManager zylo(&gameWindow, &board);
+    zylo.RunGame();
+    
 
 
 

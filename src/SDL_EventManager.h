@@ -1,7 +1,7 @@
 /***********************************************************
  *                   SDL_EVENTMANAGER.H
  * 
- * Handles all game events, clicks, keyboard strokes, etc etc
+ * Handles all screen related events, but makes no decisions.
  ***********************************************************/
 
 
@@ -11,21 +11,40 @@
 #include "SDL_Board.h"
 #include "BoardPosition.h"
 
+enum CLICK_TYPE {
+    BOARD, OTHER
+};
 
 class SDL_EventManager
 {
     private:
+        bool isRunning;
+
         SDL_Event ev_cur;
         SDL_Event ev_prev;
-        BoardPosition curBoardCoord;
-        BoardPosition prevBoardCoord;
+
+        SDL_Board* gameWindow;
+        Board* board;
+
+        BoardPosition curPos;
+        BoardPosition prevPos;
+        
 
     public:
+        SDL_EventManager(SDL_Board* gameWindow_, Board* board_) : gameWindow(gameWindow_), board(board_) {};
         void RunGame();
-        void MouseToBoardCoords();
-
-        /* PLACEHOLDER METHODS: Nothing to see here! */
+        
+        // MOUSE EVENTS
         void MouseEvents();
+        void MovementEvents();
+        CLICK_TYPE ProcessClick();
+        
+        // KEYBOARD EVENTS
         void KeyboardEvents();
+
+        // GAMEPLAY EVENTS
+        bool checkGameplayFlags();
+        void requestPiecePromotion(BOARD_FLAGS boardFlags);
+        
 
 };

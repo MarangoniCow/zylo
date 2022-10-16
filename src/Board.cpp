@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <queue>
+#include <utility>
 
 /****************************************************/
 /*                  CONSTRUCTORS                    */
@@ -70,7 +71,18 @@ void Board::initialiseBoard()
             state.piecesCurr[temp->returnPosition().x][temp->returnPosition().y] = temp;
     }
 }
-
+void Board::clearBoard()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            Piece* currentPiece = state.piecesCurr[i][j];
+            if(currentPiece != NULL)
+                removePiece(currentPiece);
+        }
+    }
+}
 /****************************************************/
 /*            STATE-RELATED FUNCTIONS               */
 /****************************************************/
@@ -89,14 +101,14 @@ void Board::addPieceToState(Piece* piece)
         std::cout << "Cannot add piece: invalid position" << std::endl;
 }
 
-void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
+bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 {
     // Determine the target piece
     Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
 
     // If there isn't anything to be found, we don't do anything.
     if (currentPiece == NULL)
-        return;
+        return 0;
 
 
     
@@ -138,10 +150,11 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
         // Update old state
         memcpy(state.piecesPrev, state.piecesCurr, sizeof(state.piecesCurr));
         movePiece(currentPiece, tarPos);
+        return 1;
     }
-        
     else
-        return;    
+        return 0;
+    
 }
 
 /****************************************************/
@@ -150,6 +163,9 @@ void Board::processClick(BoardPosition curPos, BoardPosition tarPos)
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {
+    // Reset flags before movement occurs
+    boardFlags.RESET_FLAGS();
+
     BoardPosition curPos = currentPiece->returnPosition();
 
     // Update current position in state as null
@@ -184,13 +200,19 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
         }
         case PAWN:
         {
+            int endrow = (currentPiece->returnColour() == WHITE) ? 7 : 0;
+            if(currentPiece->returnPosition().y == endrow)
+            {
+                boardFlags.pawnPromotion.first = 1;
+                boardFlags.pawnPromotion.second = currentPiece->returnID();
+            }
+
             break;            
         }
         default: {
             break;
         }
-    }
-    
+    }   
 }
 void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
 {
@@ -220,6 +242,11 @@ void Board::removePiece(Piece* pieceToDelete)
 
     // Delete the piece, destructor will take care of the rest
     delete(pieceToDelete);
+}
+
+void Board::removePiece(PIECE_ID pieceToDelete)
+{
+    removePiece(Piece::returnIDPtr(pieceToDelete));
 }
 
 MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition curPos)
@@ -399,7 +426,7 @@ void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
                     validMoves->push(curPos.returnUpdate(-2, 0));
             }
             break;
-        }
+        }        
         default: {
             break;
         };

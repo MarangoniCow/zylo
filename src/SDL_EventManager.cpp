@@ -23,58 +23,83 @@ void SDL_EventManager::RunGame() {
     * and re-arrange the EventManager to do that: manage the events.
     * For the moment, everything is just initialised here to get things running.
     */
-
-
-    // Initialise board logic class and initialise the board with a new state
-    Board board;
-    // Initialise the board with pieces
-    board.initialiseBoard();
-   
-    // Initialise a game window and render the current state
-    SDL_Board gameWindow;
-    gameWindow.renderBoard(board.returnState());
-    
+   PIECE_COLOUR currentTurn = WHITE;
+       
     // Game boolean
-    bool isRunning = true;
+    isRunning = true;
     
     // Run the game!
     while(isRunning)
     {
-        
         // Poll event checks for event and processes events each frame
         while(SDL_PollEvent(&ev_cur) != 0)
         {
             if (ev_cur.type == SDL_QUIT)
+            {
                 isRunning = false;
-            else if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
-                
-                // Fetch current board coordinates
-                MouseToBoardCoords();
+                continue;
+            }
+            else if(checkGameplayFlags())
+            {
+                gameWindow->renderBoard(board->returnState());
+                continue;
+            }
 
-                // Check for previous board coordinates
-                if(prevBoardCoord.validPosition()) {
-                    
-                    // Process a click and update the board
-                    board.processClick(prevBoardCoord, curBoardCoord);
-                    gameWindow.renderBoard(board.returnState());
-                    
-                    // Reset the click location
-                    curBoardCoord.ResetPosition();
-                    prevBoardCoord.ResetPosition();
-                }
-                else
-                {
-                    // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
-                    MovementQueue moveQueue = board.generateMovementRange(curBoardCoord);
-                    gameWindow.renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
-                }    
+            if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
+                MouseEvents();          
+            }
+            else if (ev_cur.type == SDL_KEYDOWN) {
+                KeyboardEvents();
             }
         }
     }
     SDL_Quit(); 
 };
 
-void SDL_EventManager::MouseToBoardCoords()
+
+
+/****************************************************/
+/*                  MOUSE EVENTS                    */
+/****************************************************/
+
+
+void SDL_EventManager::MouseEvents()
+{
+    CLICK_TYPE click = ProcessClick();
+
+    if (click == BOARD)
+    {
+        MovementEvents();
+    }
+    else
+    {
+        // Nothing else yet
+    }      
+}
+
+void SDL_EventManager::MovementEvents()
+{
+
+    // Check for previous board coordinates
+    if(prevPos.validPosition()) {
+        
+        // Process a click and update the board
+        board->processUpdate(prevPos, curPos);
+        gameWindow->renderBoard(board->returnState());
+        
+        // Reset the click location
+        curPos.ResetPosition();
+        prevPos.ResetPosition();
+    }
+    else
+    {
+        // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
+        MovementQueue moveQueue = board->generateMovementRange(curPos);
+        gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
+    }    
+}
+
+CLICK_TYPE SDL_EventManager::ProcessClick()
 {
     BoardPosition clickPos;  
     // Fetch screen coordinates and translate into board coordinates
@@ -85,17 +110,114 @@ void SDL_EventManager::MouseToBoardCoords()
     // If a valid board location...
     if(clickPos.validPosition())     
     {
-        
         // Check for a current click, if no previous click, save current click as prev
-        if(curBoardCoord.validPosition())
+        if(curPos.validPosition())
         {
             
-            prevBoardCoord = curBoardCoord;
+            prevPos = curPos;
         }
-        curBoardCoord = clickPos;
+        curPos = clickPos;
+        return BOARD;
     }
     else
     {
-        // Nothing yet! 
+        return OTHER;
     }    
 };
+
+
+
+/****************************************************/
+/*                 KEYBOARD EVENTS                  */
+/****************************************************/
+
+void SDL_EventManager::KeyboardEvents()
+{
+    switch(ev_cur.key.keysym.sym)
+    {
+        case SDLK_r:
+        {
+            board->clearBoard();
+            board->initialiseBoard();
+            gameWindow->renderBoard(board->returnState());
+            break;
+        }
+        default:
+        {break;};
+    }
+}
+
+/****************************************************/
+/*                 SPECIAL EVENTS                   */
+/****************************************************/
+
+bool SDL_EventManager::checkGameplayFlags()
+{
+    BOARD_FLAGS boardFlags = board->returnFlags();
+
+    // Check for promotion
+    if(boardFlags.pawnPromotion.first)
+    {
+        requestPiecePromotion(boardFlags);
+        board->resetFlags();
+        return 1;
+    }
+    return 0;
+}
+
+void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
+{
+    // Fetch necessary piece ID
+    PIECE_ID ID = boardFlags.pawnPromotion.second;
+    Piece* currentPiece = Piece::returnIDPtr(ID);
+    BoardPosition pos = currentPiece->returnPosition();
+    PIECE_COLOUR col = currentPiece->returnColour();
+    
+    // Remove the piece
+    board->removePiece(ID);
+    bool found = 0;
+    
+    // Start an event loop to fetch the new item.
+    while(!found)
+    {
+        while(SDL_PollEvent(&ev_cur) != 0)
+        {
+            if (ev_cur.type == SDL_QUIT)
+                isRunning = false;
+            else if (ev_cur.type == SDL_KEYDOWN)
+            {
+                switch(ev_cur.key.keysym.sym)
+                {
+                    case SDLK_q:
+                    {
+                        board->addPieceToState(new Queen(col, pos.x, pos.y));
+                        found = 1;
+                        break;
+                    }
+                    case SDLK_k:
+                    {
+                        board->addPieceToState(new Knight(col, pos.x, pos.y));
+                        found = 1;
+                        break;
+                    }
+                    case SDLK_r:
+                    {
+                        board->addPieceToState(new Rook(col, pos.x, pos.y));
+                        found = 1;
+                        break;
+                    }
+                    case SDLK_b:
+                    {
+                        board->addPieceToState(new Bishop(col, pos.x, pos.y));
+                        found = 1;
+                        break;
+                    }
+                    default:
+                    {break;};
+                }
+            }
+        }
+    }
+}
+
+

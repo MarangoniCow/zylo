@@ -18,9 +18,11 @@
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
+#include <utility>
 
 typedef std::queue<BoardPosition> PositionQueue;
 typedef std::queue<PIECE_ID> IDQueue;
+typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
 
 struct BoardState {
     Piece* piecesCurr[8][8];
@@ -36,7 +38,31 @@ struct BoardState {
     };
 };
 
+struct BOARD_FLAGS
+{
+    PLAY_FLAG kingCheck;
+    PLAY_FLAG kingCheckmate;
+    PLAY_FLAG pawnPromotion;
 
+    BOARD_FLAGS()
+    {
+        kingCheck.first = 0;
+        kingCheck.second = 0;
+        kingCheckmate.first = 0;
+        kingCheckmate.second = 0;
+        pawnPromotion.first = 0;
+        pawnPromotion.second = 0;
+    }
+    void RESET_FLAGS()
+    {
+        kingCheck.first = 0;
+        kingCheck.second = 0;
+        kingCheckmate.first = 0;
+        kingCheckmate.second = 0;
+        pawnPromotion.first = 0;
+        pawnPromotion.second = 0;
+    }
+};
 
 struct MovementQueue {
     PositionQueue validMoves;
@@ -56,21 +82,27 @@ class Board {
     protected:
         // MEMBER VARIABLES
         BoardState state;
+        BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
         void movePiece(Piece* curPiece, BoardPosition newPos);
         void takePiece(Piece* curPiece, BoardPosition newPos);
         void removePiece(Piece* pieceToDelete);
+        
 
     public:
         // CONSTRUCTORS
         Board() {};
         ~Board() {};
-        void initialiseBoard();
+        
         
         // STATE-RELATED FUNCTIONS
+        void initialiseBoard();
+        void clearBoard();
         void addPieceToState(Piece* newPiece);
-        void processClick(BoardPosition oldPos, BoardPosition newPos);
+        bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
+        void removePiece(PIECE_ID pieceToDelete);
+        
         
         // MOVEMENT-RELATED FUNCTIONS
         MovementQueue generateMovementRange(BoardPosition oldPos);
@@ -84,8 +116,12 @@ class Board {
         bool isChecked(PIECE_ID ID);
         bool canCastle(PIECE_ID ID, RELPOS relpos);
 
+        // FLAG RELATED FUNCTIONS
+        void resetFlags() {boardFlags.RESET_FLAGS();};
+
         // RETURNS
-        BoardState returnState() {return state;};       
+        BoardState returnState() {return state;};   
+        BOARD_FLAGS returnFlags() {return boardFlags;};
         
         
 };

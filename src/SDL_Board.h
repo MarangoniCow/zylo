@@ -69,6 +69,7 @@ enum OVERLAY_COL
     OVERLAY_GREEN, OVERLAY_RED, OVERLAY_WHITE
 };
 
+
 class SDL_Board
 {
     protected:
@@ -77,6 +78,7 @@ class SDL_Board
         SDL_Window* window;                     // Window handle
         SDL_Renderer* windowRenderer;           // Window renderer
         int SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square
+
 
         // INTERNAL LOADING METHODS
         void loadBackground();                   
