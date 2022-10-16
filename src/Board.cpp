@@ -14,21 +14,52 @@
 
 /****************************************************/
 /*                  CONSTRUCTORS                    */
-/****************************************************/
+/********************************2.1*******************/
 
 void Board::initialiseBoard()
 {
     // Initialise all 32 pieces with correct positions
-    static Pawn pw1(WHITE, 0, 1), pw2(WHITE, 1, 1), pw3(WHITE, 2, 1), pw4(WHITE, 3, 1),
-                    pw5(WHITE, 4, 1), pw6(WHITE, 5, 1), pw7(WHITE, 6, 1), pw8(WHITE, 7, 1);
-    static Pawn pb1(BLACK, 0, 6), pb2(BLACK, 1, 6), pb3(BLACK, 2, 6), pb4(BLACK, 3, 6),
-                    pb5(BLACK, 4, 6), pb6(BLACK, 5, 6), pb7(BLACK, 6, 6), pb8(BLACK, 7, 6);
-    static Rook rw1(WHITE, 0, 0), rw2(WHITE, 7, 0), rb1(BLACK, 0, 7), rb2(BLACK, 7, 7);
-    static Knight kw1(WHITE, 1, 0), kw2(WHITE, 6, 0), kb1(BLACK, 1, 7), kb2(BLACK, 6, 7);
-    static Bishop bw1(WHITE, 2, 0), bw2(WHITE, 5, 0), bb1(BLACK, 2, 7), bb2(BLACK, 5, 7);
-    static Queen qw1(WHITE, 3, 0), qb1(BLACK, 3, 7);
-    static King kiw1(WHITE, 4, 0), kib1(BLACK, 4, 7);
-   
+
+    Pawn* pw1 = new Pawn(WHITE, 0, 1);
+    Pawn* pw2 = new Pawn(WHITE, 1, 1);
+    Pawn* pw3 = new Pawn(WHITE, 2, 1);
+    Pawn* pw4 = new Pawn(WHITE, 3, 1);
+    Pawn* pw5 = new Pawn(WHITE, 4, 1);
+    Pawn* pw6 = new Pawn(WHITE, 5, 1);
+    Pawn* pw7 = new Pawn(WHITE, 6, 1);
+    Pawn* pw8 = new Pawn(WHITE, 7, 1);
+
+    Pawn* pb1 = new Pawn(BLACK, 0, 6);
+    Pawn* pb2 = new Pawn(BLACK, 1, 6);
+    Pawn* pb3 = new Pawn(BLACK, 2, 6);
+    Pawn* pb4 = new Pawn(BLACK, 3, 6);
+    Pawn* pb5 = new Pawn(BLACK, 4, 6);
+    Pawn* pb6 = new Pawn(BLACK, 5, 6);
+    Pawn* pb7 = new Pawn(BLACK, 6, 6);
+    Pawn* pb8 = new Pawn(BLACK, 7, 6);
+
+    Rook* rw1 = new Rook(WHITE, 0, 0);
+    Rook* rw2 = new Rook(WHITE, 7, 0);
+    Rook* rb1 = new Rook(BLACK, 0, 7);
+    Rook* rb2 = new Rook(BLACK, 7, 7);
+
+    Knight* kw1 = new Knight(WHITE, 1, 0);
+    Knight* kw2 = new Knight(WHITE, 6, 0);
+    Knight* kb1 = new Knight(BLACK, 1, 7);
+    Knight* kb2 = new Knight(BLACK, 6, 7);
+
+    Bishop* bw1 = new Bishop(WHITE, 2, 0);
+    Bishop* bw2 = new Bishop(WHITE, 5, 0);
+    Bishop* bb1 = new Bishop(BLACK, 2, 7);
+    Bishop* bb2 = new Bishop(BLACK, 5, 7);
+
+    Queen* qw1 = new Queen(WHITE, 3, 0);
+    Queen* qb1 = new Queen(BLACK, 3, 7);
+
+    King* kiw1 = new King(WHITE, 4, 0);
+    King* kib1 = new King(BLACK, 4, 7);
+
+  
    // Return the list of pieces from Piece, iterate over it and update BoardState accordingly.
     std::vector<Piece*> pieceList = Piece::returnInstanceList();
     for(auto it = pieceList.begin(); it != pieceList.end(); it++)
@@ -188,9 +219,7 @@ void Board::removePiece(Piece* pieceToDelete)
     state.piecesCurr[pos.x][pos.y] = NULL;
 
     // Delete the piece, destructor will take care of the rest
-
-    /* BUG: DESTRUCTOR FOR DERIVED CLASS NOT PROPERLY CALLED */
-    // delete(pieceToDelete);
+    delete(pieceToDelete);
 }
 
 MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition curPos)
