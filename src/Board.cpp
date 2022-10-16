@@ -455,46 +455,11 @@ void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
             }
             break;     
         }
-<<<<<<< HEAD
-        case KING:
-        {
-            if(!currentPiece->hasMoved())
-            {
-                
-
-                Piece* targetRookRight = state.piecesCurr[7][curPos.y];
-                Piece* targetRookLeft  = state.piecesCurr[0][curPos.y];
-
-                bool rightRookConditions = (targetRookRight->returnDescriptor().type == ROOK && !targetRookRight->hasMoved() 
-                    && targetRookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-                bool leftRookConditions = (targetRookLeft->returnDescriptor().type == ROOK && !targetRookLeft->hasMoved()
-                    && targetRookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-
-                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
-                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
-
-                if(targetRookLeft == NULL || targetRookRight == NULL)
-                    break;
-                if (rightRookConditions && clearRight)
-                    validMoves.push(curPos.returnUpdate(2, 0));
-                if (leftRookConditions && clearLeft)
-                    validMoves.push(curPos.returnUpdate(-2, 0));
-                    //  && canCastle(currentPiece->returnID(), LEFT)
-            }
-            break;
-        }
-=======
->>>>>>> main
         default: {
             break;
         };
-    }
-}
-
-
-
-
-
+    };
+};
 
 
 
