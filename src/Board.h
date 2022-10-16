@@ -75,6 +75,8 @@ class Board {
         // MOVEMENT-RELATED FUNCTIONS
         MovementQueue generateMovementRange(BoardPosition oldPos);
         MovementQueue processMoveRange(PositionQueue moveRange, BoardPosition curPiecePos);
+        void addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves);
+        void addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes);
         
         // CHECK-RELATED FUNCTIONS
         IDQueue pieceChecks(PIECE_ID ID);
