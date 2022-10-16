@@ -343,10 +343,6 @@ void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
     // Special moves list
     switch(currentPiece->returnDescriptor().type)
     {
-        case PAWN:
-        {
-            // Promotion will go here
-        }
         case KING:
         {
             if(!currentPiece->hasMoved())
@@ -368,9 +364,9 @@ void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
 
                 if(rookLeft == NULL || rookRight == NULL)
                     break;
-                if (rightRookConditions && clearRight)
+                if (rightRookConditions && clearRight && canCastle(currentPiece->returnID(), RIGHT))
                     validMoves->push(curPos.returnUpdate(2, 0));
-                if (leftRookConditions && clearLeft)
+                if (leftRookConditions && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
                     validMoves->push(curPos.returnUpdate(-2, 0));
             }
             break;
@@ -473,10 +469,19 @@ void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
 
 IDQueue Board::pieceChecks(PIECE_ID ID)
 {
+    // Queue for checked pieces
     IDQueue checkedPieces;
-    Piece* piecePtr = Piece::returnIDPtr(ID);
-    MovementQueue moveQueue = generateMovementRange(piecePtr->returnPosition());
 
+    // Get the piece...
+    Piece* piecePtr = Piece::returnIDPtr(ID);
+
+    // Generate the queue of all its pieces with special takes
+    PositionQueue moveRange = piecePtr->moveRange();
+    MovementQueue moveQueue = processMoveRange(moveRange, piecePtr->returnPosition());
+    addSpecialTakes(piecePtr, &moveQueue.validTakes);
+
+
+    // Iteate through list of takes and add ID to checkedPieces.
     while(!moveQueue.validTakes.empty())
     {
         BoardPosition targetPos = moveQueue.validTakes.front();
@@ -501,12 +506,14 @@ IDQueue Board::generateCheckedList(PIECE_COLOUR col)
             // Collect the current piece from state
             Piece* piecePtr = state.piecesCurr[i][j];
 
-            // Skip over it if it's null or it's a different colour
+            // Skip over it if it's null or it's a different colour to the one we're checking
             if(piecePtr == NULL || piecePtr->returnColour() != col)
                 continue;
+            // Else, fetch the list of pieces that that piece checks
             else
                 tempQueue = pieceChecks(piecePtr->returnID());
 
+            // Empty temp queue into checkedQueue
             while(!tempQueue.empty())
             {
                 checkedQueue.push(tempQueue.front());
@@ -538,7 +545,7 @@ bool Board::isChecked(PIECE_ID ID)
     Piece* piecePtr = Piece::returnIDPtr(ID);
 
     // Fetch the list of pieces checked by the opposite colour
-    PIECE_COLOUR col = (col == WHITE) ? BLACK : WHITE;
+    PIECE_COLOUR col = (piecePtr->returnColour() == WHITE) ? BLACK : WHITE;
     IDQueue checkedQueue = generateCheckedList(col);
 
     bool found = 0;
@@ -560,11 +567,11 @@ bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
     Piece* kingPtr = state.piecesCurr[kingPos.x][kingPos.y];
     
     // // Decide if we're castling right or left
-    // int castlingDirection = (relpos == RIGHT) ? 1 : -1;
+    int castlingDirection = (relpos == RIGHT) ? 1 : -1;
 
     // // Temporarily add the king to the new positions
-    // state.piecesCurr[kingPos.x + castlingDirection][kingPos.y] = kingPtr;
-    // state.piecesCurr[kingPos.x + 2*castlingDirection][kingPos.y] = kingPtr;
+    state.piecesCurr[kingPos.x + castlingDirection][kingPos.y] = kingPtr;
+    state.piecesCurr[kingPos.x + 2*castlingDirection][kingPos.y] = kingPtr;
 
     // Run is checked!
     bool inCheck = isChecked(ID);
@@ -573,5 +580,5 @@ bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
     state = stateToRestore;
 
     // Done :)
-    return inCheck;
+    return !inCheck;
 }
