@@ -22,21 +22,9 @@
 
 typedef std::queue<BoardPosition> PositionQueue;
 typedef std::queue<PIECE_ID> IDQueue;
+typedef std::pair<PIECE_ID, IDQueue> PieceChecks;
+typedef std::queue<PieceChecks> ChecksQueue;
 typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-
-struct BoardState {
-    Piece* piecesCurr[8][8];
-    Piece* piecesPrev[8][8];
-
-    BoardState() {
-    for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                piecesCurr[i][j] = NULL;
-                piecesPrev[i][j] = NULL; 
-            };
-        };
-    };
-};
 
 struct BOARD_FLAGS
 {
@@ -64,6 +52,26 @@ struct BOARD_FLAGS
     }
 };
 
+struct BoardState {
+    Piece* piecesCurr[8][8];
+    Piece* piecesPrev[8][8];
+    ChecksQueue currentChecks;
+    BOARD_FLAGS boardFlags;
+
+
+
+    BoardState()
+    {
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                piecesCurr[i][j] = NULL;
+                piecesPrev[i][j] = NULL; 
+            };
+        };
+    };
+};
+
+
 struct MovementQueue {
     PositionQueue validMoves;
     PositionQueue validTakes;
@@ -82,14 +90,12 @@ class Board {
     protected:
         // MEMBER VARIABLES
         BoardState state;
-        BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
         void movePiece(Piece* curPiece, BoardPosition newPos);
         void takePiece(Piece* curPiece, BoardPosition newPos);
         void removePiece(Piece* pieceToDelete);
-        
-
+    
     public:
         // CONSTRUCTORS
         Board() {};
@@ -102,6 +108,7 @@ class Board {
         void addPieceToState(Piece* newPiece);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         void removePiece(PIECE_ID pieceToDelete);
+        void postMoveTasks();
         
         
         // MOVEMENT-RELATED FUNCTIONS
@@ -117,11 +124,10 @@ class Board {
         bool canCastle(PIECE_ID ID, RELPOS relpos);
 
         // FLAG RELATED FUNCTIONS
-        void resetFlags() {boardFlags.RESET_FLAGS();};
+        void resetFlags() {state.boardFlags.RESET_FLAGS();};
 
         // RETURNS
         BoardState returnState() {return state;};   
-        BOARD_FLAGS returnFlags() {return boardFlags;};
         
         
 };

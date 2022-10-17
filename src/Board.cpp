@@ -110,12 +110,6 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if (currentPiece == NULL)
         return 0;
 
-
-    
-    /* CODE-ARCHITECTURE FLAW: 
-    * I'm generating the same movement queue twice. I could just pass it as a new argument?
-    */
-
     MovementQueue moveQueue = generateMovementRange(currentPiece->returnPosition());
 
     // Otherwise, iterate through the current list of moves for that piece.
@@ -164,7 +158,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {
     // Reset flags before movement occurs
-    boardFlags.RESET_FLAGS();
+    state.boardFlags.RESET_FLAGS();
 
     BoardPosition curPos = currentPiece->returnPosition();
 
@@ -203,8 +197,8 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
             int endrow = (currentPiece->returnColour() == WHITE) ? 7 : 0;
             if(currentPiece->returnPosition().y == endrow)
             {
-                boardFlags.pawnPromotion.first = 1;
-                boardFlags.pawnPromotion.second = currentPiece->returnID();
+                state.boardFlags.pawnPromotion.first = 1;
+                state.boardFlags.pawnPromotion.second = currentPiece->returnID();
             }
 
             break;            

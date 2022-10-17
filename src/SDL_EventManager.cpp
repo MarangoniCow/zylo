@@ -153,12 +153,12 @@ void SDL_EventManager::KeyboardEvents()
 
 bool SDL_EventManager::checkGameplayFlags()
 {
-    BOARD_FLAGS boardFlags = board->returnFlags();
+    BoardState state = board->returnState();
 
     // Check for promotion
-    if(boardFlags.pawnPromotion.first)
+    if(state.boardFlags.pawnPromotion.first)
     {
-        requestPiecePromotion(boardFlags);
+        requestPiecePromotion(state.boardFlags);
         board->resetFlags();
         return 1;
     }
