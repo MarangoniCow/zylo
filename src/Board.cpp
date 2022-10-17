@@ -143,7 +143,11 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     {
         // Update old state
         memcpy(state.piecesPrev, state.piecesCurr, sizeof(state.piecesCurr));
+
+        // Begin movement task flow
+        preMoveTasks();
         movePiece(currentPiece, tarPos);
+        postMoveTasks();
         return 1;
     }
     else
@@ -155,11 +159,21 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 /*           MOVEMENT-RELATED FUNCTIONS             */
 /****************************************************/
 
+void Board::preMoveTasks()
+{
+    // Flags are always reset BEFORE moving occurs so that movement can properly generate flags
+    state.boardFlags.RESET_FLAGS();
+    state.clearChecksQueue();
+}
+void Board::postMoveTasks()
+{
+    // TO DO: Re-arrange movement flags
+    state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
+}
+
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {
-    // Reset flags before movement occurs
-    state.boardFlags.RESET_FLAGS();
-
+    
     BoardPosition curPos = currentPiece->returnPosition();
 
     // Update current position in state as null
@@ -206,7 +220,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
         default: {
             break;
         }
-    }   
+    }
 }
 void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
 {
@@ -368,17 +382,44 @@ MovementQueue Board::generateMovementRange(BoardPosition curPos) {
 
     if (currentPiece == nullptr)
         return processedQueue;
+    else if (currentPiece->returnColour() != state.currentTurn)
+        return processedQueue;
    
     // Generate move range
     moveRange = currentPiece->moveRange();
 
     // Process the movement range from the current position
     processedQueue = processMoveRange(moveRange, curPos);
-    
-    // Add special moves & takes
-    addSpecialMoves(currentPiece, &processedQueue.validMoves);
+    // Add special takes (pawn takes & enpassant)
     addSpecialTakes(currentPiece, &processedQueue.validTakes);
 
+
+    /* POTENTIAL CODING FLAW/BUG
+    * I'm going to *assume* that the piece I've clicked on is the right colour to move.
+    * This should be fine... except I will have a coding flaw if I click on a white piece to move it
+    * then generate a movement list/fill checkedPieces/then click on a black piece. Now checkedPieces is filled
+    * (intentional) but it's filled with checks of a different colour. Could be a design flaw.
+    * */
+
+    // KING-CHECKED ACTIONS:=
+    // 1) Fetch the appropriate King's ID
+    // 2) Check that he's not in check
+    // 3) If he is, update the board flags
+    // 4) Place restrictions on the rest of our movement
+    PIECE_ID kingID = fetchKingID(currentPiece->returnColour());
+    if(isChecked(kingID))
+    {
+        state.boardFlags.kingCheck.first = true;
+        state.boardFlags.kingCheck.second = kingID;
+        if(currentPiece->returnID() != kingID)
+        {
+            MovementQueue emptyQueue;
+            return emptyQueue;
+        }        
+    }  
+    
+    // Add special moves (castling)
+    addSpecialMoves(currentPiece, &processedQueue.validMoves);
     return processedQueue;   
 }
 
@@ -398,11 +439,8 @@ void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
             if(!currentPiece->hasMoved())
             {
                 
-
                 Piece* rookRight = state.piecesCurr[7][curPos.y];
-                Piece* rookLeft  = state.piecesCurr[0][curPos.y];
-
-                
+                Piece* rookLeft  = state.piecesCurr[0][curPos.y];              
 
                 bool rightRookConditions = (rookRight != NULL && rookRight->returnDescriptor().type == ROOK && !rookRight->hasMoved() 
                     && rookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
@@ -425,8 +463,6 @@ void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
             break;
         };
     }
-    
-
 }
 
 void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
@@ -507,7 +543,7 @@ void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
 
 
 /****************************************************/
-/*           MOVEMENT-RELATED FUNCTIONS             */
+/*             CHECK-RELATED FUNCTIONS              */
 /****************************************************/
 
 /* METHOD ONE FOR CASTLING:
@@ -517,7 +553,7 @@ void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
 */
 
 
-IDQueue Board::pieceChecks(PIECE_ID ID)
+PieceChecks Board::pieceChecks(PIECE_ID ID)
 {
     // Queue for checked pieces
     IDQueue checkedPieces;
@@ -538,21 +574,21 @@ IDQueue Board::pieceChecks(PIECE_ID ID)
         moveQueue.validTakes.pop();
         checkedPieces.push(state.piecesCurr[targetPos.x][targetPos.y]->returnID());
     }
-    return checkedPieces;
+    return std::make_pair(ID, checkedPieces);
 }
 
-IDQueue Board::generateCheckedList(PIECE_COLOUR col)
+ChecksQueue Board::generateChecksList(PIECE_COLOUR col)
 {
     // Initialise return
-    IDQueue checkedQueue;
+    ChecksQueue checksQueue;
 
     // Iterate over all board positions
     for(int i = 0; i < 8; i++)
     {
         for(int j = 0; j < 8; j++)
         {
-            IDQueue tempQueue;
-
+            PieceChecks tempQueue;
+            PIECE_ID tempID;
             // Collect the current piece from state
             Piece* piecePtr = state.piecesCurr[i][j];
 
@@ -561,51 +597,51 @@ IDQueue Board::generateCheckedList(PIECE_COLOUR col)
                 continue;
             // Else, fetch the list of pieces that that piece checks
             else
-                tempQueue = pieceChecks(piecePtr->returnID());
-
-            // Empty temp queue into checkedQueue
-            while(!tempQueue.empty())
             {
-                checkedQueue.push(tempQueue.front());
-                tempQueue.pop();
-            }                
+                tempID = piecePtr->returnID();
+                tempQueue = pieceChecks(tempID);
+            }
+                
+            checksQueue.push(tempQueue);
         }
     }
-    return checkedQueue;
+    state.currentChecks = checksQueue;
+    return checksQueue;
 }
 
 bool Board::isChecked(PIECE_ID ID)
 {
-
-    /*          CODING FLAW FOUND           
-    * When iterating through all the pieces to generate their movements, I inevitably call a king.
-    * When I call a king, I run 'isChecked'.
-    * This means I generate my movement list again, and hence I create an infinite loop.
-    * 
-    * There are few workarounds:
-    * 1) I can change when 'isChecked' is called, that way I won't run into a loop
-    * 2) I can omit kings from 'isChecked', since a king can't check someone. I don't like this.
-    * 3) I can add a vector describing all the checked pieces and make sure I only iterate through it once.
-    * 
-    * How frustrating.
-    * 
-    */
 
     // Retrieve pointer of interest
     Piece* piecePtr = Piece::returnIDPtr(ID);
 
     // Fetch the list of pieces checked by the opposite colour
     PIECE_COLOUR col = (piecePtr->returnColour() == WHITE) ? BLACK : WHITE;
-    IDQueue checkedQueue = generateCheckedList(col);
+
+    // If the queue is empty, generate it
+    if(state.currentChecks.empty())
+    {
+        generateChecksList(col);
+    }
+    
+    // Iterate through the checks list
+    ChecksQueue queueToCheck = state.currentChecks;
 
     bool found = 0;
-    while(!checkedQueue.empty() && !found)
+    while(!queueToCheck.empty() && !found)
     {
-        found = (ID == checkedQueue.front()) ? 1 : 0;
-        checkedQueue.pop();
+        PieceChecks tempQueue = queueToCheck.front();
+        queueToCheck.pop();
+
+        while(!tempQueue.second.empty())
+        {
+            found = (ID == tempQueue.second.front()) ? 1 : 0;
+            tempQueue.second.pop();
+        }
     }
     return found;
 }
+
 
 bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
 {
@@ -631,4 +667,23 @@ bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
 
     // Done :)
     return !inCheck;
+}
+
+PIECE_ID Board::fetchKingID(PIECE_COLOUR col)
+{
+    bool found = 0;
+
+    for(int ID = 0; ID < Piece::returnTotalPieces(); ID++)
+    {
+        Piece* tempPiece = Piece::returnIDPtr(ID);
+        if(tempPiece == NULL)
+            continue;
+        
+        found = (tempPiece->returnDescriptor().type == KING && tempPiece->returnColour() == col) ? 1 : 0;
+        if(found)
+            return ID;
+    }
+    std::cout << "Error: No king on the board!" << std::endl;
+    return 0;
+    
 }

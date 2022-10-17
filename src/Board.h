@@ -57,11 +57,11 @@ struct BoardState {
     Piece* piecesPrev[8][8];
     ChecksQueue currentChecks;
     BOARD_FLAGS boardFlags;
-
-
+    PIECE_COLOUR currentTurn;
 
     BoardState()
     {
+        currentTurn = WHITE;
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 piecesCurr[i][j] = NULL;
@@ -69,6 +69,13 @@ struct BoardState {
             };
         };
     };
+    void clearChecksQueue()
+    {
+        while(!currentChecks.empty())
+        {
+            currentChecks.pop();
+        }
+    }
 };
 
 
@@ -108,6 +115,7 @@ class Board {
         void addPieceToState(Piece* newPiece);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         void removePiece(PIECE_ID pieceToDelete);
+        void preMoveTasks();
         void postMoveTasks();
         
         
@@ -118,10 +126,11 @@ class Board {
         void addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes);
         
         // CHECK-RELATED FUNCTIONS
-        IDQueue pieceChecks(PIECE_ID ID);
-        IDQueue generateCheckedList(PIECE_COLOUR col);
+        PieceChecks pieceChecks(PIECE_ID ID);
+        ChecksQueue generateChecksList(PIECE_COLOUR col);
         bool isChecked(PIECE_ID ID);
         bool canCastle(PIECE_ID ID, RELPOS relpos);
+        PIECE_ID fetchKingID(PIECE_COLOUR col);
 
         // FLAG RELATED FUNCTIONS
         void resetFlags() {state.boardFlags.RESET_FLAGS();};
