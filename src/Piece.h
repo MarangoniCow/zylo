@@ -76,7 +76,7 @@ class Piece
             Piece_instanceList.push_back(this); 
             flag_move = 0; 
         };
-        Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y) {
+        Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y), ID(ID_) {
             Piece_instanceList[ID_] = this;
             flag_move = 1; 
         };
