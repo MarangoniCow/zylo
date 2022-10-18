@@ -137,8 +137,7 @@ void SDL_EventManager::KeyboardEvents()
     {
         case SDLK_r:
         {
-            board->clearBoard();
-            board->initialiseBoard();
+            board->newGame();
             gameWindow->renderBoard(board->returnState());
             break;
         }
@@ -158,24 +157,17 @@ bool SDL_EventManager::checkGameplayFlags()
     // Check for promotion
     if(state.boardFlags.pawnPromotion.first)
     {
-        requestPiecePromotion(state.boardFlags);
-        board->resetFlags();
+        requestPiecePromotion();
         return 1;
     }
     return 0;
 }
 
-void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
-{
-    // Fetch necessary piece ID
-    PIECE_ID ID = boardFlags.pawnPromotion.second;
-    Piece* currentPiece = Piece::returnIDPtr(ID);
-    BoardPosition pos = currentPiece->returnPosition();
-    PIECE_COLOUR col = currentPiece->returnColour();
-    
-    // Remove the piece
-    board->removePiece(ID);
+void SDL_EventManager::requestPiecePromotion()
+{  
+    // Boolean for found
     bool found = 0;
+    PIECE_TYPE promotionType;
     
     // Start an event loop to fetch the new item.
     while(!found)
@@ -190,25 +182,25 @@ void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
                 {
                     case SDLK_q:
                     {
-                        board->addPieceToState(new Queen(col, pos.x, pos.y, ID));
+                        promotionType = QUEEN;
                         found = 1;
                         break;
                     }
                     case SDLK_k:
                     {
-                        board->addPieceToState(new Knight(col, pos.x, pos.y, ID));
+                        promotionType = KNIGHT;
                         found = 1;
                         break;
                     }
                     case SDLK_r:
                     {
-                        board->addPieceToState(new Rook(col, pos.x, pos.y, ID));
+                        promotionType = ROOK;
                         found = 1;
                         break;
                     }
                     case SDLK_b:
                     {
-                        board->addPieceToState(new Bishop(col, pos.x, pos.y, ID));
+                        promotionType = BISHOP;
                         found = 1;
                         break;
                     }
@@ -218,6 +210,7 @@ void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
             }
         }
     }
+    board->processPromotion(promotionType);
 }
 
 

@@ -15,82 +15,11 @@
 // INTERNAL INCLUDES
 #include "Piece.h"
 #include "BoardPosition.h"
+#include "BoardState.h"
 
 // EXTERNAL INCLUDES
-#include <SDL2/SDL.h>
 #include <utility>
 
-typedef std::queue<BoardPosition> PositionQueue;
-typedef std::queue<PIECE_ID> IDQueue;
-typedef std::pair<PIECE_ID, IDQueue> PieceChecks;
-typedef std::queue<PieceChecks> ChecksQueue;
-typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-
-struct BOARD_FLAGS
-{
-    PLAY_FLAG kingCheck;
-    PLAY_FLAG kingCheckmate;
-    PLAY_FLAG pawnPromotion;
-
-    BOARD_FLAGS()
-    {
-        kingCheck.first = 0;
-        kingCheck.second = 0;
-        kingCheckmate.first = 0;
-        kingCheckmate.second = 0;
-        pawnPromotion.first = 0;
-        pawnPromotion.second = 0;
-    }
-    void RESET_FLAGS()
-    {
-        kingCheck.first = 0;
-        kingCheck.second = 0;
-        kingCheckmate.first = 0;
-        kingCheckmate.second = 0;
-        pawnPromotion.first = 0;
-        pawnPromotion.second = 0;
-    }
-};
-
-struct BoardState {
-    Piece* piecesCurr[8][8];
-    Piece* piecesPrev[8][8];
-    ChecksQueue currentChecks;
-    BOARD_FLAGS boardFlags;
-    PIECE_COLOUR currentTurn;
-
-    BoardState()
-    {
-        currentTurn = WHITE;
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                piecesCurr[i][j] = NULL;
-                piecesPrev[i][j] = NULL; 
-            };
-        };
-    };
-    void clearChecksQueue()
-    {
-        while(!currentChecks.empty())
-        {
-            currentChecks.pop();
-        }
-    }
-};
-
-
-struct MovementQueue {
-    PositionQueue validMoves;
-    PositionQueue validTakes;
-    PositionQueue invalidMoves;
-    PositionQueue invalidTakes;
-
-    MovementQueue() {};
-    MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, 
-                    PositionQueue invalidMoves_, PositionQueue invalidTakes_)
-        :   validMoves(validMoves_), validTakes(validTakes_),
-            invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
-};
 
 class Board {
 
@@ -99,24 +28,25 @@ class Board {
         BoardState state;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
+        void preMoveTasks();
+        void postMoveTasks();
         void movePiece(Piece* curPiece, BoardPosition newPos);
         void takePiece(Piece* curPiece, BoardPosition newPos);
-        void removePiece(Piece* pieceToDelete);
     
     public:
         // CONSTRUCTORS
         Board() {};
+        Board(BoardState state_) : state(state_) {};
         ~Board() {};
+        void newGame() {state.initialiseBoard();};
         
         
         // STATE-RELATED FUNCTIONS
-        void initialiseBoard();
-        void clearBoard();
-        void addPieceToState(Piece* newPiece);
+        void processPromotion(PIECE_TYPE newType);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
-        void removePiece(PIECE_ID pieceToDelete);
-        void preMoveTasks();
-        void postMoveTasks();
+        
+        MovementQueue retrievePositionQueue(int i, int j);
+        
         
         
         // MOVEMENT-RELATED FUNCTIONS
@@ -128,7 +58,10 @@ class Board {
         // CHECK-RELATED FUNCTIONS
         PieceChecks pieceChecks(PIECE_ID ID);
         ChecksQueue generateChecksList(PIECE_COLOUR col);
+
+        // KING-RELATED FUNCTIONS
         bool isChecked(PIECE_ID ID);
+        bool isCheckmated(PIECE_ID ID);
         bool canCastle(PIECE_ID ID, RELPOS relpos);
         PIECE_ID fetchKingID(PIECE_COLOUR col);
 

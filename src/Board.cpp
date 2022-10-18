@@ -8,99 +8,26 @@
 
 // EXTERNAL INCLUDES
 #include <iostream>
-#include <SDL2/SDL.h>
 #include <vector>
 #include <queue>
 #include <utility>
 
 /****************************************************/
-/*                  CONSTRUCTORS                    */
-/********************************2.1*******************/
+/*              CONSTRUCTOR & ADMIN                 */
+/****************************************************/
 
-void Board::initialiseBoard()
-{
-    // Initialise all 32 pieces with correct positions
-
-    Pawn* pw1 = new Pawn(WHITE, 0, 1);
-    Pawn* pw2 = new Pawn(WHITE, 1, 1);
-    Pawn* pw3 = new Pawn(WHITE, 2, 1);
-    Pawn* pw4 = new Pawn(WHITE, 3, 1);
-    Pawn* pw5 = new Pawn(WHITE, 4, 1);
-    Pawn* pw6 = new Pawn(WHITE, 5, 1);
-    Pawn* pw7 = new Pawn(WHITE, 6, 1);
-    Pawn* pw8 = new Pawn(WHITE, 7, 1);
-
-    Pawn* pb1 = new Pawn(BLACK, 0, 6);
-    Pawn* pb2 = new Pawn(BLACK, 1, 6);
-    Pawn* pb3 = new Pawn(BLACK, 2, 6);
-    Pawn* pb4 = new Pawn(BLACK, 3, 6);
-    Pawn* pb5 = new Pawn(BLACK, 4, 6);
-    Pawn* pb6 = new Pawn(BLACK, 5, 6);
-    Pawn* pb7 = new Pawn(BLACK, 6, 6);
-    Pawn* pb8 = new Pawn(BLACK, 7, 6);
-
-    Rook* rw1 = new Rook(WHITE, 0, 0);
-    Rook* rw2 = new Rook(WHITE, 7, 0);
-    Rook* rb1 = new Rook(BLACK, 0, 7);
-    Rook* rb2 = new Rook(BLACK, 7, 7);
-
-    Knight* kw1 = new Knight(WHITE, 1, 0);
-    Knight* kw2 = new Knight(WHITE, 6, 0);
-    Knight* kb1 = new Knight(BLACK, 1, 7);
-    Knight* kb2 = new Knight(BLACK, 6, 7);
-
-    Bishop* bw1 = new Bishop(WHITE, 2, 0);
-    Bishop* bw2 = new Bishop(WHITE, 5, 0);
-    Bishop* bb1 = new Bishop(BLACK, 2, 7);
-    Bishop* bb2 = new Bishop(BLACK, 5, 7);
-
-    Queen* qw1 = new Queen(WHITE, 3, 0);
-    Queen* qb1 = new Queen(BLACK, 3, 7);
-
-    King* kiw1 = new King(WHITE, 4, 0);
-    King* kib1 = new King(BLACK, 4, 7);
-
-  
-   // Return the list of pieces from Piece, iterate over it and update BoardState accordingly.
-    std::vector<Piece*> pieceList = Piece::returnInstanceList();
-    for(auto it = pieceList.begin(); it != pieceList.end(); it++)
-    {
-        Piece* temp = *it;
-
-        if(temp != NULL)
-            state.piecesCurr[temp->returnPosition().x][temp->returnPosition().y] = temp;
-    }
-}
-void Board::clearBoard()
-{
-    for(int i = 0; i < 8; i++)
-    {
-        for(int j = 0; j < 8; j++)
-        {
-            Piece* currentPiece = state.piecesCurr[i][j];
-            if(currentPiece != NULL)
-                removePiece(currentPiece);
-        }
-    }
-}
 /****************************************************/
 /*            STATE-RELATED FUNCTIONS               */
 /****************************************************/
-void Board::addPieceToState(Piece* piece)
+void Board::processPromotion(PIECE_TYPE newType)
 {
+    // Update state
+    state.updatePiece(state.boardFlags.pawnPromotion.second, newType);
 
-    if(piece == NULL) {
-        std::cout << "Cannot add piece: nullptr" << std::endl;
-        return;
-    }
-
-    BoardPosition pos = piece->returnPosition();
-    if(pos.validPosition())
-        state.piecesCurr[pos.x][pos.y] = piece;
-    else
-        std::cout << "Cannot add piece: invalid position" << std::endl;
+    // Update promotion flags
+    state.boardFlags.pawnPromotion.first = 0;
+    state.boardFlags.pawnPromotion.second = 0;
 }
-
 bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 {
     // Determine the target piece
@@ -156,7 +83,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 }
 
 /****************************************************/
-/*           MOVEMENT-RELATED FUNCTIONS             */
+/*           MOVEMENT-RELATED FUNCTIONS (TASKS)     */
 /****************************************************/
 
 void Board::preMoveTasks()
@@ -168,9 +95,13 @@ void Board::preMoveTasks()
 void Board::postMoveTasks()
 {
     // TO DO: Re-arrange movement flags
-    state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
-}
 
+    // Set turn
+    state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
+
+    // Check if King is in check
+    PIECE_ID fetchKingID(state.currentTurn);    
+}
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {
     
@@ -235,28 +166,175 @@ void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
     {
         pieceToDelete = state.piecesCurr[newPos.x][newPos.y];
     }
-    removePiece(pieceToDelete);
+    state.removePiece(pieceToDelete);
     movePiece(currentPiece, newPos);
 
 }
 
-void Board::removePiece(Piece* pieceToDelete)
-{
-    // Get current position
-    BoardPosition pos = pieceToDelete->returnPosition();
 
-    // Update board state to null
-    state.piecesCurr[pos.x][pos.y] = NULL;
+/****************************************************/
+/*           MOVEMENT-RELATED FUNCTIONS (PUBLIC)     */
+/****************************************************/
 
-    // Delete the piece, destructor will take care of the rest
-    delete(pieceToDelete);
+
+MovementQueue Board::generateMovementRange(BoardPosition curPos) {
+
+    // Initialise local movement queue variables. Slightly lazy as I introduced MovementQueue after I created the multiple queue implementation.
+    PositionQueue moveRange;
+    MovementQueue processedQueue;
+
+    // Determine the piece in the old position
+    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
+
+    if (currentPiece == nullptr)
+        return processedQueue;
+    else if (currentPiece->returnColour() != state.currentTurn)
+        return processedQueue;
+   
+    // Generate move range
+    moveRange = currentPiece->moveRange();
+
+    // Process the movement range from the current position
+    processedQueue = processMoveRange(moveRange, curPos);
+    // Add special takes (pawn takes & enpassant)
+    addSpecialTakes(currentPiece, &processedQueue.validTakes);
+
+    // KING-CHECKED ACTIONS:=
+    // 1) Fetch the appropriate King's ID
+    // 2) Check that he's not in check
+    // 3) If he is, update the board flags
+    // 4) Place restrictions on the rest of our movement
+    PIECE_ID kingID = fetchKingID(currentPiece->returnColour());
+    if(isChecked(kingID))
+    {
+        state.boardFlags.kingCheck.first = true;
+        state.boardFlags.kingCheck.second = kingID;
+        if(currentPiece->returnID() != kingID)
+        {
+            MovementQueue emptyQueue;
+            return emptyQueue;
+        }        
+    }  
+    
+    // Add special moves (castling)
+    addSpecialMoves(currentPiece, &processedQueue.validMoves);
+
+    return processedQueue;   
 }
-
-void Board::removePiece(PIECE_ID pieceToDelete)
+void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
 {
-    removePiece(Piece::returnIDPtr(pieceToDelete));
-}
+    if(currentPiece == NULL)
+        return;
+    
+    BoardPosition curPos = currentPiece->returnPosition();
+    
 
+    // Special moves list
+    switch(currentPiece->returnDescriptor().type)
+    {
+        case KING:
+        {
+            if(!currentPiece->hasMoved())
+            {
+                
+                Piece* rookRight = state.piecesCurr[7][curPos.y];
+                Piece* rookLeft  = state.piecesCurr[0][curPos.y];              
+
+                bool rightRookConditions = (rookRight != NULL && rookRight->returnDescriptor().type == ROOK && !rookRight->hasMoved() 
+                    && rookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                bool leftRookConditions = (rookLeft != NULL && rookLeft->returnDescriptor().type == ROOK && !rookLeft->hasMoved()
+                    && rookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+
+                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
+                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
+
+                if(rookLeft == NULL || rookRight == NULL)
+                    break;
+                if (rightRookConditions && clearRight && canCastle(currentPiece->returnID(), RIGHT))
+                    validMoves->push(curPos.returnUpdate(2, 0));
+                if (leftRookConditions && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
+                    validMoves->push(curPos.returnUpdate(-2, 0));
+            }
+            break;
+        }        
+        default: {
+            break;
+        };
+    }
+}
+void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
+{
+    if(currentPiece == NULL)
+        return;
+    
+    BoardPosition curPos = currentPiece->returnPosition();
+    
+
+    // Special moves list
+    switch(currentPiece->returnDescriptor().type)
+    {
+        case PAWN:
+        {
+            // Initialise
+            PIECE_COLOUR oppositeCol;
+            int enpassantRow;
+            int forward;
+
+            if(currentPiece->returnColour() == WHITE)
+            {
+                oppositeCol = BLACK;
+                enpassantRow = 4;
+                forward = 1;               
+            }
+            else
+            {
+                oppositeCol = WHITE;
+                enpassantRow = 3;
+                forward = -1;                
+            }
+
+            // GENERATE TAKE & EN-PASSANT: For loop repeats move queue for left/right instructions
+            for(int i = -1; i <= 1; i += 2)
+            {
+                // CHECK FOR TAKE: Check if we're at the edge or not
+                if(curPos.validUpdate(i, forward))
+                {
+                    BoardPosition temp = curPos.returnUpdate(i, forward);
+                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
+                    
+                    if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
+                        validTakes->push(temp);
+                }
+
+                    // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
+                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0))
+                {
+                    Piece* targetPiece;
+                    targetPiece = state.piecesCurr[curPos.x + i][enpassantRow];
+                    if(targetPiece == NULL)
+                        continue;
+                    
+                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
+                    bool pawnAdjacent = (targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
+
+                    // Check to see if it was on the home row last move
+                    Piece* targetPiecePrev = state.piecesPrev[curPos.x + i][enpassantRow + 2*forward];
+                    if(targetPiecePrev == NULL)
+                        continue;
+
+                    bool lastOnHomeRow = ( targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
+                    
+                    if(pawnAdjacent && lastOnHomeRow)
+                        validTakes->push(curPos.returnUpdate(i, forward));
+                }
+            }
+            break;     
+        }
+        default: {
+            break;
+        };
+    };
+};
 MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition curPos)
 {
     // Helper/local variable names.
@@ -370,177 +448,6 @@ MovementQueue Board::processMoveRange(PositionQueue moveRange, BoardPosition cur
 
 }
 
-MovementQueue Board::generateMovementRange(BoardPosition curPos) {
-
-      
-    // Initialise local movement queue variables. Slightly lazy as I introduced MovementQueue after I created the multiple queue implementation.
-    PositionQueue moveRange;
-    MovementQueue processedQueue;
-
-    // Determine the piece in the old position
-    Piece* currentPiece = state.piecesCurr[curPos.x][curPos.y];
-
-    if (currentPiece == nullptr)
-        return processedQueue;
-    else if (currentPiece->returnColour() != state.currentTurn)
-        return processedQueue;
-   
-    // Generate move range
-    moveRange = currentPiece->moveRange();
-
-    // Process the movement range from the current position
-    processedQueue = processMoveRange(moveRange, curPos);
-    // Add special takes (pawn takes & enpassant)
-    addSpecialTakes(currentPiece, &processedQueue.validTakes);
-
-
-    /* POTENTIAL CODING FLAW/BUG
-    * I'm going to *assume* that the piece I've clicked on is the right colour to move.
-    * This should be fine... except I will have a coding flaw if I click on a white piece to move it
-    * then generate a movement list/fill checkedPieces/then click on a black piece. Now checkedPieces is filled
-    * (intentional) but it's filled with checks of a different colour. Could be a design flaw.
-    * */
-
-    // KING-CHECKED ACTIONS:=
-    // 1) Fetch the appropriate King's ID
-    // 2) Check that he's not in check
-    // 3) If he is, update the board flags
-    // 4) Place restrictions on the rest of our movement
-    PIECE_ID kingID = fetchKingID(currentPiece->returnColour());
-    if(isChecked(kingID))
-    {
-        state.boardFlags.kingCheck.first = true;
-        state.boardFlags.kingCheck.second = kingID;
-        if(currentPiece->returnID() != kingID)
-        {
-            MovementQueue emptyQueue;
-            return emptyQueue;
-        }        
-    }  
-    
-    // Add special moves (castling)
-    addSpecialMoves(currentPiece, &processedQueue.validMoves);
-    return processedQueue;   
-}
-
-void Board::addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves)
-{
-    if(currentPiece == NULL)
-        return;
-    
-    BoardPosition curPos = currentPiece->returnPosition();
-    
-
-    // Special moves list
-    switch(currentPiece->returnDescriptor().type)
-    {
-        case KING:
-        {
-            if(!currentPiece->hasMoved())
-            {
-                
-                Piece* rookRight = state.piecesCurr[7][curPos.y];
-                Piece* rookLeft  = state.piecesCurr[0][curPos.y];              
-
-                bool rightRookConditions = (rookRight != NULL && rookRight->returnDescriptor().type == ROOK && !rookRight->hasMoved() 
-                    && rookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-                bool leftRookConditions = (rookLeft != NULL && rookLeft->returnDescriptor().type == ROOK && !rookLeft->hasMoved()
-                    && rookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-
-                bool clearRight = (state.piecesCurr[5][curPos.y] == NULL && state.piecesCurr[6][curPos.y] == NULL) ? 1 : 0;
-                bool clearLeft  = (state.piecesCurr[3][curPos.y] == NULL && state.piecesCurr[2][curPos.y] == NULL) ? 1 : 0;
-
-                if(rookLeft == NULL || rookRight == NULL)
-                    break;
-                if (rightRookConditions && clearRight && canCastle(currentPiece->returnID(), RIGHT))
-                    validMoves->push(curPos.returnUpdate(2, 0));
-                if (leftRookConditions && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
-                    validMoves->push(curPos.returnUpdate(-2, 0));
-            }
-            break;
-        }        
-        default: {
-            break;
-        };
-    }
-}
-
-void Board::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
-{
-    if(currentPiece == NULL)
-        return;
-    
-    BoardPosition curPos = currentPiece->returnPosition();
-    
-
-    // Special moves list
-    switch(currentPiece->returnDescriptor().type)
-    {
-        case PAWN:
-        {
-            // Initialise
-            PIECE_COLOUR oppositeCol;
-            int enpassantRow;
-            int forward;
-
-            if(currentPiece->returnColour() == WHITE)
-            {
-                oppositeCol = BLACK;
-                enpassantRow = 4;
-                forward = 1;               
-            }
-            else
-            {
-                oppositeCol = WHITE;
-                enpassantRow = 3;
-                forward = -1;                
-            }
-
-            // GENERATE TAKE & EN-PASSANT: For loop repeats move queue for left/right instructions
-            for(int i = -1; i <= 1; i += 2)
-            {
-                // CHECK FOR TAKE: Check if we're at the edge or not
-                if(curPos.validUpdate(i, forward))
-                {
-                    BoardPosition temp = curPos.returnUpdate(i, forward);
-                    Piece* targetPiece = state.piecesCurr[temp.x][temp.y];
-                    
-                    if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
-                        validTakes->push(temp);
-                }
-
-                    // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
-                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0))
-                {
-                    Piece* targetPiece;
-                    targetPiece = state.piecesCurr[curPos.x + i][enpassantRow];
-                    if(targetPiece == NULL)
-                        continue;
-                    
-                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
-
-                    // Check to see if it was on the home row last move
-                    Piece* targetPiecePrev = state.piecesPrev[curPos.x + i][enpassantRow + 2*forward];
-                    if(targetPiecePrev == NULL)
-                        continue;
-
-                    bool lastOnHomeRow = ( targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
-                    
-                    if(pawnAdjacent && lastOnHomeRow)
-                        validTakes->push(curPos.returnUpdate(i, forward));
-                }
-            }
-            break;     
-        }
-        default: {
-            break;
-        };
-    };
-};
-
-
-
 
 /****************************************************/
 /*             CHECK-RELATED FUNCTIONS              */
@@ -576,7 +483,6 @@ PieceChecks Board::pieceChecks(PIECE_ID ID)
     }
     return std::make_pair(ID, checkedPieces);
 }
-
 ChecksQueue Board::generateChecksList(PIECE_COLOUR col)
 {
     // Initialise return
@@ -608,7 +514,6 @@ ChecksQueue Board::generateChecksList(PIECE_COLOUR col)
     state.currentChecks = checksQueue;
     return checksQueue;
 }
-
 bool Board::isChecked(PIECE_ID ID)
 {
 
@@ -641,8 +546,10 @@ bool Board::isChecked(PIECE_ID ID)
     }
     return found;
 }
-
-
+bool Board::isCheckmated(PIECE_ID ID)
+{
+    return 0;
+}
 bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
 {
     /* POTENTIAL CODING DESIGN FLAW */
@@ -668,7 +575,6 @@ bool Board::canCastle(PIECE_ID ID, RELPOS relpos)
     // Done :)
     return !inCheck;
 }
-
 PIECE_ID Board::fetchKingID(PIECE_COLOUR col)
 {
     bool found = 0;

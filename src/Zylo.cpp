@@ -25,7 +25,7 @@ int main () {
 
     // Initalise board and board logic
     Board board;
-    board.initialiseBoard();
+    board.newGame();
 
     // Initialise a game window and render the current state
     SDL_Board gameWindow;

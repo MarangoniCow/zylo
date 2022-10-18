@@ -44,7 +44,7 @@ class SDL_EventManager
 
         // GAMEPLAY EVENTS
         bool checkGameplayFlags();
-        void requestPiecePromotion(BOARD_FLAGS boardFlags);
+        void requestPiecePromotion();
         
 
 };
