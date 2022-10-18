@@ -190,25 +190,25 @@ void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
                 {
                     case SDLK_q:
                     {
-                        board->addPieceToState(new Queen(col, pos.x, pos.y));
+                        board->addPieceToState(new Queen(col, pos.x, pos.y, ID));
                         found = 1;
                         break;
                     }
                     case SDLK_k:
                     {
-                        board->addPieceToState(new Knight(col, pos.x, pos.y));
+                        board->addPieceToState(new Knight(col, pos.x, pos.y, ID));
                         found = 1;
                         break;
                     }
                     case SDLK_r:
                     {
-                        board->addPieceToState(new Rook(col, pos.x, pos.y));
+                        board->addPieceToState(new Rook(col, pos.x, pos.y, ID));
                         found = 1;
                         break;
                     }
                     case SDLK_b:
                     {
-                        board->addPieceToState(new Bishop(col, pos.x, pos.y));
+                        board->addPieceToState(new Bishop(col, pos.x, pos.y, ID));
                         found = 1;
                         break;
                     }

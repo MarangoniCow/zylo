@@ -75,7 +75,11 @@ class Piece
             ID = Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             flag_move = 0; 
-        };                    
+        };
+        Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y) {
+            Piece_instanceList[ID_] = this;
+            flag_move = 1; 
+        };
         virtual ~Piece() {
             Piece_count -= 1;
             Piece_instanceList[ID] = nullptr;
@@ -121,6 +125,8 @@ class Pawn : public Piece
         static PieceDescriptor descriptor; 
     public:
         Pawn(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        Pawn(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+
         ~Pawn() {};
         PositionQueue moveRange();
 };
@@ -131,6 +137,7 @@ class Rook : public Piece
         static PieceDescriptor descriptor; 
     public:
         Rook(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y){};
+        Rook(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID){};
         ~Rook() {};
         PositionQueue moveRange();
 };
@@ -141,6 +148,7 @@ class Knight : public Piece
         static PieceDescriptor descriptor; 
     public:
         Knight(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        Knight(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
         ~Knight() {};
         PositionQueue moveRange();
 };
@@ -151,6 +159,7 @@ class Bishop : public Piece
         static PieceDescriptor descriptor; 
     public:
         Bishop(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        Bishop(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
         ~Bishop() {};
         PositionQueue moveRange();
 };
@@ -161,6 +170,7 @@ class Queen : public Piece
         static PieceDescriptor descriptor; 
     public:
         Queen(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        Queen(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
         ~Queen() {};
         PositionQueue moveRange();
 };
@@ -171,6 +181,7 @@ class King : public Piece
         static PieceDescriptor descriptor; 
     public:
         King(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
+        King(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
         ~King() {};
         PositionQueue moveRange();
 };
