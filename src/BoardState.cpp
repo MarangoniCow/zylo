@@ -3,16 +3,13 @@
  ***********************************************************/
 // INTERNAL INCLUDES
 #include "BoardState.h"
-#include "Board.h"
 #include "Piece.h"
 
 // EXTERNAL INCLUDES
 #include <iostream>
 #include <queue>
-#include <utility>
 
-
-
+/***************** INITIALISATION METHODS *****************/
 void BoardState::initialiseBoard()
 {
     // Make sure board is clear
@@ -66,27 +63,12 @@ void BoardState::initialiseBoard()
         Piece* temp = *it;
 
         if(temp != NULL)
-            piecesCurr[temp->returnPosition().x][temp->returnPosition().y] = temp;
+            current[temp->returnPosition().x][temp->returnPosition().y] = temp;
     }
 }
-void BoardState::clearBoard()
-{
-    for(int i = 0; i < 8; i++)
-    {
-        for(int j = 0; j < 8; j++)
-        {
-            Piece* currentPiece = piecesCurr[i][j];
-            if(currentPiece != NULL)
-                removePiece(currentPiece);
-        }
-    }
-}
-void BoardState::clearChecksQueue()
-{
-    while(!currentChecks.empty())
-        currentChecks.pop();
-}
-void BoardState::updatePiece(PIECE_ID ID, PIECE_TYPE newType)
+
+/******************** UPDATE METHODS **********************/
+void BoardState::promotePiece(PIECE_ID ID, PIECE_TYPE newType)
 {
     Piece* currentPiece = Piece::returnIDPtr(ID);
     PIECE_COLOUR col = currentPiece->returnColour();
@@ -127,10 +109,23 @@ void BoardState::updatePiece(PIECE_ID ID, PIECE_TYPE newType)
         }
         default:
         {break;};
-    }
-    
-    
+    }  
 }
+
+/****************** MAINTAINENCE METHODS ******************/
+void BoardState::clearBoard()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            Piece* currentPiece = current[i][j];
+            if(currentPiece != NULL)
+                removePiece(currentPiece);
+        }
+    }
+}
+
 void BoardState::addPiece(Piece* piece)
 {
 
@@ -141,17 +136,20 @@ void BoardState::addPiece(Piece* piece)
 
     BoardPosition pos = piece->returnPosition();
     if(pos.validPosition())
-        piecesCurr[pos.x][pos.y] = piece;
+        current[pos.x][pos.y] = piece;
     else
         std::cout << "Cannot add piece: invalid position" << std::endl;
 }
+
 void BoardState::removePiece(Piece* pieceToDelete)
 {
+    if(!pieceExists(pieceToDelete))
+        return;
     // Get current position
     BoardPosition pos = pieceToDelete->returnPosition();
 
     // Update board state to null
-    piecesCurr[pos.x][pos.y] = NULL;
+    current[pos.x][pos.y] = NULL;
 
     // Delete the piece, destructor will take care of the rest
     delete(pieceToDelete);
@@ -160,3 +158,37 @@ void BoardState::removePiece(PIECE_ID pieceToDelete)
 {
     removePiece(Piece::returnIDPtr(pieceToDelete));
 }
+
+/********************** RETURNS ***************************/
+bool BoardState::pieceExists(Piece* piece) {
+    return (piece != NULL);
+}
+bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col) {
+    return (pieceExists(piece) && piece->returnColour() == col);
+}
+bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) {
+    return (pieceExists(piece, col) && piece->returnDescriptor().type == type);
+}
+
+bool BoardState::pieceExists(BoardPosition pos) {
+    return (current[pos.x][pos.y] != NULL);
+}
+bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) {
+    return pieceExists(pos) && current[pos.x][pos.y]->returnColour() == col;
+}
+bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) {
+    return (pieceExists(pos, col) && current[pos.x][pos.y]->returnDescriptor().type == type);
+}
+PieceQueue BoardState::returnColPieces(PIECE_COLOUR col)
+{
+    PieceQueue pieceQueue;
+    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
+
+    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
+        Piece* piece = *it;
+        if(pieceExists(piece, col)) pieceQueue.push(piece);
+    }
+
+    return pieceQueue;
+}
+
