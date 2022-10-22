@@ -57,44 +57,60 @@ void SDL_EventManager::RunGame() {
 /*                  MOUSE EVENTS                    */
 /****************************************************/
 
-
 void SDL_EventManager::MouseEvents()
 {
-    CLICK_TYPE click = ProcessClick();
+    CLICK_TYPE click = processWindowClick();
 
     if (click == BOARD)
     {
-        MovementEvents();
+        BoardEvents();
     }
     else
     {
-        // Nothing else yet
+        // Nothing else yet, space here for any other functions
     }      
 }
 
-void SDL_EventManager::MovementEvents()
+void SDL_EventManager::BoardEvents()
 {
 
-    // Check for previous board coordinates
-    if(prevPos.validPosition()) {
-        
-        // Process a click and update the board
-        board->processUpdate(prevPos, curPos);
-        gameWindow->renderBoard(board->returnState());
-        
-        // Reset the click location
-        curPos.ResetPosition();
-        prevPos.ResetPosition();
-    }
-    else
+    BOARD_EVENT ev_board = manager->processBoardClick(prevPos, curPos);
+    switch(ev_board)
     {
-        // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
-        MovementQueue moveQueue = board->returnMovementQueue(curPos);
-        gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
-    }    
+        case OVERLAY:
+        {
+            MovementQueue moveQueue = board->returnMovementQueue(curPos);
+            gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
+            break;
+        }
+        case PROMOTION:
+        {
+            requestPiecePromotion();
+            gameWindow->renderBoard(board->returnState());
+            break;
+        }
+        case INVALID:
+        {
+            curPos.ResetPosition();
+            prevPos.ResetPosition();
+            gameWindow->renderBoard(board->returnState());
+            break;
+        }
+        case MOVE:
+        {
+            gameWindow->renderBoard(board->returnState());
+            // Reset the click location
+            curPos.ResetPosition();
+            prevPos.ResetPosition();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
-CLICK_TYPE SDL_EventManager::ProcessClick()
+CLICK_TYPE SDL_EventManager::processWindowClick()
 {
     BoardPosition clickPos;  
     // Fetch screen coordinates and translate into board coordinates

@@ -17,8 +17,7 @@
 #include <utility>
 
 typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-typedef std::queue<PIECE_ID> IDQueue;
-typedef std::pair<PIECE_ID, IDQueue> PieceChecks;
+typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
 typedef std::queue<PieceChecks> ChecksQueue;
 
 struct MovementQueue {
@@ -46,13 +45,16 @@ class BoardMoves {
         PLAY_FLAG kingCheck;
         PLAY_FLAG kingCheckmate;
         MovementQueue movementState[8][8];
+        PieceChecks checksState[8][8];
+        ChecksQueue opponentChecks;
+        ChecksQueue friendlyChecks;
 
         // Private methods: Resets
         void resetFlags();
         void resetMoves();
         // Private methods: Special moves/takes
         void addSpecialTakes(Piece* piece, PositionQueue* validTakes);
-        void addSpecialMoves(Piece* piece, PositionQueue* validMoves);
+        void addSpecialMoves(Piece* piece);
 
 
     public:
@@ -67,6 +69,7 @@ class BoardMoves {
         void processState();
         void generateMovementRange(Piece* piece);
         MovementQueue processMoveRange(Piece* piece, PositionQueue moveRange);
+        void refineMovementRange(PIECE_COLOUR col);
 
 
 
@@ -74,15 +77,16 @@ class BoardMoves {
 
         // Check related functions
         // KING-RELATED FUNCTIONS
-        bool isChecked(PIECE_ID ID);
+        bool isChecked(PIECE_ID ID, ChecksQueue checksQueue);
         bool isCheckmated(PIECE_ID ID);
         bool canCastle(PIECE_ID ID, RELPOS relpos);
-        PIECE_ID fetchKingID(PIECE_COLOUR col);
+        Piece* fetchKing(PIECE_COLOUR col);
 
         // CHECK-RELATED FUNCTIONS
         PieceChecks pieceChecks(Piece* piece);
-        PieceChecks pieceChecks(PIECE_ID ID);
+        PieceChecks pieceChecks(Piece* piece, ChecksQueue* checksQueue);
         ChecksQueue generateChecksList(PIECE_COLOUR col);
+        
         
         // Returns
         MovementQueue returnMovementQueue(BoardPosition pos);

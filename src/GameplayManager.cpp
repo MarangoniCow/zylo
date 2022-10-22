@@ -1,6 +1,6 @@
 /***********************************************************
  *              GAMEPLAYMANAGER IMPLEMENTATION
-  ***********************************************************/
+ ***********************************************************/
 
 // INTERNAL INCLUDES
 #include "GameplayManager.h"
@@ -8,33 +8,47 @@
 // EXTERNAL INCLUDES
 #include <iostream>
 
-// GameplayManager::GameplayManager()
-// {
-//     // Do stuff
-// }
+// The heck is wrong with identations on this file and this file only? They seem to be half the size, it's extremely annoying!
 
-// GameplayManager::~GameplayManager()
-// {
-//     // Do other stuff
-// }
-
-bool GameplayManager::processClick(BoardPosition curPos, BoardPosition newPos)
+BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPosition newPos)
 {
-    // 1) Check if the move is valid
-    // bool Board::validMovement(move)
+    
 
-    // 2) If it's a valid move, send the current state to history
-    // addToHistory(board.returnState());
-
-    // 3) Ask board to update the move internally
-    // board.processUpdate(curPos, newPos);
-
-    // 4) Check for flags (could be passed straight on)
-
-    // 5) Allow Zylo to start processing moves (ideally, multithreaded so that movements can be displayed)
-    // Zylo::generateSuggestedMove(board.returnState())
+    // If nothing exists in the new position, return overlay of old position
+    if (newPos.validPosition() && !curPos.validPosition())
+    {
+        
 
 
+        if(board->returnState().pieceExists(newPos, board->returnTurn()))
+        {
+            BOARD_FLAGS boardFlags = board->returnBoardFlags();
+            if(board->returnState().returnPiece(newPos)->returnID() == boardFlags.kingCheck.second)
+                return INVALID;
+            else
+                return OVERLAY;
+        }
+        else
+            return INVALID;
+            
+    }
+    // Check for piece of the correct colour, can also throw in other checks here if necessary
+    else if(board->returnState().pieceExists(curPos, board->returnTurn())) {
+        
+        // processUpdate returns 0 if no move was made.
+        if(!board->processUpdate(curPos, newPos))
+            return INVALID;
 
-    return 0;
+        // Check flags
+        BOARD_FLAGS flags = board->returnBoardFlags();
+        if(flags.pawnPromotion.first == 1)
+            return PROMOTION;
+        else if (flags.kingCheckmate.first == 1)
+            return CHECKMATE;
+        else
+            return MOVE;
+    }
+    else
+        return DEFAULT;
 }
+

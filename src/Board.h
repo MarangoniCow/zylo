@@ -21,6 +21,8 @@
 // EXTERNAL INCLUDES
 #include <utility>
 
+
+
 struct BOARD_FLAGS
 {
     PLAY_FLAG kingCheck;
@@ -62,17 +64,17 @@ class Board {
         Board() {newGame();};
         Board(BoardState state_) : state(state_) {};
         ~Board() {state.clearBoard();};
-        void newGame() {state.initialiseBoard();};        
+        void newGame();    
 
         // STATE-RELATED FUNCTIONS
-        void processState();
         void processPromotion(PIECE_TYPE newType);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         
         // RETURNS
         BoardState returnState() {return state;};   
         MovementQueue returnMovementQueue(BoardPosition pos);
-        BOARD_FLAGS returnBoardFlags() {return boardFlags;}; 
+        BOARD_FLAGS returnBoardFlags() {return boardFlags;};
+        PIECE_COLOUR returnTurn() {return state.currentTurn;};
         // PositionQueue returnPositionQueue(BoardPosition pos);
         
 };

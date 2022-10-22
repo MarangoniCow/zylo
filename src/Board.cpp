@@ -16,9 +16,19 @@
 /*              CONSTRUCTOR & ADMIN                 */
 /****************************************************/
 
+void Board::newGame()
+{
+    state.initialiseBoard();
+    boardMoves.changeState(&state);
+    boardMoves.processState();
+}
+
+
 /****************************************************/
 /*            STATE-RELATED FUNCTIONS               */
 /****************************************************/
+
+
 bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 {
     // Fetch movement queue for current position
@@ -90,7 +100,10 @@ void Board::processPromotion(PIECE_TYPE newType)
 void Board::preMoveTasks()
 {}
 void Board::postMoveTasks()
-{}
+{
+    state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
+    boardMoves.processState();
+}
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {

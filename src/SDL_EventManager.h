@@ -10,6 +10,7 @@
 // INTERNAL DEPENDENCIES
 #include "SDL_Board.h"
 #include "BoardPosition.h"
+#include "GameplayManager.h"
 
 enum CLICK_TYPE {
     BOARD, OTHER
@@ -20,25 +21,31 @@ class SDL_EventManager
     private:
         bool isRunning;
 
+        SDL_Board* gameWindow;
+        GameplayManager* manager;
+        Board* board;
+
         SDL_Event ev_cur;
         SDL_Event ev_prev;
 
-        SDL_Board* gameWindow;
-        Board* board;
-        GameplayManager* manager;
-
         BoardPosition curPos;
         BoardPosition prevPos;
+
+        
+
+       
         
 
     public:
-        SDL_EventManager(SDL_Board* gameWindow_, GameplayManager* manager_) : gameWindow(gameWindow_), manager(manager_) {};
+        SDL_EventManager(SDL_Board* gameWindow_, GameplayManager* manager_) : gameWindow(gameWindow_), manager(manager_) {
+            board = manager->gameBoard();
+        };
         void RunGame();
         
         // MOUSE EVENTS
         void MouseEvents();
-        void MovementEvents();
-        CLICK_TYPE ProcessClick();
+        void BoardEvents();
+        CLICK_TYPE processWindowClick();
         
         // KEYBOARD EVENTS
         void KeyboardEvents();

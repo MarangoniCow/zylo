@@ -15,6 +15,11 @@
 // #include "BoardHistory.h"
 
 // EXTERNAL INCLUDES
+enum BOARD_EVENT
+{
+    DEFAULT, MOVE, INVALID, OVERLAY, PROMOTION, CHECKMATE
+};
+
 
 
 class GameplayManager
@@ -22,12 +27,15 @@ class GameplayManager
     private:
         PLAY_FLAG* pawnPromotion;
         Board* board;
+        PIECE_COLOUR currentTurn;
 
     public:
         // CONSTRUCTORS 
-        GameplayManager(Board* board_) : board(board_) {};
-        ~GameplayManager();
+        GameplayManager(Board* board_) : board(board_) {
+            board->newGame();
+        };
 
-        bool processClick(BoardPosition curPos, BoardPosition newPos);
+        BOARD_EVENT processBoardClick(BoardPosition curPos, BoardPosition newPos);
         Board* gameBoard() {return board;};
+        void newGame();
 };

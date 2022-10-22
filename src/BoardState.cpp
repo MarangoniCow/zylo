@@ -15,9 +15,8 @@ void BoardState::initialiseBoard()
     // Make sure board is clear
     clearBoard();
     // Initialise all 32 pieces with correct positions
-
-    Pawn* pw1 = new Pawn(WHITE, 0, 1);
     Pawn* pw2 = new Pawn(WHITE, 1, 1);
+    Pawn* pw1 = new Pawn(WHITE, 0, 1);
     Pawn* pw3 = new Pawn(WHITE, 2, 1);
     Pawn* pw4 = new Pawn(WHITE, 3, 1);
     Pawn* pw5 = new Pawn(WHITE, 4, 1);
@@ -201,5 +200,9 @@ PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
     }
 
     return pieceQueue;
+}
+Piece* BoardState::returnPiece(BoardPosition pos)
+{
+    return current[pos.x][pos.y];
 }
 

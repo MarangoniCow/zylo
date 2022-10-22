@@ -56,6 +56,8 @@ struct BoardState {
     bool pieceExists(BoardPosition pos);
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col);
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type);
+    
+    Piece* returnPiece(BoardPosition pos);
     PieceQueue returnPieceQueue();
     PieceQueue returnPieceQueue(PIECE_COLOUR col);
     
