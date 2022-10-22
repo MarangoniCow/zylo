@@ -16,9 +16,31 @@
 #include "Piece.h"
 #include "BoardPosition.h"
 #include "BoardState.h"
+#include "BoardMoves.h"
 
 // EXTERNAL INCLUDES
 #include <utility>
+
+struct BOARD_FLAGS
+{
+    PLAY_FLAG kingCheck;
+    PLAY_FLAG kingCheckmate;
+    PLAY_FLAG pawnPromotion;
+
+    BOARD_FLAGS()
+    {
+        RESET_FLAGS();
+    }
+    void RESET_FLAGS()
+    {
+        kingCheck.first = 0;
+        kingCheck.second = UINT16_MAX;
+        kingCheckmate.first = 0;
+        kingCheckmate.second = UINT16_MAX;
+        pawnPromotion.first = 0;
+        pawnPromotion.second = UINT16_MAX;
+    }
+};
 
 
 class Board {
@@ -26,6 +48,8 @@ class Board {
     protected:
         // MEMBER VARIABLES
         BoardState state;
+        BoardMoves boardMoves;
+        BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
         void preMoveTasks();
@@ -35,41 +59,20 @@ class Board {
     
     public:
         // CONSTRUCTORS
-        Board() {};
+        Board() {newGame();};
         Board(BoardState state_) : state(state_) {};
-        ~Board() {};
-        void newGame() {state.initialiseBoard();};
-        
-        
+        ~Board() {state.clearBoard();};
+        void newGame() {state.initialiseBoard();};        
+
         // STATE-RELATED FUNCTIONS
+        void processState();
         void processPromotion(PIECE_TYPE newType);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         
-        MovementQueue retrievePositionQueue(int i, int j);
-        
-        
-        
-        // MOVEMENT-RELATED FUNCTIONS
-        MovementQueue generateMovementRange(BoardPosition oldPos);
-        MovementQueue processMoveRange(PositionQueue moveRange, BoardPosition curPiecePos);
-        void addSpecialMoves(Piece* currentPiece, PositionQueue* validMoves);
-        void addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes);
-        
-        // CHECK-RELATED FUNCTIONS
-        PieceChecks pieceChecks(PIECE_ID ID);
-        ChecksQueue generateChecksList(PIECE_COLOUR col);
-
-        // KING-RELATED FUNCTIONS
-        bool isChecked(PIECE_ID ID);
-        bool isCheckmated(PIECE_ID ID);
-        bool canCastle(PIECE_ID ID, RELPOS relpos);
-        PIECE_ID fetchKingID(PIECE_COLOUR col);
-
-        // FLAG RELATED FUNCTIONS
-        void resetFlags() {state.boardFlags.RESET_FLAGS();};
-
         // RETURNS
         BoardState returnState() {return state;};   
-        
+        MovementQueue returnMovementQueue(BoardPosition pos);
+        BOARD_FLAGS returnBoardFlags() {return boardFlags;}; 
+        // PositionQueue returnPositionQueue(BoardPosition pos);
         
 };

@@ -12,7 +12,7 @@
 // INTERNAL DEPENDENCIES
 #include "SDL_EventManager.h"
 #include "SDL_Board.h"
-#include "Board.h"
+#include "GameplayManager.h"
 
 
 
@@ -27,6 +27,9 @@ int main () {
     Board board;
     board.newGame();
 
+    // Initialise gameplay manager
+    GameplayManager manager(&board);
+
     // Initialise a game window and render the current state
     SDL_Board gameWindow;
     gameWindow.renderBoard(board.returnState());
@@ -35,7 +38,7 @@ int main () {
     
     
 
-    SDL_EventManager zylo(&gameWindow, &board);
+    SDL_EventManager zylo(&gameWindow, &manager);
     zylo.RunGame();
     
 

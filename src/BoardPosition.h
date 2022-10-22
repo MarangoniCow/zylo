@@ -15,6 +15,12 @@
 
 #pragma once
 
+// INTERNAL INCLUDES
+
+// EXTERNAL INCLUDES
+#include <queue>
+#include <utility>
+
 
 
 enum RELPOS
@@ -124,5 +130,19 @@ struct BoardPosition
             return DIAGONALLEFT;
         else
             return OUTOFLINE;
+    }
+    static std::queue<BoardPosition> returnPositionQueue()
+    {
+        std::queue<BoardPosition> allPositions;
+        BoardPosition temp;
+        for(int i = 0; i < 8; i++)
+        {
+            for(int j = 0; j < 8; j++)
+            {
+                temp.x = i; temp.y = j;
+                allPositions.push(temp);
+            }
+        }
+        return allPositions;
     }
 };

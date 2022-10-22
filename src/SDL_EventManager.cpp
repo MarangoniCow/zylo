@@ -8,6 +8,7 @@
 #include "BoardPosition.h"
 #include "Board.h"
 #include "Piece.h"
+#include "GameplayManager.h"
 
 
 // EXTERNAL DEPENDENCIES
@@ -39,12 +40,6 @@ void SDL_EventManager::RunGame() {
                 isRunning = false;
                 continue;
             }
-            else if(checkGameplayFlags())
-            {
-                gameWindow->renderBoard(board->returnState());
-                continue;
-            }
-
             if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
                 MouseEvents();          
             }
@@ -94,7 +89,7 @@ void SDL_EventManager::MovementEvents()
     else
     {
         // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
-        MovementQueue moveQueue = board->generateMovementRange(curPos);
+        MovementQueue moveQueue = board->returnMovementQueue(curPos);
         gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
     }    
 }
@@ -137,8 +132,8 @@ void SDL_EventManager::KeyboardEvents()
     {
         case SDLK_r:
         {
-            board->newGame();
-            gameWindow->renderBoard(board->returnState());
+            manager->gameBoard()->newGame();
+            gameWindow->renderBoard( manager->gameBoard()->returnState());
             break;
         }
         default:
@@ -152,10 +147,10 @@ void SDL_EventManager::KeyboardEvents()
 
 bool SDL_EventManager::checkGameplayFlags()
 {
-    BoardState state = board->returnState();
+    BOARD_FLAGS boardFlags = board->returnBoardFlags();
 
     // Check for promotion
-    if(state.boardFlags.pawnPromotion.first)
+    if(boardFlags.pawnPromotion.first)
     {
         requestPiecePromotion();
         return 1;

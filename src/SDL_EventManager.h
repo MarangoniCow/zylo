@@ -25,13 +25,14 @@ class SDL_EventManager
 
         SDL_Board* gameWindow;
         Board* board;
+        GameplayManager* manager;
 
         BoardPosition curPos;
         BoardPosition prevPos;
         
 
     public:
-        SDL_EventManager(SDL_Board* gameWindow_, Board* board_) : gameWindow(gameWindow_), board(board_) {};
+        SDL_EventManager(SDL_Board* gameWindow_, GameplayManager* manager_) : gameWindow(gameWindow_), manager(manager_) {};
         void RunGame();
         
         // MOUSE EVENTS

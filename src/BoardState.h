@@ -16,6 +16,7 @@
 // EXTERNAL INCLUDES
 #include <utility>
 
+typedef std::queue<BoardPosition> PositionQueue;
 typedef std::queue<Piece*> PieceQueue;
 
 struct BoardState {
@@ -55,7 +56,8 @@ struct BoardState {
     bool pieceExists(BoardPosition pos);
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col);
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type);
-    PieceQueue returnColPieces(PIECE_COLOUR col);
+    PieceQueue returnPieceQueue();
+    PieceQueue returnPieceQueue(PIECE_COLOUR col);
     
 };
 

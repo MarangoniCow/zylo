@@ -10,7 +10,9 @@
 #pragma once
 
 // INTERNAL INCLUDES
-#include "Piece.h"
+#include "Board.h"
+// #include "Zylo.h"
+// #include "BoardHistory.h"
 
 // EXTERNAL INCLUDES
 
@@ -18,13 +20,14 @@
 class GameplayManager
 {
     private:
-        PIECE_COLOUR currentTurn;
+        PLAY_FLAG* pawnPromotion;
+        Board* board;
 
     public:
         // CONSTRUCTORS 
-        GameplayManager();
+        GameplayManager(Board* board_) : board(board_) {};
         ~GameplayManager();
 
-
-
+        bool processClick(BoardPosition curPos, BoardPosition newPos);
+        Board* gameBoard() {return board;};
 };

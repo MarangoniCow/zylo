@@ -179,7 +179,18 @@ bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) {
 bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) {
     return (pieceExists(pos, col) && current[pos.x][pos.y]->returnDescriptor().type == type);
 }
-PieceQueue BoardState::returnColPieces(PIECE_COLOUR col)
+PieceQueue BoardState::returnPieceQueue()
+{
+    PieceQueue pieceQueue;
+    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
+
+    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
+        Piece* piece = *it;
+        if(pieceExists(piece)) pieceQueue.push(piece);
+    }
+    return pieceQueue;
+}
+PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
 {
     PieceQueue pieceQueue;
     std::vector<Piece*> pieceVector = Piece::returnInstanceList();

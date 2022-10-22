@@ -56,6 +56,8 @@ class Piece
     protected:
         // STATIC MEMBERS FOR GLOBAL FUNCTIONALITY
         static std::vector<Piece*> Piece_instanceList;          // Global ID list
+        static std::vector<Piece*> whitePieces;
+        static std::vector<Piece*> blackPieces;
         static int Piece_count;                                 // Global piece count
 
         // CLASS SPECFIC FUNCTIONALITY
@@ -63,20 +65,22 @@ class Piece
 
         // INSTANCE SPECIFIC FUNCTIONALITY
         PIECE_ID ID;                                           // Unique Piece ID
-        const PIECE_COLOUR col;                                 // Enumerated colour
+        PIECE_COLOUR col;                                 // Enumerated colour
+        PIECE_TYPE type;
         BoardPosition pos;                                     // Current position
         bool flag_move;                                         // Movement flag
 
 
         
     public:
-        Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
+        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
+            // Assert global methodology
             Piece_count += 1;
             ID = Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             flag_move = 0; 
         };
-        Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y), ID(ID_) {
+        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y), ID(ID_) {
             Piece_instanceList[ID_] = this;
             flag_move = 1; 
         };
