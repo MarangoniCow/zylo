@@ -5,6 +5,7 @@
 // INTERNAL INCLUDES
 #include "SDL_Pieces.h"
 #include "Piece.h"
+#include "functions.h"
 
 // EXTERNAL INCLUDES
 #include <SDL2/SDL.h>
@@ -68,35 +69,41 @@ std::string SDL_Pieces::returnBMPPath(PIECE_TYPE type, PIECE_COLOUR col)
 {
     std::string colour = (col == WHITE) ? "white" : "black";
     std::string relPath;
+	std::string folder = "./res";
+
+	if (!path_isFolder(folder))
+		{
+		folder = "../res";
+		}
 
     switch(type)
     {
         case PAWN: {
-            relPath = "./res/pawn_";
+            relPath = "pawn_";
             break;
         }
         case ROOK: {
-            relPath = "./res/rook_";
+            relPath = "rook_";
             break;
         }
         case KNIGHT: {
-            relPath = "./res/knight_";
+            relPath = "knight_";
             break;
         }
         case BISHOP: {
-            relPath = "./res/bishop_";
+            relPath = "bishop_";
             break;
         }
         case QUEEN: {
-            relPath = "./res/queen_";
+            relPath = "queen_";
             break;
         }
         case KING: {
-            relPath = "./res/king_";
+            relPath = "king_";
             break;
 
         }
         default: {};
     }
-    return relPath + colour + ".bmp";
+    return folder + "/" + relPath + colour + ".bmp";
 }

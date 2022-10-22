@@ -72,7 +72,7 @@ class Piece
     public:
         Piece(const PieceDescriptor& descriptor_, const PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
             Piece_count += 1;
-            ID = Piece_instanceList.size();
+            ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             flag_move = 0; 
         };                    
