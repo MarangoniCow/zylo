@@ -2,11 +2,10 @@
  *                      BOARD.h
  * 
  *  Handles all board logic:
- *      - Keeping track of board state
- *      - Moving pieces in board state
- *      - Telling SDL_Board to update screen #### POSSIBLY NOT THE BEST PLACE FOR THIS
- * 
- * 
+ *      - Link together BoardState and BoardMoves
+ *      - Process updates to state if they're valid
+ *      - Coallates board flags
+ *      - Introduce management functions like newGame and processPromotion
  * 
  ***********************************************************/
 
@@ -21,6 +20,7 @@
 // EXTERNAL INCLUDES
 #include <utility>
 
+typedef std::pair<BoardPosition, BoardPosition> Move;
 
 
 struct BOARD_FLAGS
@@ -51,30 +51,32 @@ class Board {
         // MEMBER VARIABLES
         BoardState state;
         BoardMoves boardMoves;
+        Move lastMove;
         BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
-        void preMoveTasks();
+        void preMoveTasks(BoardPosition curPos, BoardPosition tarPos);
         void postMoveTasks();
         void movePiece(Piece* curPiece, BoardPosition newPos);
         void takePiece(Piece* curPiece, BoardPosition newPos);
     
     public:
-        // CONSTRUCTORS
+        // CONSTRUCTORS & ADMIN
         Board() {newGame();};
-        Board(BoardState state_) : state(state_) {};
+        Board(BoardState state_);
         ~Board() {state.clearBoard();};
-        void newGame();    
+        void newGame();
+        void newState(BoardState state_);
 
         // STATE-RELATED FUNCTIONS
-        void processPromotion(PIECE_TYPE newType);
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
+        void processPromotion(PIECE_TYPE newType);
         
         // RETURNS
-        BoardState returnState() {return state;};   
-        MovementQueue returnMovementQueue(BoardPosition pos);
-        BOARD_FLAGS returnBoardFlags() {return boardFlags;};
-        PIECE_COLOUR returnTurn() {return state.currentTurn;};
-        // PositionQueue returnPositionQueue(BoardPosition pos);
+        BoardState      returnState()   {return state;};   
+        MovementQueue   returnMovementQueue (BoardPosition pos);
+        BOARD_FLAGS     returnBoardFlags()  {return boardFlags;};
+        PIECE_COLOUR    returnTurn()    {return state.currentTurn;};
+        Move            returnLastMove()    {return lastMove;}
         
 };

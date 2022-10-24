@@ -19,9 +19,22 @@
 // TEMP
 #include "Piece.h"
 
+
+typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
+typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
+typedef std::queue<PieceChecks> ChecksQueue;
+typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
+typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
+
+
+
 int main () {
 
     std::cout << "Welcome to Zylo!" << std::endl;
+
+    BoardPosition pos(6, 1);
+    while(pos.validPosition())
+        pos = pos.increment(RIGHT);
 
     // Initalise board and board logic
     Board board;

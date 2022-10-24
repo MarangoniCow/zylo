@@ -15,6 +15,35 @@
 
 
 /****************************************************/
+/*                  HELPER FUNCTIONS                */
+/****************************************************/
+
+template <typename T>
+std::vector<T> queueToVector(std::queue<T> queueToConvert)
+{
+    std::vector<T> returnVector;
+    while(!queueToConvert.empty())
+    {
+        returnVector.push_back(queueToConvert.front());
+        queueToConvert.pop();
+    }
+    return returnVector;
+}
+
+template <typename T>
+std::queue<T> vectorToQueue(std::vector<T> vectorToConvert)
+{
+    std::queue<T> returnQueue;
+    for(auto it = vectorToConvert.begin(); it != vectorToConvert.end(); it++)
+        returnQueue.push(*it);
+    return returnQueue;
+}
+
+
+
+
+
+/****************************************************/
 /*              CONSTRUCTOR & ADMIN                 */
 /****************************************************/
 BoardMoves::BoardMoves()
@@ -35,8 +64,6 @@ void BoardMoves::resetFlags()
     kingCheckmate.first = 0;
     kingCheckmate.second = 0;
 }
-
-
 
 void BoardMoves::processState()
 {
@@ -65,12 +92,12 @@ void BoardMoves::processState()
     {
         kingCheck.first = 1;
         kingCheck.second = kingPtr->returnID();
-        refineMovementRange(currentTurn);
     }
     else
     {
         addSpecialMoves(kingPtr);
     }
+    refineMovementRange(currentTurn);
 }
 
 
@@ -111,6 +138,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
     PositionQueue validTakes;
     PositionQueue invalidMoves;
     PositionQueue invalidTakes;
+    SightedQueue sightedQueue;
 
     // Fetch current values
     BoardPosition pos = piece->returnPosition();
@@ -172,6 +200,8 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
                 invalidTakes.push(tarPos);
             else
                 invalidMoves.push(tarPos);
+
+            sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
 
             continue;
         }
@@ -331,64 +361,6 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     };
 };
 
-void BoardMoves::refineMovementRange(PIECE_COLOUR col)
-{
-    Piece* piece = fetchKing(col);
-    BoardPosition pos = piece->returnPosition();
-    PositionQueue validMoves = movementState[pos.x][pos.y].validMoves;
-
-    // Populate a vector with current moves
-    std::vector<BoardPosition> pieceMoves;
-    while(!validMoves.empty())
-    {
-        pieceMoves.push_back(validMoves.front());
-        validMoves.pop();
-    }
-
-    // Iterate through all the pieces of the opposing colour
-    PieceQueue opponentPieces = statePtr->returnPieceQueue(col);
-    while(!opponentPieces.empty())
-    {
-        BoardPosition temp = opponentPieces.front()->returnPosition();
-        PositionQueue opponentMoves = movementState[pos.x][pos.y].validMoves;
-        opponentPieces.pop();
-
-        while(!opponentMoves.empty())
-        {
-            for(auto it = pieceMoves.begin(); it != pieceMoves.end(); it++)
-            {
-                if(*it == opponentMoves.front())
-                {
-                    pieceMoves.erase(it);
-                    break;
-                }
-            }
-            opponentMoves.pop();
-        }        
-    }
-
-    // Populate the valid moves queue back up
-    for(auto it = pieceMoves.begin(); it != pieceMoves.end(); it++)
-    {
-        validMoves.push(*it);
-    }
-    movementState[pos.x][pos.y].validMoves = validMoves;
-}
-
-/****************************************************/
-/*                      RETURNS                     */
-/****************************************************/
-
-MovementQueue BoardMoves::returnMovementQueue(BoardPosition pos)
-{
-    return movementState[pos.x][pos.y];
-}
-
-
-
-/****************************************************/
-/*           MOVEMENT-RELATED FUNCTIONS (PUBLIC)     */
-/****************************************************/
 
 
 
@@ -396,11 +368,6 @@ MovementQueue BoardMoves::returnMovementQueue(BoardPosition pos)
 /*             CHECK-RELATED FUNCTIONS              */
 /****************************************************/
 
-/* METHOD ONE FOR CASTLING:
-* 1) Generate the movement queues of ALL pieces
-* 2) Check if the king is being checked by anything
-* 3) Add as conditional
-*/
 
 ChecksQueue BoardMoves::generateChecksList(PIECE_COLOUR col)
 {
@@ -416,8 +383,6 @@ ChecksQueue BoardMoves::generateChecksList(PIECE_COLOUR col)
     
     return checksQueue;
 }
-
-
 PieceChecks BoardMoves::pieceChecks(Piece* piece)
 {
     // Fetch the list of valid takes from movement state
@@ -443,9 +408,6 @@ PieceChecks BoardMoves::pieceChecks(Piece* piece)
     checksState[pos.x][pos.y] = pieceChecks; 
     return pieceChecks;
 }
-
-
-
 bool BoardMoves::isChecked(PIECE_ID ID, ChecksQueue checksQueue)
 {
     while(!checksQueue.empty())
@@ -492,7 +454,6 @@ bool BoardMoves::canCastle(PIECE_ID ID, RELPOS relpos)
     // return !inCheck;
     return 0;
 }
-
 Piece* BoardMoves::fetchKing(PIECE_COLOUR col)
 {
     bool found = 0;
@@ -508,3 +469,108 @@ Piece* BoardMoves::fetchKing(PIECE_COLOUR col)
     return nullptr;
     
 }
+
+/****************************************************/
+/*              REFINEMENT-FUNCTIONS                */
+/****************************************************/
+
+void BoardMoves::refineMovementRange(PIECE_COLOUR col)
+{
+    // 1) Restrict king moves
+    Piece* kingPtr = fetchKing(statePtr->currentTurn);
+    BoardPosition kingPos = kingPtr->returnPosition();
+    PositionQueue validMoves = restrictValidMoves(kingPtr);
+    movementState[kingPos.x][kingPos.y].validMoves = validMoves;
+
+    // 2) Restrict moves that put the king into check
+    restrictCheckingMoves(kingPtr);
+
+}
+
+PositionQueue BoardMoves::restrictValidMoves(Piece* piece)
+{
+    // Fetch vector of curent pieces
+    PIECE_COLOUR  col = piece->returnColour();
+    MovementQueue pieceMovementQueue = returnMovementQueue(piece);
+    std::vector<BoardPosition> validMoves = queueToVector(pieceMovementQueue.validMoves);
+
+    // Fetch queue of opposing pieces
+    PieceQueue opposingPieces = statePtr->returnPieceQueue(col == WHITE ? BLACK : WHITE); 
+
+    // Iterate through queue, removing positions from validMoves that appear in the opposing pieces list
+    while(!opposingPieces.empty())
+    {
+        PositionQueue curOppValidMoves = returnMovementQueue(opposingPieces.front()).validMoves;
+        opposingPieces.pop();
+
+        while(!curOppValidMoves.empty())
+        {
+            BoardPosition temp = curOppValidMoves.front();
+            curOppValidMoves.pop();
+            for(auto it = validMoves.begin(); it != validMoves.end(); it++)
+            {
+                if(temp == *it) {
+                    validMoves.erase(it);
+                    break;
+                }
+            }
+        }
+    }
+    return vectorToQueue(validMoves);
+}
+
+void BoardMoves::restrictCheckingMoves(Piece* piece)
+{
+    // Fetch the piece colour
+    PIECE_COLOUR col = piece->returnColour();
+
+    // Fetch all pieces of the opposite colour
+    PieceQueue opposingPieces = statePtr->returnPieceQueue((col == WHITE) ? BLACK : WHITE);
+
+
+    // See which pieces have the King as an invalid check
+    while(!opposingPieces.empty())
+    {
+        // Fetch front piece
+        BoardPosition pos = opposingPieces.front()->returnPosition();
+        opposingPieces.pop();
+
+        // Check the invalid queue for the king
+        PositionQueue invalidTakes = movementState[pos.x][pos.y].invalidTakes;
+        bool found = 0;
+        while(!invalidTakes.empty() && !found)
+        {
+            pos = invalidTakes.front();
+            invalidTakes.pop();
+
+            if(statePtr->returnPiece(pos) == piece)
+                found = 1;
+        }
+
+        if(found)
+        {
+            
+        }
+    }
+}
+
+
+
+
+
+/****************************************************/
+/*                      RETURNS                     */
+/****************************************************/
+
+MovementQueue BoardMoves::returnMovementQueue(BoardPosition pos)
+{
+    return movementState[pos.x][pos.y];
+}
+MovementQueue BoardMoves::returnMovementQueue(Piece* piece)
+{
+    BoardPosition pos = piece->returnPosition();
+    return returnMovementQueue(pos);
+}
+
+
+

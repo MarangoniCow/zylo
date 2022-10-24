@@ -16,9 +16,14 @@
 /*              CONSTRUCTOR & ADMIN                 */
 /****************************************************/
 
-void Board::newGame()
-{
+Board::Board(BoardState state_) : state(state_) {};
+void Board::newGame() {
     state.initialiseBoard();
+    boardMoves.changeState(&state);
+    boardMoves.processState();
+}
+void Board::newState(BoardState state_) {
+    state = state_;
     boardMoves.changeState(&state);
     boardMoves.processState();
 }
@@ -27,8 +32,6 @@ void Board::newGame()
 /****************************************************/
 /*            STATE-RELATED FUNCTIONS               */
 /****************************************************/
-
-
 bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 {
     // Fetch movement queue for current position
@@ -72,18 +75,15 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
         memcpy(state.previous, state.current, sizeof(state.current));
 
         // Begin movement task flow
-        preMoveTasks();
+        preMoveTasks(curPos, tarPos);
         movePiece(currentPiece, tarPos);
         postMoveTasks();
+
         return 1;
     }
     else
         return 0;
 }
-
-
-
-
 void Board::processPromotion(PIECE_TYPE newType)
 {
     // Update state
@@ -97,8 +97,11 @@ void Board::processPromotion(PIECE_TYPE newType)
 /*           MOVEMENT-RELATED FUNCTIONS (TASKS)     */
 /****************************************************/
 
-void Board::preMoveTasks()
-{}
+void Board::preMoveTasks(BoardPosition curPos, BoardPosition tarPos)
+{
+    lastMove.first = curPos;
+    lastMove.second = tarPos;
+}
 void Board::postMoveTasks()
 {
     state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
@@ -106,8 +109,7 @@ void Board::postMoveTasks()
 }
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
-{
-    
+{   
     BoardPosition curPos = currentPiece->returnPosition();
 
     // Update current position in state as null

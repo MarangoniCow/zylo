@@ -25,12 +25,9 @@
 
 enum RELPOS
 {
-    SAME, LEFT, LEFTUP, UP, RIGHTUP, RIGHT, RIGHTDOWN, DOWN, LEFTDOWN
+    OUTOFLINE, SAME, LEFT, LEFTUP, UP, RIGHTUP, RIGHT, RIGHTDOWN, DOWN, LEFTDOWN
 };
-enum INLINE
-{
-    OUTOFLINE, HORIZONTAL, VERTICAL, DIAGONALRIGHT, DIAGONALLEFT
-};
+
 
 struct BoardPosition
 {
@@ -113,23 +110,34 @@ struct BoardPosition
             return LEFTUP;
         else if(curPos.y < tarPos.y && tarPos.x > curPos.x)
             return RIGHTUP;
+        else if (curPos.y == tarPos.y && tarPos.x == curPos.x)
+            return SAME;
         else
-            return SAME;   
-    }
-    static INLINE returnInline(BoardPosition curPos, BoardPosition tarPos)
+            return OUTOFLINE;
+    };
+    BoardPosition increment(RELPOS relpos)
     {
-        if (curPos.y == tarPos.y && curPos.x == tarPos.x)
-            return OUTOFLINE;
-        else if(curPos.y == tarPos.y)
-            return HORIZONTAL;
-        else if(curPos.x == tarPos.x)
-            return VERTICAL;
-        else if (curPos.x - tarPos.x == curPos.y - tarPos.y)
-            return DIAGONALRIGHT;
-        else if (curPos.x - tarPos.x == tarPos.y - curPos.y)
-            return DIAGONALLEFT;
+        if(relpos == LEFT && validUpdate(-1, 0))
+            return returnUpdate(-1, 0);
+        else if(relpos == RIGHT && validUpdate(1, 0))
+            return returnUpdate(1, 0);
+        else if(relpos == DOWN && validUpdate(0, -1))
+            return returnUpdate(0, -1);
+        else if(relpos == UP && validUpdate(0, 1))
+            return returnUpdate(0, 1);
+        else if(relpos == LEFTDOWN && validUpdate(-1, -1))
+            return returnUpdate(-1, -1);
+        else if(relpos == LEFTUP && validUpdate(-1, 1))
+            return returnUpdate(-1, 1);
+        else if(relpos == RIGHTDOWN && validUpdate(1, -1))
+            return returnUpdate(1, -1);
+        else if(relpos == RIGHTUP && validUpdate(1, 1))
+            return returnUpdate(1, 1);
         else
-            return OUTOFLINE;
+        {
+            BoardPosition pos;
+            return pos;
+        }
     }
     static std::queue<BoardPosition> returnPositionQueue()
     {
@@ -144,5 +152,21 @@ struct BoardPosition
             }
         }
         return allPositions;
+    }
+
+    static std::queue<BoardPosition> returnRelativePositions(BoardPosition curPos, BoardPosition tarPos)
+    {
+        std::queue<BoardPosition> returnQueue;
+        RELPOS relpos = returnRelPos(curPos, tarPos);
+        if(relpos != SAME || relpos != OUTOFLINE)
+        {
+            BoardPosition temp = curPos;
+            while(temp.validPosition())
+            {
+                returnQueue.push(temp);
+                temp.increment(relpos);
+            }
+        }
+        return returnQueue;
     }
 };

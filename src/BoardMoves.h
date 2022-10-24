@@ -19,18 +19,25 @@
 typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
 typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
 typedef std::queue<PieceChecks> ChecksQueue;
+typedef std::queue<std::pair<Piece*, RELPOS>> SightedQueue;
+
 
 struct MovementQueue {
     PositionQueue validMoves;
     PositionQueue validTakes;
     PositionQueue invalidMoves;
     PositionQueue invalidTakes;
+    SightedQueue sightedQueue;
 
     MovementQueue() {};
     MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, 
-                    PositionQueue invalidMoves_, PositionQueue invalidTakes_)
-        :   validMoves(validMoves_), validTakes(validTakes_),
-            invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
+        PositionQueue invalidMoves_, PositionQueue invalidTakes_) :
+        validMoves(validMoves_), validTakes(validTakes_),
+        invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
+    MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, PositionQueue invalidMoves_,
+        PositionQueue invalidTakes_, SightedQueue sightedQueue_) :
+        sightedQueue(sightedQueue_), validMoves(validMoves_), validTakes(validTakes_),
+        invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
 };
 
 
@@ -52,10 +59,11 @@ class BoardMoves {
         // Private methods: Resets
         void resetFlags();
         void resetMoves();
-        // Private methods: Special moves/takes
+
+        // Private methods: Special takes/moves (castling)
         void addSpecialTakes(Piece* piece, PositionQueue* validTakes);
         void addSpecialMoves(Piece* piece);
-
+        bool canCastle(PIECE_ID ID, RELPOS relpos);
 
     public:
         // CONSTRUCTORS
@@ -67,28 +75,26 @@ class BoardMoves {
             statePtr = statePtr_;
         }
         void processState();
-        void generateMovementRange(Piece* piece);
+        void  generateMovementRange(Piece* piece);
+        void    refineMovementRange(PIECE_COLOUR col);
         MovementQueue processMoveRange(Piece* piece, PositionQueue moveRange);
-        void refineMovementRange(PIECE_COLOUR col);
-
-
-
-
 
         // Check related functions
-        // KING-RELATED FUNCTIONS
-        bool isChecked(PIECE_ID ID, ChecksQueue checksQueue);
+        bool    isChecked(PIECE_ID ID, ChecksQueue checksQueue);
         bool isCheckmated(PIECE_ID ID);
-        bool canCastle(PIECE_ID ID, RELPOS relpos);
-        Piece* fetchKing(PIECE_COLOUR col);
+        Piece*  fetchKing(PIECE_COLOUR col);
 
         // CHECK-RELATED FUNCTIONS
         PieceChecks pieceChecks(Piece* piece);
         PieceChecks pieceChecks(Piece* piece, ChecksQueue* checksQueue);
         ChecksQueue generateChecksList(PIECE_COLOUR col);
         
-        
         // Returns
+        MovementQueue returnMovementQueue(Piece* piece);
         MovementQueue returnMovementQueue(BoardPosition pos);
-        ChecksQueue returnChecksQueue(BoardPosition pos);      
+        ChecksQueue     returnChecksQueue(BoardPosition pos);
+
+        // 'Refinement' methods
+        PositionQueue restrictValidMoves(Piece* piece);
+        void restrictCheckingMoves(Piece* piece);
 };
