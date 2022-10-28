@@ -303,7 +303,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
         return;
     
     BoardPosition curPos = currentPiece->returnPosition();
-    PositionQueue castleMoves;
+    PositionQueue* validMoves = &movementState[curPos.x][curPos.y].validMoves;
     
 
     // Special moves list
@@ -315,21 +315,23 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
             {
                 
                 Piece* rookRight = statePtr->current[7][curPos.y];
-                Piece* rookLeft  = statePtr->current[0][curPos.y];              
+                Piece* rookLeft  = statePtr->current[0][curPos.y];
 
-                bool rightRookConditions = (rookRight != NULL && rookRight->returnDescriptor().type == ROOK && !rookRight->hasMoved() 
-                    && rookRight->returnColour() == currentPiece->returnColour()) ? 1 : 0;
-                bool leftRookConditions = (rookLeft != NULL && rookLeft->returnDescriptor().type == ROOK && !rookLeft->hasMoved()
-                    && rookLeft->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                auto rook_conditions = [=](Piece* tarRook)
+                {
+                    bool rookConditions = (tarRook != NULL && tarRook->returnDescriptor().type == ROOK && !tarRook->hasMoved() 
+                    && tarRook->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                    return rookConditions;
+                };
 
                 bool clearRight = (statePtr->current[5][curPos.y] == NULL && statePtr->current[6][curPos.y] == NULL) ? 1 : 0;
                 bool clearLeft  = (statePtr->current[3][curPos.y] == NULL && statePtr->current[2][curPos.y] == NULL) ? 1 : 0;
 
                 if(rookLeft == NULL || rookRight == NULL)
                     break;
-                if (rightRookConditions && clearRight && canCastle(currentPiece->returnID(), RIGHT))
+                if (rook_conditions(rookRight) && clearRight && canCastle(currentPiece->returnID(), RIGHT))
                     validMoves->push(curPos.returnUpdate(2, 0));
-                if (leftRookConditions && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
+                if (rook_conditions(rookLeft) && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
                     validMoves->push(curPos.returnUpdate(-2, 0));
             }
             break;
@@ -338,6 +340,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
             break;
         };
     }
+    
 }
 void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
 {
@@ -504,7 +507,7 @@ bool BoardMoves::canCastle(PIECE_ID ID, RELPOS relpos)
 
     // // Done :)
     // return !inCheck;
-    return 0;
+    return 1;
 }
 
 
