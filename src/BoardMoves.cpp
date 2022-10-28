@@ -12,6 +12,7 @@
 #include <vector>
 #include <queue>
 #include <utility>
+#include <functional>
 
 
 /****************************************************/
@@ -39,8 +40,23 @@ std::queue<T> vectorToQueue(std::vector<T> vectorToConvert)
     return returnQueue;
 }
 
+template <typename T>
+std::queue<T> appendToQueue(std::queue<T> queueToAppend, std::queue<T> appendQueue)
+{
+    while(!appendQueue.empty())
+    {
+        queueToAppend.push(appendQueue.front());
+        appendQueue.pop();
+    }
+    return queueToAppend;
+}
 
-
+template <typename T>
+void emptyQueue(std::queue<T>* queueToEmpty)
+{
+    std::queue<T> emptyQueue;
+    *queueToEmpty = emptyQueue;
+}
 
 
 /****************************************************/
@@ -56,7 +72,6 @@ BoardMoves::BoardMoves(BoardState* statePtr_)
     // Run process state
     processState();
 }
-
 void BoardMoves::resetFlags()
 {
     kingCheck.first = 0;
@@ -64,40 +79,76 @@ void BoardMoves::resetFlags()
     kingCheckmate.first = 0;
     kingCheckmate.second = 0;
 }
+void BoardMoves::resetMoves()
+{
+    MovementQueue emptyMovementQueue;
+    PieceChecks emptyChecksQueue;
 
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
+            movementState[i][j] = emptyMovementQueue;
+            checksState[i][j] = emptyChecksQueue;
+        }
+    }
+}
+void BoardMoves::fetchTurn()
+{
+    curCol = statePtr->currentTurn;
+    oppCol = (curCol == WHITE) ? BLACK : WHITE;
+}
+
+
+/****************************************************/
+/*                  MAIN METHODS                    */
+/****************************************************/
 void BoardMoves::processState()
 {
-    // 0) Pre-process: Reset board flags
+    // 0) Pre-process: Reset board flags, fetch current turn
     resetFlags();
+    resetMoves();
+    fetchTurn();
 
     // 1) Fetch queue of all pieces
     PieceQueue piecesQueue = statePtr->returnPieceQueue();
 
     // 2) Iterate through entire list, generating movement range of all pieces
-    while(!piecesQueue.empty())
-    {
-        Piece* piece = piecesQueue.front();
+    while(!piecesQueue.empty()) {
+        generateMovementRange(piecesQueue.front());
         piecesQueue.pop();
-        generateMovementRange(piece);
     }
 
     // 3) Generate checks for opposite colour
-    PIECE_COLOUR currentTurn = statePtr->currentTurn;
-    PIECE_COLOUR opponentColour = (currentTurn == WHITE) ? BLACK : WHITE;
-    opponentChecks = generateChecksList(opponentColour);
+    oppChecks = generateChecksList(oppCol);
 
     // 4) Check if the King is in check
-    Piece* kingPtr = fetchKing(currentTurn);
-    if(isChecked(kingPtr->returnID(), opponentChecks))
-    {
+    Piece* kingPtr = statePtr->returnPieceQueue(curCol, KING).front();
+    if(isChecked(kingPtr->returnID(), oppChecks)) {
+        // Set check flags
         kingCheck.first = 1;
         kingCheck.second = kingPtr->returnID();
     }
     else
     {
+        // Add castling for the King
         addSpecialMoves(kingPtr);
     }
-    refineMovementRange(currentTurn);
+
+    // 5) Restrict the movement range of all pieces to avoid putting King into check
+    refineMovementRange(curCol);
+    
+    // Done!
+}
+
+void BoardMoves::refineMovementRange(PIECE_COLOUR col)
+{
+    // 1) Restrict king moves that put him in check
+    Piece* kingPtr = statePtr->returnPieceQueue(curCol, KING).front();
+    BoardPosition kingPos = kingPtr->returnPosition();
+    movementState[kingPos.x][kingPos.y].validMoves = returnNoncheckedMoves(kingPtr);
+
+    // 2) Restrict moves that put the king into check
+    restrictRevealedCheckMoves(kingPtr);
+
 }
 
 
@@ -169,6 +220,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
             else if (tarPiece->returnColour() == piece->returnColour())
             {
                 invalidMoves.push(tarPos);
+                sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
             }
             else
             {
@@ -189,25 +241,25 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
         // Update relative position
         relpos_prev = relpos_curr;   
         relpos_curr = BoardPosition::returnRelPos(pos, tarPos);
+        tarPiece = statePtr->current[tarPos.x][tarPos.y];
+
+        // If there's a piece there, add it to our sighted pieces
+        if(tarPiece != NULL)
+                sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
         
         // If we added a piece last time and we haven't changed the relative direction, we need to continue to the next item in the queue.
         // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
         if(relpos_prev != SAME && pieceInPrev && relpos_curr == relpos_prev)
         {
-            tarPiece = statePtr->current[tarPos.x][tarPos.y];
-
             if(tarPiece != NULL && piece->returnColour() != tarPiece->returnColour())
                 invalidTakes.push(tarPos);
             else
                 invalidMoves.push(tarPos);
 
-            sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
+            
 
             continue;
-        }
-
-        // Otherwise, fetch the piece in the currently targetted position
-        tarPiece = statePtr->current[tarPos.x][tarPos.y];
+        }       
 
         // Check for a piece in the current state
         if(tarPiece == NULL)
@@ -216,17 +268,17 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
             validMoves.push(tarPos);
             // There's no piece, so our if condition at the beginning won't fail.
             pieceInPrev = 0;
-
         }
         // If it isn't null, that means there's something there. We need to check if it's the same colour.
         else 
         {
-                       
             if (tarPiece->returnColour() != piece->returnColour())
             {
                 // If it's a pawn, we can't take forward
                 if(piece->returnDescriptor().type == PAWN)
+                {
                     invalidMoves.push(tarPos);
+                }
                 else
                     validTakes.push(tarPos);
             }
@@ -239,7 +291,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
         }
     }
 
-    MovementQueue proceesedQueue(validMoves, validTakes, invalidMoves, invalidTakes);
+    MovementQueue proceesedQueue(validMoves, validTakes, invalidMoves, invalidTakes, sightedQueue);
     return proceesedQueue;  
 }
 
@@ -251,7 +303,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
         return;
     
     BoardPosition curPos = currentPiece->returnPosition();
-    PositionQueue* validMoves = &movementState[curPos.x][curPos.y].validMoves;
+    PositionQueue castleMoves;
     
 
     // Special moves list
@@ -454,40 +506,12 @@ bool BoardMoves::canCastle(PIECE_ID ID, RELPOS relpos)
     // return !inCheck;
     return 0;
 }
-Piece* BoardMoves::fetchKing(PIECE_COLOUR col)
-{
-    bool found = 0;
-    PieceQueue colouredQueue = statePtr->returnPieceQueue(col);
 
-    while(!colouredQueue.empty())
-    {
-        Piece* piece = colouredQueue.front();
-        colouredQueue.pop();
-        if(piece->returnDescriptor().type == KING)
-            return piece;        
-    }
-    return nullptr;
-    
-}
 
 /****************************************************/
 /*              REFINEMENT-FUNCTIONS                */
 /****************************************************/
-
-void BoardMoves::refineMovementRange(PIECE_COLOUR col)
-{
-    // 1) Restrict king moves
-    Piece* kingPtr = fetchKing(statePtr->currentTurn);
-    BoardPosition kingPos = kingPtr->returnPosition();
-    PositionQueue validMoves = restrictValidMoves(kingPtr);
-    movementState[kingPos.x][kingPos.y].validMoves = validMoves;
-
-    // 2) Restrict moves that put the king into check
-    restrictCheckingMoves(kingPtr);
-
-}
-
-PositionQueue BoardMoves::restrictValidMoves(Piece* piece)
+PositionQueue BoardMoves::returnNoncheckedMoves(Piece* piece)
 {
     // Fetch vector of curent pieces
     PIECE_COLOUR  col = piece->returnColour();
@@ -519,37 +543,73 @@ PositionQueue BoardMoves::restrictValidMoves(Piece* piece)
     return vectorToQueue(validMoves);
 }
 
-void BoardMoves::restrictCheckingMoves(Piece* piece)
+void BoardMoves::restrictRevealedCheckMoves(Piece* piece)
 {
     // Fetch the piece colour
     PIECE_COLOUR col = piece->returnColour();
+    BoardPosition curPos = piece->returnPosition();
 
     // Fetch all pieces of the opposite colour
     PieceQueue opposingPieces = statePtr->returnPieceQueue((col == WHITE) ? BLACK : WHITE);
 
-
     // See which pieces have the King as an invalid check
     while(!opposingPieces.empty())
     {
-        // Fetch front piece
-        BoardPosition pos = opposingPieces.front()->returnPosition();
+        // 1) Fetch front piece
+        BoardPosition oppPos = opposingPieces.front()->returnPosition();
         opposingPieces.pop();
+        MovementQueue oppMovQueue = returnMovementQueue(oppPos);
 
-        // Check the invalid queue for the king
-        PositionQueue invalidTakes = movementState[pos.x][pos.y].invalidTakes;
+        // 2) Fetch the front pieces' invalid takes queue for our current piece
+        PositionQueue invalidTakes = oppMovQueue.invalidTakes;
         bool found = 0;
         while(!invalidTakes.empty() && !found)
         {
-            pos = invalidTakes.front();
+            BoardPosition oppCheckPos;
+            oppCheckPos = invalidTakes.front();
             invalidTakes.pop();
-
-            if(statePtr->returnPiece(pos) == piece)
+            if(statePtr->returnPiece(oppCheckPos) == piece)
                 found = 1;
         }
 
+        /***********INCOMPLETE METHOD***********/
+        // 3) If we've found the king as an invalid target, we need to make sure the piece blocking this line of sight doesn't move       
         if(found)
         {
+            // 3a) Fetch the relative position of the piece that's targetting our piece
+            RELPOS relpos = BoardPosition::returnRelPos(oppPos, curPos); 
+
+            // 3b) Fetch the pieces that are in the line of sight of our opposing piece
+            SightedQueue oppSightline = oppMovQueue.sightedQueue;
+            PieceQueue sightedPieces;
             
+            // 3c) Run through this queue, check if the piece is in the same relative direction, and wipe it's queue
+            while(!oppSightline.empty())
+            {
+                Piece* temp = oppSightline.front().first;
+                RELPOS sightedPos = oppSightline.front().second;
+                oppSightline.pop();
+                
+                if(sightedPos == relpos)
+                    sightedPieces.push(temp);                    
+            }
+
+            std::vector<Piece*> sightedPiecesVector = queueToVector(sightedPieces);
+            int idx = 0;
+            
+            // Find the king in the vector
+            for(; idx < sightedPiecesVector.size(); idx++) {
+                if(sightedPiecesVector[idx] == piece)
+                    break;
+            }
+
+            if(sightedPiecesVector.size() <= 2)
+            {
+                Piece* temp = sightedPiecesVector[idx - 1];
+                MovementQueue moveQueue = returnMovementQueue(temp);
+                movementState[temp->returnPosition().x][temp->returnPosition().y].invalidMoves = appendToQueue(moveQueue.invalidMoves, moveQueue.validMoves);
+                emptyQueue(&movementState[temp->returnPosition().x][temp->returnPosition().y].validMoves);                                
+            }
         }
     }
 }

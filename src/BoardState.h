@@ -49,7 +49,7 @@ struct BoardState {
     void removePiece(Piece* pieceToDelete);
     void removePiece(PIECE_ID pieceToDelete);
 
-    // Returns
+    // Bool checks
     bool pieceExists(Piece* piece);
     bool pieceExists(Piece* piece, PIECE_COLOUR col);
     bool pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type);
@@ -57,9 +57,11 @@ struct BoardState {
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col);
     bool pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type);
     
+    // Returns
     Piece* returnPiece(BoardPosition pos);
     PieceQueue returnPieceQueue();
     PieceQueue returnPieceQueue(PIECE_COLOUR col);
+    PieceQueue returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type);
     
 };
 

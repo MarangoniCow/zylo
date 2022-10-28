@@ -31,11 +31,9 @@ class GameplayManager
 
     public:
         // CONSTRUCTORS 
-        GameplayManager(Board* board_) : board(board_) {
-            board->newGame();
-        };
+        GameplayManager(Board* board_) : board(board_) {};
 
         BOARD_EVENT processBoardClick(BoardPosition curPos, BoardPosition newPos);
         Board* gameBoard() {return board;};
-        void newGame();
+        void newGame() {board->newGame();};
 };

@@ -20,7 +20,7 @@
 // EXTERNAL INCLUDES
 #include <queue>
 #include <utility>
-
+#include <cmath>
 
 
 enum RELPOS
@@ -94,6 +94,10 @@ struct BoardPosition
     }
     static RELPOS returnRelPos(BoardPosition curPos, BoardPosition tarPos)
     {
+        int xa = curPos.x - tarPos.x;
+        int ya = curPos.y - tarPos.y;
+        int diff = abs(xa - ya);
+
         if(curPos.y == tarPos.y && tarPos.x < curPos.x)
             return LEFT;
         else if(curPos.y == tarPos.y && tarPos.x > curPos.x)
@@ -102,13 +106,13 @@ struct BoardPosition
             return DOWN;
         else if(curPos.y < tarPos.y && tarPos.x == curPos.x)
             return UP;
-        else if(curPos.y > tarPos.y && tarPos.x < curPos.x)
+        else if(curPos.y > tarPos.y && tarPos.x < curPos.x && diff == 0)
             return LEFTDOWN;
-        else if(curPos.y > tarPos.y && tarPos.x > curPos.x)
-            return RIGHTDOWN;
-        else if(curPos.y < tarPos.y && tarPos.x < curPos.x)
+        else if(curPos.y < tarPos.y && tarPos.x < curPos.x && diff == 0)
             return LEFTUP;
-        else if(curPos.y < tarPos.y && tarPos.x > curPos.x)
+        else if(curPos.y > tarPos.y && tarPos.x > curPos.x && diff == 0)
+            return RIGHTDOWN;
+        else if(curPos.y < tarPos.y && tarPos.x > curPos.x && diff == 0)
             return RIGHTUP;
         else if (curPos.y == tarPos.y && tarPos.x == curPos.x)
             return SAME;

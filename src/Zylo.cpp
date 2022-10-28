@@ -32,16 +32,11 @@ int main () {
 
     std::cout << "Welcome to Zylo!" << std::endl;
 
-    BoardPosition pos(6, 1);
-    while(pos.validPosition())
-        pos = pos.increment(RIGHT);
-
     // Initalise board and board logic
     Board board;
-    board.newGame();
-
     // Initialise gameplay manager
     GameplayManager manager(&board);
+    manager.newGame();
 
     // Initialise a game window and render the current state
     SDL_Board gameWindow;

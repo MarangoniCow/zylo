@@ -62,7 +62,7 @@ class Board {
     
     public:
         // CONSTRUCTORS & ADMIN
-        Board() {newGame();};
+        Board() {};
         Board(BoardState state_);
         ~Board() {state.clearBoard();};
         void newGame();

@@ -158,7 +158,7 @@ void BoardState::removePiece(PIECE_ID pieceToDelete)
     removePiece(Piece::returnIDPtr(pieceToDelete));
 }
 
-/********************** RETURNS ***************************/
+/******************** BOOL CHECKS**************************/
 bool BoardState::pieceExists(Piece* piece) {
     return (piece != NULL);
 }
@@ -178,6 +178,9 @@ bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) {
 bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) {
     return (pieceExists(pos, col) && current[pos.x][pos.y]->returnDescriptor().type == type);
 }
+
+
+/********************** RETURNS ***************************/
 PieceQueue BoardState::returnPieceQueue()
 {
     PieceQueue pieceQueue;
@@ -198,9 +201,21 @@ PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
         Piece* piece = *it;
         if(pieceExists(piece, col)) pieceQueue.push(piece);
     }
-
     return pieceQueue;
 }
+PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type)
+{
+    PieceQueue pieceQueue;
+    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
+
+    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
+        Piece* piece = *it;
+        if(pieceExists(piece, col, type)) pieceQueue.push(piece);
+    }
+    return pieceQueue;
+}
+
+
 Piece* BoardState::returnPiece(BoardPosition pos)
 {
     return current[pos.x][pos.y];

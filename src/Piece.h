@@ -78,11 +78,13 @@ class Piece
             Piece_count += 1;
             ID = Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
-            flag_move = 0; 
+            flag_move = 0;
+            type = descriptor.type;
         };
         Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y), ID(ID_) {
             Piece_instanceList[ID_] = this;
             flag_move = 1; 
+            type = descriptor.type;
         };
         virtual ~Piece() {
             Piece_count -= 1;
