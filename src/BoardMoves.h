@@ -105,6 +105,7 @@ class BoardMoves {
         PieceChecks pieceChecks(Piece* piece);
         PieceChecks pieceChecks(Piece* piece, ChecksQueue* checksQueue);
         ChecksQueue generateChecksList(PIECE_COLOUR col);
+        std::pair<bool, PieceQueue> checkPositionForChecks(BoardPosition pos, PIECE_COLOUR oppCol);
         
         // Returns
         MovementQueue returnMovementQueue(Piece* piece);

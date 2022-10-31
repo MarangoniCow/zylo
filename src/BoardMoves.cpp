@@ -58,6 +58,21 @@ void emptyQueue(std::queue<T>* queueToEmpty)
     *queueToEmpty = emptyQueue;
 }
 
+template <typename T>
+std::pair<bool, T> searchQueue(std::queue<T> queueToSearch, T searchQuery)
+{
+    T defaultType;
+    while(!queueToSearch.empty())
+    {
+        if(queueToSearch.front() == searchQuery)
+            return std::make_pair(1, searchQuery);
+        else
+            queueToSearch.pop();
+    }
+    return std::make_pair(0, defaultType);
+
+}
+
 
 /****************************************************/
 /*              CONSTRUCTOR & ADMIN                 */
@@ -102,7 +117,7 @@ void BoardMoves::fetchTurn()
 /*                  MAIN METHODS                    */
 /****************************************************/
 void BoardMoves::processState()
-{
+{ 
     // 0) Pre-process: Reset board flags, fetch current turn
     resetFlags();
     resetMoves();
@@ -201,9 +216,11 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
     // Bool to check pieces
     bool pieceInPrev = 1;
 
+    PIECE_TYPE pieceType = piece->returnType();
+
 
     // Knight algorithm: Special case, don't need to think about all the other bits
-    if(piece != NULL && piece->returnDescriptor().type == KNIGHT)
+    if(piece != NULL && piece->returnType() == KNIGHT)
     {
         while(!moveRange.empty())
         {
@@ -275,7 +292,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
             if (tarPiece->returnColour() != piece->returnColour())
             {
                 // If it's a pawn, we can't take forward
-                if(piece->returnDescriptor().type == PAWN)
+                if(piece->returnType() == PAWN)
                 {
                     invalidMoves.push(tarPos);
                 }
@@ -307,7 +324,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
     
 
     // Special moves list
-    switch(currentPiece->returnDescriptor().type)
+    switch(currentPiece->returnType())
     {
         case KING:
         {
@@ -319,7 +336,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
 
                 auto rook_conditions = [=](Piece* tarRook)
                 {
-                    bool rookConditions = (tarRook != NULL && tarRook->returnDescriptor().type == ROOK && !tarRook->hasMoved() 
+                    bool rookConditions = (tarRook != NULL && tarRook->returnType() == ROOK && !tarRook->hasMoved() 
                     && tarRook->returnColour() == currentPiece->returnColour()) ? 1 : 0;
                     return rookConditions;
                 };
@@ -351,7 +368,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     
 
     // Special moves list
-    switch(currentPiece->returnDescriptor().type)
+    switch(currentPiece->returnType())
     {
         case PAWN:
         {
@@ -395,7 +412,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                         continue;
                     
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece->returnDescriptor().type == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
+                    bool pawnAdjacent = (targetPiece->returnType() == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
 
                     // Check to see if it was on the home row last move
                     Piece* targetPiecePrev = statePtr->previous[curPos.x + i][enpassantRow + 2*forward];
@@ -479,6 +496,25 @@ bool BoardMoves::isChecked(PIECE_ID ID, ChecksQueue checksQueue)
     }
     return 0;
 }
+std::pair<bool, PieceQueue> BoardMoves::checkPositionForChecks(BoardPosition pos, PIECE_COLOUR oppCol)
+{
+    PieceQueue oppPieceQueue = statePtr->returnPieceQueue(oppCol);
+
+    while(!oppPieceQueue.empty())
+    {
+        MovementQueue oppMoveQueue = returnMovementQueue(oppPieceQueue.front());
+        std::pair<bool, BoardPosition> pieceHasPos = searchQueue(oppMoveQueue.validMoves, pos);
+        if(pieceHasPos.first)
+            oppPieceQueue.push(oppPieceQueue.front());
+        oppPieceQueue.pop();
+    }
+
+    if(oppPieceQueue.empty())
+        return make_pair(0, oppPieceQueue);
+    else
+        return make_pair(1, oppPieceQueue);
+}
+
 bool BoardMoves::isCheckmated(PIECE_ID ID)
 {
     return 0;
@@ -575,7 +611,6 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* piece)
                 found = 1;
         }
 
-        /***********INCOMPLETE METHOD***********/
         // 3) If we've found the king as an invalid target, we need to make sure the piece blocking this line of sight doesn't move       
         if(found)
         {

@@ -15,13 +15,6 @@ int Piece::Piece_count = 0;
 std::vector<Piece*> Piece::Piece_instanceList;
 
 /*******    GETTER METHODS    *******/
-std::string Piece::returnPath()
-{   
-    std::string colStr = (col) ? "black" : "white";
-    return descriptor.bmpPath + colStr + ".bmp";
-}
-
-
 void Piece::updatePosition(BoardPosition newPos)
 {
     // Check flag

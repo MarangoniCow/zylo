@@ -122,7 +122,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
     currentPiece->updatePosition(newPos);
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
-    switch (currentPiece->returnDescriptor().type)
+    switch (currentPiece->returnType())
     {
         case KING:
         {   
@@ -164,7 +164,7 @@ void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
 {
     Piece* pieceToDelete;
     /* SPECIAL CASE: EN-PASSANT */
-    if(currentPiece->returnDescriptor().type == PAWN && state.current[newPos.x][newPos.y] == NULL)
+    if(currentPiece->returnType() == PAWN && state.current[newPos.x][newPos.y] == NULL)
     {
         int forward = (currentPiece->returnColour() == WHITE) ? 1 : -1;
         pieceToDelete = state.current[newPos.x][newPos.y - forward];

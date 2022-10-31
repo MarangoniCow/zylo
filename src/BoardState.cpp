@@ -166,7 +166,7 @@ bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col) {
     return (pieceExists(piece) && piece->returnColour() == col);
 }
 bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) {
-    return (pieceExists(piece, col) && piece->returnDescriptor().type == type);
+    return (pieceExists(piece, col) && piece->returnType() == type);
 }
 
 bool BoardState::pieceExists(BoardPosition pos) {
@@ -176,7 +176,7 @@ bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) {
     return pieceExists(pos) && current[pos.x][pos.y]->returnColour() == col;
 }
 bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) {
-    return (pieceExists(pos, col) && current[pos.x][pos.y]->returnDescriptor().type == type);
+    return (pieceExists(pos, col) && current[pos.x][pos.y]->returnType() == type);
 }
 
 

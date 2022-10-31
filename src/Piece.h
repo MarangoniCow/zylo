@@ -98,11 +98,10 @@ class Piece
         static int returnTotalPieces() {return size(Piece_instanceList);};
 
         // NON-STATIC RETURNS
-        PieceDescriptor returnDescriptor() {return descriptor;};
-        std::string returnPath(); 
-        BoardPosition returnPosition() {return pos;};
-        PIECE_COLOUR returnColour() {return col;};
-        PIECE_ID returnID() {return ID;};
+        PIECE_TYPE      returnType() {return type;};
+        BoardPosition   returnPosition() {return pos;};
+        PIECE_COLOUR    returnColour() {return col;};
+        PIECE_ID        returnID() {return ID;};
         
         
 
