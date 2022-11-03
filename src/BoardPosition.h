@@ -96,8 +96,7 @@ struct BoardPosition
     {
         int xa = curPos.x - tarPos.x;
         int ya = curPos.y - tarPos.y;
-        int diff = abs(xa - ya);
-
+        
         if(curPos.y == tarPos.y && tarPos.x < curPos.x)
             return LEFT;
         else if(curPos.y == tarPos.y && tarPos.x > curPos.x)
@@ -106,13 +105,13 @@ struct BoardPosition
             return DOWN;
         else if(curPos.y < tarPos.y && tarPos.x == curPos.x)
             return UP;
-        else if(curPos.y > tarPos.y && tarPos.x < curPos.x && diff == 0)
+        else if(curPos.y > tarPos.y && tarPos.x < curPos.x && xa == ya)
             return LEFTDOWN;
-        else if(curPos.y < tarPos.y && tarPos.x < curPos.x && diff == 0)
+        else if(curPos.y < tarPos.y && tarPos.x < curPos.x && xa == -ya)
             return LEFTUP;
-        else if(curPos.y > tarPos.y && tarPos.x > curPos.x && diff == 0)
+        else if(curPos.y > tarPos.y && tarPos.x > curPos.x && xa == -ya)
             return RIGHTDOWN;
-        else if(curPos.y < tarPos.y && tarPos.x > curPos.x && diff == 0)
+        else if(curPos.y < tarPos.y && tarPos.x > curPos.x && xa == ya)
             return RIGHTUP;
         else if (curPos.y == tarPos.y && tarPos.x == curPos.x)
             return SAME;

@@ -131,13 +131,14 @@ void BoardMoves::processState()
         generateMovementRange(piecesQueue.front());
         piecesQueue.pop();
     }
-
+    
     // 3) Generate checks for opposite colour
     oppChecks = generateChecksList(oppCol);
 
     // 4) Check if the King is in check
     Piece* kingPtr = statePtr->returnPieceQueue(curCol, KING).front();
-    if(isChecked(kingPtr->returnID(), oppChecks)) {
+    
+    if(kingPtr != NULL && isChecked(kingPtr->returnID(), oppChecks)) {
         // Set check flags
         kingCheck.first = 1;
         kingCheck.second = kingPtr->returnID();
@@ -272,9 +273,6 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
                 invalidTakes.push(tarPos);
             else
                 invalidMoves.push(tarPos);
-
-            
-
             continue;
         }       
 
@@ -293,9 +291,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
             {
                 // If it's a pawn, we can't take forward
                 if(piece->returnType() == PAWN)
-                {
                     invalidMoves.push(tarPos);
-                }
                 else
                     validTakes.push(tarPos);
             }
@@ -321,6 +317,7 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
     
     BoardPosition curPos = currentPiece->returnPosition();
     PositionQueue* validMoves = &movementState[curPos.x][curPos.y].validMoves;
+    PIECE_COLOUR oppCol = (currentPiece->returnColour() == WHITE) ? BLACK : WHITE;
     
 
     // Special moves list
@@ -344,11 +341,14 @@ void BoardMoves::addSpecialMoves(Piece* currentPiece)
                 bool clearRight = (statePtr->current[5][curPos.y] == NULL && statePtr->current[6][curPos.y] == NULL) ? 1 : 0;
                 bool clearLeft  = (statePtr->current[3][curPos.y] == NULL && statePtr->current[2][curPos.y] == NULL) ? 1 : 0;
 
+                std::pair<bool, PieceQueue> checkRight = checkPositionForChecks(curPos.returnUpdate(1, 0), oppCol);
+                std::pair<bool, PieceQueue> checkLeft = checkPositionForChecks(curPos.returnUpdate(-1, 0), oppCol);
+
                 if(rookLeft == NULL || rookRight == NULL)
                     break;
-                if (rook_conditions(rookRight) && clearRight && canCastle(currentPiece->returnID(), RIGHT))
+                if (rook_conditions(rookRight) && clearRight && !checkRight.first)
                     validMoves->push(curPos.returnUpdate(2, 0));
-                if (rook_conditions(rookLeft) && clearLeft  && canCastle(currentPiece->returnID(), LEFT))
+                if (rook_conditions(rookLeft) && clearLeft && !checkLeft.first)
                     validMoves->push(curPos.returnUpdate(-2, 0));
             }
             break;
@@ -499,20 +499,21 @@ bool BoardMoves::isChecked(PIECE_ID ID, ChecksQueue checksQueue)
 std::pair<bool, PieceQueue> BoardMoves::checkPositionForChecks(BoardPosition pos, PIECE_COLOUR oppCol)
 {
     PieceQueue oppPieceQueue = statePtr->returnPieceQueue(oppCol);
+    PieceQueue oppCheckingQueue;
 
     while(!oppPieceQueue.empty())
     {
         MovementQueue oppMoveQueue = returnMovementQueue(oppPieceQueue.front());
         std::pair<bool, BoardPosition> pieceHasPos = searchQueue(oppMoveQueue.validMoves, pos);
         if(pieceHasPos.first)
-            oppPieceQueue.push(oppPieceQueue.front());
+            oppCheckingQueue.push(oppPieceQueue.front());
         oppPieceQueue.pop();
     }
 
-    if(oppPieceQueue.empty())
-        return make_pair(0, oppPieceQueue);
+    if(oppCheckingQueue.empty())
+        return make_pair(0, oppCheckingQueue);
     else
-        return make_pair(1, oppPieceQueue);
+        return make_pair(1, oppCheckingQueue);
 }
 
 bool BoardMoves::isCheckmated(PIECE_ID ID)
