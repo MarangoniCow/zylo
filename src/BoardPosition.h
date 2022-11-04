@@ -118,7 +118,7 @@ struct BoardPosition
         else
             return OUTOFLINE;
     };
-    BoardPosition increment(RELPOS relpos)
+    BoardPosition returnIncrement(RELPOS relpos)
     {
         if(relpos == LEFT && validUpdate(-1, 0))
             return returnUpdate(-1, 0);
@@ -161,13 +161,13 @@ struct BoardPosition
     {
         std::queue<BoardPosition> returnQueue;
         RELPOS relpos = returnRelPos(curPos, tarPos);
-        if(relpos != SAME || relpos != OUTOFLINE)
+        if(relpos != SAME && relpos != OUTOFLINE)
         {
             BoardPosition temp = curPos;
             while(temp.validPosition())
             {
                 returnQueue.push(temp);
-                temp.increment(relpos);
+                temp = temp.returnIncrement(relpos);
             }
         }
         return returnQueue;

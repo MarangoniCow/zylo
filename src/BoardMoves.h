@@ -63,25 +63,30 @@ class BoardMoves {
         PLAY_FLAG kingCheck;
         PLAY_FLAG kingCheckmate;
 
+        // Movement and checks state
         MovementQueue movementState[8][8];
         PieceChecks checksState[8][8];
 
+        // Common memeber variables regularly accessed
         ChecksQueue curChecks;
         ChecksQueue oppChecks;
 
         PIECE_COLOUR curCol;
         PIECE_COLOUR oppCol;
+
+        Piece* curKing;
+        Piece* oppKing;
         
 
         // Private methods: Resets
         void resetFlags();
         void resetMoves();
-        void fetchTurn();
+        void setTurnDependencies();
 
         // Private methods: Special takes/moves (castling)
         void addSpecialTakes(Piece* piece, PositionQueue* validTakes);
-        void addSpecialMoves(Piece* piece);
-        bool canCastle(PIECE_ID ID, RELPOS relpos);
+        void addCastling(Piece* piece);
+        void verifyMate();
 
     public:
         // CONSTRUCTORS
@@ -94,25 +99,24 @@ class BoardMoves {
         // MAIN METHODS
         void processState();
         void generateMovementRange(Piece* piece);
-        void refineMovementRange(PIECE_COLOUR col);
         MovementQueue processMoveRange(Piece* piece, PositionQueue moveRange);
-
-        // Check related functions
-        bool    isChecked(PIECE_ID ID, ChecksQueue checksQueue);
-        bool isCheckmated(PIECE_ID ID);
-
+ 
         // CHECK-RELATED FUNCTIONS
         PieceChecks pieceChecks(Piece* piece);
-        PieceChecks pieceChecks(Piece* piece, ChecksQueue* checksQueue);
-        ChecksQueue generateChecksList(PIECE_COLOUR col);
-        std::pair<bool, PieceQueue> checkPositionForChecks(BoardPosition pos, PIECE_COLOUR oppCol);
-        
-        // Returns
+        PieceQueue  pieceCheckedBy(PIECE_ID ID, ChecksQueue checksQueue);
+        PieceQueue  positionCheckedBy(BoardPosition pos, PIECE_COLOUR oppCol);
+
+        // REFINEMENTS
+        PositionQueue returnSafeMoves(Piece* piece);
+        PositionQueue returnSafeTakes(Piece* piece);
+        void restrictRevealedCheckMoves(Piece* piece);
+        void restrictKingMoves(PIECE_COLOUR col);
+        void restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
+                                         PositionQueue* validMoves, PositionQueue* validTakes);
+        void removeInvalidCheckedMoves(PieceQueue kingCheckedBy);
+
+        // RETURNS
         MovementQueue returnMovementQueue(Piece* piece);
         MovementQueue returnMovementQueue(BoardPosition pos);
-        ChecksQueue     returnChecksQueue(BoardPosition pos);
-
-        // 'Refinement' methods
-        PositionQueue returnNoncheckedMoves(Piece* piece);
-        void restrictRevealedCheckMoves(Piece* piece);
+        ChecksQueue   returnChecksQueue(PIECE_COLOUR col);
 };
