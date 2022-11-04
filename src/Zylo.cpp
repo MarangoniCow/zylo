@@ -12,12 +12,21 @@
 // INTERNAL DEPENDENCIES
 #include "SDL_EventManager.h"
 #include "SDL_Board.h"
-#include "Board.h"
+#include "GameplayManager.h"
 
 
 
 // TEMP
 #include "Piece.h"
+
+
+typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
+typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
+typedef std::queue<PieceChecks> ChecksQueue;
+typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
+typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
+
+
 
 int main () {
 
@@ -25,7 +34,9 @@ int main () {
 
     // Initalise board and board logic
     Board board;
-    board.initialiseBoard();
+    // Initialise gameplay manager
+    GameplayManager manager(&board);
+    manager.newGame();
 
     // Initialise a game window and render the current state
     SDL_Board gameWindow;
@@ -35,7 +46,7 @@ int main () {
     
     
 
-    SDL_EventManager zylo(&gameWindow, &board);
+    SDL_EventManager zylo(&gameWindow, &manager);
     zylo.RunGame();
     
 

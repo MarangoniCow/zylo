@@ -120,9 +120,9 @@ void SDL_Board::loadState(BoardState state)
         for(int j = 0; j < 8; j++) {
             
             
-            Piece* current = state.piecesCurr[i][j];
+            Piece* current = state.current[i][j];
             if (current != NULL) {
-                loadPiece(i, j, current->returnDescriptor().type, current->returnColour());
+                loadPiece(i, j, current->returnType(), current->returnColour());
             }
         }
     }         
@@ -193,15 +193,15 @@ void SDL_Board::renderBoardUpdate(BoardState state)
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++)
         {
-            if(state.piecesCurr[i][j] != state.piecesPrev[i][j]) {
+            if(state.current[i][j] != state.previous[i][j]) {
 
                 // Clear the current square
                 loadSquare(i, j);
 
                 // Check for a new piece and render if necessary
-                Piece* currentPiece = state.piecesCurr[i][j];
+                Piece* currentPiece = state.current[i][j];
                 if (currentPiece != NULL)
-                    loadPiece(i, j, currentPiece->returnDescriptor().type, currentPiece->returnColour());
+                    loadPiece(i, j, currentPiece->returnType(), currentPiece->returnColour());
             }
         }
     }

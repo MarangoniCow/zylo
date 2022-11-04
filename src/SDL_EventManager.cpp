@@ -8,6 +8,7 @@
 #include "BoardPosition.h"
 #include "Board.h"
 #include "Piece.h"
+#include "GameplayManager.h"
 
 
 // EXTERNAL DEPENDENCIES
@@ -39,12 +40,6 @@ void SDL_EventManager::RunGame() {
                 isRunning = false;
                 continue;
             }
-            else if(checkGameplayFlags())
-            {
-                gameWindow->renderBoard(board->returnState());
-                continue;
-            }
-
             if(ev_cur.type == SDL_MOUSEBUTTONDOWN) {
                 MouseEvents();          
             }
@@ -62,44 +57,60 @@ void SDL_EventManager::RunGame() {
 /*                  MOUSE EVENTS                    */
 /****************************************************/
 
-
 void SDL_EventManager::MouseEvents()
 {
-    CLICK_TYPE click = ProcessClick();
+    CLICK_TYPE click = processWindowClick();
 
     if (click == BOARD)
     {
-        MovementEvents();
+        BoardEvents();
     }
     else
     {
-        // Nothing else yet
+        // Nothing else yet, space here for any other functions
     }      
 }
 
-void SDL_EventManager::MovementEvents()
+void SDL_EventManager::BoardEvents()
 {
 
-    // Check for previous board coordinates
-    if(prevPos.validPosition()) {
-        
-        // Process a click and update the board
-        board->processUpdate(prevPos, curPos);
-        gameWindow->renderBoard(board->returnState());
-        
-        // Reset the click location
-        curPos.ResetPosition();
-        prevPos.ResetPosition();
-    }
-    else
+    BOARD_EVENT ev_board = manager->processBoardClick(prevPos, curPos);
+    switch(ev_board)
     {
-        // Generate the mvoement range, which is stored in board, and pass those movement queues to render overlay
-        MovementQueue moveQueue = board->generateMovementRange(curPos);
-        gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
-    }    
+        case OVERLAY:
+        {
+            MovementQueue moveQueue = board->returnMovementQueue(curPos);
+            gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
+            break;
+        }
+        case PROMOTION:
+        {
+            requestPiecePromotion();
+            gameWindow->renderBoard(board->returnState());
+            break;
+        }
+        case INVALID:
+        {
+            curPos.ResetPosition();
+            prevPos.ResetPosition();
+            gameWindow->renderBoard(board->returnState());
+            break;
+        }
+        case MOVE:
+        {
+            gameWindow->renderBoard(board->returnState());
+            // Reset the click location
+            curPos.ResetPosition();
+            prevPos.ResetPosition();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
-CLICK_TYPE SDL_EventManager::ProcessClick()
+CLICK_TYPE SDL_EventManager::processWindowClick()
 {
     BoardPosition clickPos;  
     // Fetch screen coordinates and translate into board coordinates
@@ -137,9 +148,8 @@ void SDL_EventManager::KeyboardEvents()
     {
         case SDLK_r:
         {
-            board->clearBoard();
-            board->initialiseBoard();
-            gameWindow->renderBoard(board->returnState());
+            manager->gameBoard()->newGame();
+            gameWindow->renderBoard( manager->gameBoard()->returnState());
             break;
         }
         default:
@@ -153,29 +163,22 @@ void SDL_EventManager::KeyboardEvents()
 
 bool SDL_EventManager::checkGameplayFlags()
 {
-    BOARD_FLAGS boardFlags = board->returnFlags();
+    BOARD_FLAGS boardFlags = board->returnBoardFlags();
 
     // Check for promotion
     if(boardFlags.pawnPromotion.first)
     {
-        requestPiecePromotion(boardFlags);
-        board->resetFlags();
+        requestPiecePromotion();
         return 1;
     }
     return 0;
 }
 
-void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
-{
-    // Fetch necessary piece ID
-    PIECE_ID ID = boardFlags.pawnPromotion.second;
-    Piece* currentPiece = Piece::returnIDPtr(ID);
-    BoardPosition pos = currentPiece->returnPosition();
-    PIECE_COLOUR col = currentPiece->returnColour();
-    
-    // Remove the piece
-    board->removePiece(ID);
+void SDL_EventManager::requestPiecePromotion()
+{  
+    // Boolean for found
     bool found = 0;
+    PIECE_TYPE promotionType;
     
     // Start an event loop to fetch the new item.
     while(!found)
@@ -190,25 +193,25 @@ void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
                 {
                     case SDLK_q:
                     {
-                        board->addPieceToState(new Queen(col, pos.x, pos.y));
+                        promotionType = QUEEN;
                         found = 1;
                         break;
                     }
                     case SDLK_k:
                     {
-                        board->addPieceToState(new Knight(col, pos.x, pos.y));
+                        promotionType = KNIGHT;
                         found = 1;
                         break;
                     }
                     case SDLK_r:
                     {
-                        board->addPieceToState(new Rook(col, pos.x, pos.y));
+                        promotionType = ROOK;
                         found = 1;
                         break;
                     }
                     case SDLK_b:
                     {
-                        board->addPieceToState(new Bishop(col, pos.x, pos.y));
+                        promotionType = BISHOP;
                         found = 1;
                         break;
                     }
@@ -218,6 +221,7 @@ void SDL_EventManager::requestPiecePromotion(BOARD_FLAGS boardFlags)
             }
         }
     }
+    board->processPromotion(promotionType);
 }
 
 
