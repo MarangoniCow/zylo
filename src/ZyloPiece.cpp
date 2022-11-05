@@ -1,13 +1,10 @@
 /***********************************************************
- *                   ZYLO IMPLEMENTATION
+ *                 ZYLOPIECE IMPLEMENTATION
  ***********************************************************/
 
 // INTERNAL INCLUDES
-#include "ZyloPiece.h"
-#include "ZyloBoard.h"
 #include "Board.h"
+#include "BoardMoves.h"
+#include "Piece.h"
 
 // EXTERNAL INCLUDES
-
-
-
