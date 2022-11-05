@@ -470,11 +470,11 @@ PositionQueue BoardMoves::returnSafeTakes(Piece* piece)
     }
     return vectorToQueue(validTakes);
 }
-void BoardMoves::restrictRevealedCheckMoves(Piece* piece)
+void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
 {
     // Fetch the piece colour
-    PIECE_COLOUR col = piece->returnColour();
-    BoardPosition curPos = piece->returnPosition();
+    PIECE_COLOUR col = revealedPiece->returnColour();
+    BoardPosition curPos = revealedPiece->returnPosition();
 
     // Fetch all pieces of the opposite colour
     PieceQueue opposingPieces = statePtr->returnPieceQueue((col == WHITE) ? BLACK : WHITE);
@@ -517,16 +517,50 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* piece)
             
             // Find the king in the vector
             for(; idx < sightedPiecesVector.size(); idx++) {
-                if(sightedPiecesVector[idx] == piece)
+                if(sightedPiecesVector[idx] == revealedPiece)
                     break;
             }
 
+            // If this is the only piece in the way, then it can't move
             if(sightedPiecesVector.size() <= 2)
             {
                 Piece* temp = sightedPiecesVector[idx - 1];
+                BoardPosition tempPos = temp->returnPosition();
                 MovementQueue moveQueue = returnMovementQueue(temp);
-                movementState[temp->returnPosition().x][temp->returnPosition().y].invalidMoves = appendToQueue(moveQueue.invalidMoves, moveQueue.validMoves);
-                emptyQueue(&movementState[temp->returnPosition().x][temp->returnPosition().y].validMoves);                                
+
+                // Empty valid moves *BUG: DON'T NEED TO GET RID OF MOVEMENTS IN THE SAME RELATIVE DIRECTION*
+                PositionQueue newInvalidMoves;
+                PositionQueue stillValidMoves;
+
+                while(!moveQueue.validMoves.empty())
+                {
+                    BoardPosition validPos = moveQueue.validMoves.front();
+                    moveQueue.validMoves.pop();
+                    if(BoardPosition::returnRelPos(oppPos, validPos) == BoardPosition::returnRelPos(oppPos, curPos))
+                        stillValidMoves.push(validPos);
+                    else
+                        newInvalidMoves.push(validPos);
+                }
+                movementState[tempPos.x][tempPos.y].invalidMoves = appendToQueue(moveQueue.invalidMoves, newInvalidMoves);
+                movementState[tempPos.x][tempPos.y].validMoves = stillValidMoves;
+
+                PositionQueue newInvalidTakes;
+                PositionQueue stillValidTakes;
+
+                while(!moveQueue.validTakes.empty())
+                {
+                    BoardPosition validPos = moveQueue.validTakes.front();
+                    moveQueue.validTakes.pop();
+
+                    if(oppPos == validPos)
+                        stillValidTakes.push(validPos);
+                    else
+                        newInvalidTakes.push(validPos);                    
+                }
+
+                movementState[tempPos.x][tempPos.y].invalidTakes = appendToQueue(moveQueue.invalidTakes, newInvalidTakes);
+                movementState[tempPos.x][tempPos.y].validTakes = stillValidTakes;
+                
             }
         }
     }
