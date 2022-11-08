@@ -135,19 +135,29 @@ void SDL_Board::loadOverlay(int x, int y, OVERLAY_COL col)
     SDL_Rect targetSquare = returnSDLSquare(x, y);
 
     // Set draw colour and fill rectangle
-    if(col == OVERLAY_RED)
-        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_RED_R, OVERLAY_RED_G, OVERLAY_RED_B, 80);
-    else if (col == OVERLAY_GREEN)
-        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_GREEN_R, OVERLAY_GREEN_G, OVERLAY_GREEN_B, 80);
-    else
-        SDL_SetRenderDrawColor(windowRenderer, OVERLAY_WHITE_R, OVERLAY_WHITE_G, OVERLAY_WHITE_B, 80);
-    
+    switch(col)
+    {
+        case OVERLAY_RED: {
+            SDL_SetRenderDrawColor(windowRenderer, OVERLAY_RED_R, OVERLAY_RED_G, OVERLAY_RED_B, 80);
+            break;
+        }
+        case OVERLAY_GREEN: {
+            SDL_SetRenderDrawColor(windowRenderer, OVERLAY_GREEN_R, OVERLAY_GREEN_G, OVERLAY_GREEN_B, 80);
+            break;
+        }
+        case OVERLAY_YELLOW: {
+            SDL_SetRenderDrawColor(windowRenderer, OVERLAY_YELLOW_R, OVERLAY_YELLOW_G, OVERLAY_YELLOW_B, 50);
+            break;
+        }
+        case OVERLAY_WHITE: {
+            SDL_SetRenderDrawColor(windowRenderer, OVERLAY_WHITE_R, OVERLAY_WHITE_G, OVERLAY_WHITE_B, 80);
+            break;
+        }
+    }    
     SDL_RenderFillRect(windowRenderer, &targetSquare);
 
     // Restore blend mode
-    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_NONE);
-    
-
+    SDL_SetRenderDrawBlendMode(windowRenderer, SDL_BLENDMODE_NONE);   
 }   
 void SDL_Board::clearBoard()
 {
@@ -230,8 +240,21 @@ void SDL_Board::renderOverlay(PositionQueue validQueue, PositionQueue takeQueue,
         invalidQueue.pop();
         loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_WHITE);
     }
+
     SDL_RenderPresent(windowRenderer);
 }
+
+void SDL_Board::renderLast(Move lastMove)
+{
+    if(!lastMove.first.validPosition() || !lastMove.second.validPosition())
+        return;
+
+    // Previous move
+    loadOverlay(lastMove.first.x, lastMove.first.y, OVERLAY_YELLOW);
+    loadOverlay(lastMove.second.x, lastMove.second.y, OVERLAY_YELLOW);
+    SDL_RenderPresent(windowRenderer);
+}
+
 
 
 /****************************************************/

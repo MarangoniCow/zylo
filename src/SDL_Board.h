@@ -61,12 +61,15 @@ enum BOARD_OVERLAY
     OVERLAY_RED_B = 43,
     OVERLAY_WHITE_R = 40,
     OVERLAY_WHITE_G = 40,
-    OVERLAY_WHITE_B = 40
+    OVERLAY_WHITE_B = 40,
+    OVERLAY_YELLOW_R = 246,
+    OVERLAY_YELLOW_G = 218,
+    OVERLAY_YELLOW_B = 60
 };
 
 enum OVERLAY_COL
 {
-    OVERLAY_GREEN, OVERLAY_RED, OVERLAY_WHITE
+    OVERLAY_GREEN, OVERLAY_RED, OVERLAY_WHITE, OVERLAY_YELLOW
 };
 
 
@@ -100,6 +103,8 @@ class SDL_Board
         void renderBoard(BoardState state);
         void renderBoardUpdate(BoardState state);
         void renderOverlay(PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue);
+        void renderLast(Move lastMove);
+        void renderPrevious(BoardPosition prevPos, BoardPosition newPos);
 
         // STATIC METHODS
         static BoardPosition SDL_to_Coords(int SDL_x, int SDL_y);

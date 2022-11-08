@@ -87,6 +87,7 @@ void SDL_EventManager::BoardEvents()
         {
             requestPiecePromotion();
             gameWindow->renderBoard(board->returnState());
+            gameWindow->renderLast(board->returnLastMove());
             break;
         }
         case INVALID:
@@ -94,20 +95,21 @@ void SDL_EventManager::BoardEvents()
             curPos.ResetPosition();
             prevPos.ResetPosition();
             gameWindow->renderBoard(board->returnState());
+            gameWindow->renderLast(board->returnLastMove());
             break;
         }
         case MOVE:
         {
             gameWindow->renderBoard(board->returnState());
+            gameWindow->renderLast(board->returnLastMove());
             // Reset the click location
             curPos.ResetPosition();
             prevPos.ResetPosition();
             break;
         }
-        default: {
-            break;
-        }
+        default: {}
     }
+    
 }
 
 CLICK_TYPE SDL_EventManager::processWindowClick()

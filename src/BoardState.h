@@ -19,6 +19,7 @@
 typedef std::queue<BoardPosition> PositionQueue;
 typedef std::queue<Piece*> PieceQueue;
 
+
 struct BoardState {
     // Pieces, current and previous turn
     Piece* current[8][8];
