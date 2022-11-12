@@ -11,13 +11,18 @@
 
 // INTERNAL INCLUDES
 #include "Board.h"
+#include "GameplayHistory.h"
 // #include "Zylo.h"
-// #include "BoardHistory.h"
+
 
 // EXTERNAL INCLUDES
 enum BOARD_EVENT
 {
     DEFAULT, MOVE, INVALID, OVERLAY, PROMOTION, CHECKMATE
+};
+enum DIRECTION
+{
+    FORWARD = 1, BACKWARD = -1
 };
 
 
@@ -28,6 +33,8 @@ class GameplayManager
         PLAY_FLAG* pawnPromotion;
         Board* board;
         PIECE_COLOUR currentTurn;
+        GameplayHistory gameHistory;
+        TURN turnHead;
 
     public:
         // CONSTRUCTORS 
@@ -35,5 +42,9 @@ class GameplayManager
 
         BOARD_EVENT processBoardClick(BoardPosition curPos, BoardPosition newPos);
         Board* gameBoard() {return board;};
-        void newGame() {board->newGame();};
+        void newGame();
+        TURN turnNumber() {return gameHistory.returnTurn();};
+        StatePtr returnHistory(TURN n);
+        void newHistoryBranch(TURN n);
+        void traverseHistory(DIRECTION direction);
 };

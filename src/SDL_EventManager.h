@@ -31,11 +31,6 @@ class SDL_EventManager
         BoardPosition curPos;
         BoardPosition prevPos;
 
-        
-
-       
-        
-
     public:
         SDL_EventManager(SDL_Board* gameWindow_, GameplayManager* manager_) : gameWindow(gameWindow_), manager(manager_) {
             board = manager->gameBoard();
@@ -53,6 +48,8 @@ class SDL_EventManager
         // GAMEPLAY EVENTS
         bool checkGameplayFlags();
         void requestPiecePromotion();
+
+
         
 
 };

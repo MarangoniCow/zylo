@@ -8,7 +8,6 @@
 // EXTERNAL INCLUDES
 #include <iostream>
 
-// The heck is wrong with identations on this file and this file only? They seem to be half the size, it's extremely annoying!
 
 BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPosition newPos)
 {
@@ -17,9 +16,6 @@ BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPositi
     // If nothing exists in the new position, return overlay of old position
     if (newPos.validPosition() && !curPos.validPosition())
     {
-        
-
-
         if(board->returnState().pieceExists(newPos, board->returnTurn()))
         {
             BOARD_FLAGS boardFlags = board->returnBoardFlags();
@@ -38,6 +34,17 @@ BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPositi
         // processUpdate returns 0 if no move was made.
         if(!board->processUpdate(curPos, newPos))
             return INVALID;
+        else
+        {
+            if(turnHead != gameHistory.returnTurn())
+            {
+                gameHistory.truncateHistory(turnHead);
+            }
+            gameHistory.appendHistory(board->returnState());
+            turnHead = gameHistory.returnTurn();
+        }
+        
+            
 
         // Check flags
         BOARD_FLAGS flags = board->returnBoardFlags();
@@ -52,3 +59,32 @@ BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPositi
         return DEFAULT;
 }
 
+void GameplayManager::newGame()
+{
+    board->newGame();
+    gameHistory.newGame(board->returnState());
+    turnHead = gameHistory.returnTurn();
+}
+
+
+
+void GameplayManager::traverseHistory(DIRECTION direction)
+{
+    // Update turn head
+    if(direction == FORWARD) {
+        if(turnHead >= gameHistory.returnTurn())
+            return;
+        else
+            turnHead++;
+    }
+    else {
+        if(turnHead <= 1)
+            return;
+        else
+            turnHead--;
+    }
+
+    // Set board state to turn head from history
+    StatePtr newStatePtr = gameHistory.returnState(turnHead);
+    board->newState(*newStatePtr);
+}

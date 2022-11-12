@@ -18,14 +18,7 @@
 
 
 void SDL_EventManager::RunGame() {
-
-    /* CURRENT STATE REPORT 
-    * Long term plan: Move most of the initialisation of the board logic, etc etc to zylo.cpp
-    * and re-arrange the EventManager to do that: manage the events.
-    * For the moment, everything is just initialised here to get things running.
-    */
-   PIECE_COLOUR currentTurn = WHITE;
-       
+        
     // Game boolean
     isRunning = true;
     
@@ -102,14 +95,15 @@ void SDL_EventManager::BoardEvents()
         {
             gameWindow->renderBoard(board->returnState());
             gameWindow->renderLast(board->returnLastMove());
+            
             // Reset the click location
             curPos.ResetPosition();
             prevPos.ResetPosition();
+
             break;
         }
         default: {}
-    }
-    
+    }   
 }
 
 CLICK_TYPE SDL_EventManager::processWindowClick()
@@ -150,12 +144,24 @@ void SDL_EventManager::KeyboardEvents()
     {
         case SDLK_r:
         {
-            manager->gameBoard()->newGame();
-            gameWindow->renderBoard( manager->gameBoard()->returnState());
+            manager->newGame();
+            gameWindow->renderBoard(manager->gameBoard()->returnState());
+            break;
+        }
+        case SDLK_LEFT:
+        {
+            manager->traverseHistory(BACKWARD);
+            gameWindow->renderBoard(manager->gameBoard()->returnState());
+            break;
+        }
+        case SDLK_RIGHT:
+        {
+            manager->traverseHistory(FORWARD);
+            gameWindow->renderBoard(manager->gameBoard()->returnState());
             break;
         }
         default:
-        {break;};
+        {};
     }
 }
 
@@ -225,5 +231,3 @@ void SDL_EventManager::requestPiecePromotion()
     }
     board->processPromotion(promotionType);
 }
-
-
