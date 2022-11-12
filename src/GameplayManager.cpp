@@ -9,7 +9,8 @@
 #include <iostream>
 
 
-BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPosition newPos)
+BOARD_EVENT
+GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos)
 {
     
 

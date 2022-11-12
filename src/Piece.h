@@ -95,7 +95,7 @@ class Piece
         static int returnCount() {return Piece_count;};
         static std::vector<Piece*> returnInstanceList() {return Piece_instanceList;};
         static Piece* returnIDPtr(PIECE_ID ID_) {return Piece_instanceList[ID_];}; 
-        static int returnTotalPieces() {return size(Piece_instanceList);};
+        static int returnTotalPieces() {return (int)size(Piece_instanceList);};
 
         // NON-STATIC RETURNS
         PIECE_TYPE      returnType() {return type;};

@@ -46,11 +46,11 @@ internalGetFileType(const std::string &filename)
 			else res = FileTypeFile;
 			}
 #else
-		sw_uint32_t	unixmode=0, symlink=0;
-		sw_uint32_t	uid=0, gid=0;
-		sw_stat_t	st;
+		uint32_t	unixmode=0, symlink=0;
+		uint32_t	uid=0, gid=0;
+		stat_t	st;
 
-		if (sw_lstat(SWString(filename.c_str()), &st) >= 0)
+		if (lstat(SWString(filename.c_str()), &st) >= 0)
 			{
 #ifdef S_IFLNK
 			if ((st.st_mode & S_IFMT) == S_IFLNK)
