@@ -160,23 +160,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Board.cpp" />
+    <ClCompile Include="..\src\BoardMoves.cpp" />
+    <ClCompile Include="..\src\BoardState.cpp" />
     <ClCompile Include="..\src\functions.cpp" />
     <ClCompile Include="..\src\GameplayManager.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
+    <ClCompile Include="..\src\QueueFunctions.cpp" />
     <ClCompile Include="..\src\SDL_Board.cpp" />
     <ClCompile Include="..\src\SDL_EventManager.cpp" />
     <ClCompile Include="..\src\SDL_Pieces.cpp" />
     <ClCompile Include="..\src\Zylo.cpp" />
+    <ClCompile Include="..\src\ZyloBoard.cpp" />
+    <ClCompile Include="..\src\ZyloPiece.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Board.h" />
+    <ClInclude Include="..\src\BoardMoves.h" />
     <ClInclude Include="..\src\BoardPosition.h" />
+    <ClInclude Include="..\src\BoardState.h" />
     <ClInclude Include="..\src\functions.h" />
     <ClInclude Include="..\src\GameplayManager.h" />
     <ClInclude Include="..\src\Piece.h" />
+    <ClInclude Include="..\src\QueueFunctions.h" />
     <ClInclude Include="..\src\SDL_Board.h" />
     <ClInclude Include="..\src\SDL_EventManager.h" />
     <ClInclude Include="..\src\SDL_Pieces.h" />
+    <ClInclude Include="..\src\Zylo.h" />
+    <ClInclude Include="..\src\ZyloBoard.h" />
+    <ClInclude Include="..\src\ZyloPiece.h" />
+    <ClInclude Include="..\src\ZyloWeightings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

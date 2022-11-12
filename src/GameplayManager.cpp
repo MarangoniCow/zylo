@@ -10,7 +10,8 @@
 
 // The heck is wrong with identations on this file and this file only? They seem to be half the size, it's extremely annoying!
 
-BOARD_EVENT GameplayManager::processBoardClick(BoardPosition curPos, BoardPosition newPos)
+BOARD_EVENT
+GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos)
 {
     
 

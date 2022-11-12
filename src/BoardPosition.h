@@ -40,7 +40,7 @@ struct BoardPosition
         x = -1;
         y = -1;
     }
-    bool validPosition()
+    bool validPosition() const
     {
         if(x < 8 && x >= 0 && y < 8 && y >= 0)
             return 1;

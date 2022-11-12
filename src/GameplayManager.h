@@ -33,7 +33,7 @@ class GameplayManager
         // CONSTRUCTORS 
         GameplayManager(Board* board_) : board(board_) {};
 
-        BOARD_EVENT processBoardClick(BoardPosition curPos, BoardPosition newPos);
+        BOARD_EVENT processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos);
         Board* gameBoard() {return board;};
         void newGame() {board->newGame();};
 };
