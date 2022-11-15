@@ -161,8 +161,11 @@
   <ItemGroup>
     <ClCompile Include="..\src\Board.cpp" />
     <ClCompile Include="..\src\BoardMoves.cpp" />
+    <ClCompile Include="..\src\BoardPosition.cpp" />
+    <ClCompile Include="..\src\BoardSnapshot.cpp" />
     <ClCompile Include="..\src\BoardState.cpp" />
     <ClCompile Include="..\src\functions.cpp" />
+    <ClCompile Include="..\src\GameplayHistory.cpp" />
     <ClCompile Include="..\src\GameplayManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
@@ -176,10 +179,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Board.h" />
+    <ClInclude Include="..\src\BoardDefs.h" />
     <ClInclude Include="..\src\BoardMoves.h" />
     <ClInclude Include="..\src\BoardPosition.h" />
+    <ClInclude Include="..\src\BoardSnapshot.h" />
     <ClInclude Include="..\src\BoardState.h" />
     <ClInclude Include="..\src\functions.h" />
+    <ClInclude Include="..\src\GameplayHistory.h" />
     <ClInclude Include="..\src\GameplayManager.h" />
     <ClInclude Include="..\src\Piece.h" />
     <ClInclude Include="..\src\QueueFunctions.h" />

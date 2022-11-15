@@ -159,29 +159,42 @@ void BoardState::removePiece(PIECE_ID pieceToDelete)
 }
 
 /******************** BOOL CHECKS**************************/
-bool BoardState::pieceExists(Piece* piece) {
+bool BoardState::pieceExists(Piece* piece) const {
     return (piece != NULL);
 }
-bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col) {
+bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col) const {
     return (pieceExists(piece) && piece->returnColour() == col);
 }
-bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) {
+bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) const {
     return (pieceExists(piece, col) && piece->returnType() == type);
 }
 
-bool BoardState::pieceExists(BoardPosition pos) {
+bool BoardState::pieceExists(BoardPosition pos) const {
     return (current[pos.x][pos.y] != NULL);
 }
-bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) {
+bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) const {
     return pieceExists(pos) && current[pos.x][pos.y]->returnColour() == col;
 }
-bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) {
+bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const {
     return (pieceExists(pos, col) && current[pos.x][pos.y]->returnType() == type);
 }
 
 
 /********************** RETURNS ***************************/
-PieceQueue BoardState::returnPieceQueue()
+void
+BoardState::getPieceQueue(PieceQueue &pieceQueue) const
+{
+    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
+
+	// pieceQueue.clear();
+
+    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
+        Piece* piece = *it;
+        if(pieceExists(piece)) pieceQueue.push(piece);
+    }
+}
+
+PieceQueue BoardState::returnPieceQueue() const
 {
     PieceQueue pieceQueue;
     std::vector<Piece*> pieceVector = Piece::returnInstanceList();
@@ -192,7 +205,7 @@ PieceQueue BoardState::returnPieceQueue()
     }
     return pieceQueue;
 }
-PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
+PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col) const
 {
     PieceQueue pieceQueue;
     std::vector<Piece*> pieceVector = Piece::returnInstanceList();
@@ -203,7 +216,7 @@ PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
     }
     return pieceQueue;
 }
-PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type)
+PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type) const
 {
     PieceQueue pieceQueue;
     std::vector<Piece*> pieceVector = Piece::returnInstanceList();
@@ -216,7 +229,7 @@ PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type)
 }
 
 
-Piece* BoardState::returnPiece(BoardPosition pos)
+Piece* BoardState::returnPiece(BoardPosition pos) const
 {
     return current[pos.x][pos.y];
 }

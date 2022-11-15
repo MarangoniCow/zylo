@@ -12,15 +12,12 @@
 #pragma once
 
 // INTERNAL INCLUDES
+#include "BoardDefs.h"
+
 #include "Piece.h"
 #include "BoardPosition.h"
 #include "BoardState.h"
 #include "BoardMoves.h"
-
-// EXTERNAL INCLUDES
-#include <utility>
-
-typedef std::pair<BoardPosition, BoardPosition> Move;
 
 
 struct BOARD_FLAGS

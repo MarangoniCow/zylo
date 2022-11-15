@@ -15,7 +15,7 @@ void GameplayHistory::appendHistory(const BoardState &state)
     // Push to vector
     historyVec.push_back(std::make_shared<BoardState>(state));
     // Update current turn
-    turnCount = size(historyVec);
+    turnCount = (int)size(historyVec);
 }
 
 StatePtr GameplayHistory::returnState(TURN n) const
