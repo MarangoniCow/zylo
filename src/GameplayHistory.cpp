@@ -13,31 +13,31 @@
 void GameplayHistory::appendHistory(const BoardState &state)
 {
     // Push to vector
-    historyVec.push_back(std::make_shared<BoardState>(state));
+    m_historyVec.push_back(std::make_shared<BoardState>(state));
     // Update current turn
-    turnCount = (int)size(historyVec);
+    m_turnCount = (int)size(m_historyVec);
 }
 
 StatePtr GameplayHistory::returnState(TURN n) const
 {
     if(n > 0)
-        return historyVec[n - 1];
+        return m_historyVec[n - 1];
     else
         return nullptr;
 }
 
 void GameplayHistory::truncateHistory(unsigned int n)
 {
-    if(n >= turnCount)
+    if(n >= m_turnCount)
         return;
     else
     {
-        historyVec.erase(historyVec.begin() + n, historyVec.end());
+        m_historyVec.erase(m_historyVec.begin() + n, m_historyVec.end());
     }
 }
 
 void GameplayHistory::newGame(const BoardState& newState)
 {
-    historyVec.clear();
+    m_historyVec.clear();
     appendHistory(newState);
 }

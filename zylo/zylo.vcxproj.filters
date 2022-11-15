@@ -66,6 +66,9 @@
     <ClCompile Include="..\src\BoardSnapshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BoardPiece.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Board.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\src\BoardDefs.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BoardPiece.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

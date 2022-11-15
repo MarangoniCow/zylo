@@ -108,6 +108,7 @@ class Piece
         // NON-STATIC RETURNS
 		PIECE_TYPE      type() const		{ return m_type; }
 		BoardPosition   position() const	{ return pos; }
+		PIECE_COLOUR    color() const		{ return col; }
 
 		PIECE_TYPE      returnType() const {return m_type;}
 		BoardPosition   returnPosition() const {return pos;}
