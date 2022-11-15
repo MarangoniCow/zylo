@@ -209,13 +209,13 @@ bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE typ
 void
 BoardState::getPieceQueue(PieceQueue &pieceQueue) const
 {
-    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
-
-	// pieceQueue.clear();
-
-    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
-        Piece* piece = *it;
-        if(pieceExists(piece)) pieceQueue.push(piece);
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            if(current[i][j] != NULL)
+                pieceQueue.push(current[i][j]);
+        }
     }
 }
 

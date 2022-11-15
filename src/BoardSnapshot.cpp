@@ -1,5 +1,6 @@
 #include "BoardSnapshot.h"
 #include "Piece.h"
+#include <cstring>
 
 
 BoardSnapshot::BoardSnapshot()
