@@ -76,6 +76,10 @@ class BoardMoves {
 
         Piece* curKing;
         Piece* oppKing;
+
+        int curDir;
+
+        
         
 
         // Private methods: Resets

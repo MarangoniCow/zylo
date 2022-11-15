@@ -152,6 +152,9 @@ void BoardMoves::setTurnDependencies()
     curKing = statePtr->returnPieceQueue(curCol, KING).front();
     oppKing = statePtr->returnPieceQueue(oppCol, KING).front();
 
+    // Forward direction
+    curDir = (curCol == WHITE) ? 1 : -1;
+
 }
 
 /****************************************************/
@@ -682,6 +685,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
         return;
     
     BoardPosition curPos = currentPiece->position();
+    Move lastMove = statePtr->lastMove();
     
 
     // Special moves list
@@ -689,57 +693,40 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     {
         case PAWN:
         {
-            // Initialise
-            PIECE_COLOUR oppositeCol;
-            int enpassantRow;
-            int forward;
+            
 
-            if(currentPiece->colour() == WHITE)
-            {
-                oppositeCol = BLACK;
-                enpassantRow = 4;
-                forward = 1;               
-            }
-            else
-            {
-                oppositeCol = WHITE;
-                enpassantRow = 3;
-                forward = -1;                
-            }
+            // Initialise
+            int enpassantRow = (curCol == WHITE) ? 4 : 3;
 
             // GENERATE TAKE & EN-PASSANT: For loop repeats move queue for left/right instructions
             for(int i = -1; i <= 1; i += 2)
             {
                 // CHECK FOR TAKE: Check if we're at the edge or not
-                if(curPos.validUpdate(i, forward))
+                if(curPos.validUpdate(i, curDir))
                 {
-                    BoardPosition temp = curPos.returnUpdate(i, forward);
+                    BoardPosition temp = curPos.returnUpdate(i, curDir);
                     Piece* targetPiece = statePtr->current[temp.x][temp.y];
                     
-                    if(targetPiece != NULL && targetPiece->colour() == oppositeCol)
+                    if(targetPiece != NULL && targetPiece->colour() == oppCol)
                         validTakes->push(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
-                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0))
+                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0) && currentPiece->colour() == curCol)
                 {
                     Piece* targetPiece;
                     targetPiece = statePtr->current[curPos.x + i][enpassantRow];
                     if(targetPiece == NULL)
                         continue;
                     
-                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() == oppositeCol) ? 1 : 0;
-
-                    // Check to see if it was on the home row last move
-                    Piece* targetPiecePrev = statePtr->previous[curPos.x + i][enpassantRow + 2*forward];
-                    if(targetPiecePrev == NULL)
-                        continue;
-
-                    bool lastOnHomeRow = ( targetPiece->ID() == targetPiecePrev->ID()) ? 1 : 0;
                     
-                    if(pawnAdjacent && lastOnHomeRow)
-                        validTakes->push(curPos.returnUpdate(i, forward));
+                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
+                    bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() == oppCol) ? 1 : 0;
+                    bool isLastMoved = (targetPiece->position() == lastMove.second);
+                    bool lastOnHomeRow = (lastMove.first.y - lastMove.second.y == 2*curDir);
+                    
+                    if(pawnAdjacent && isLastMoved && lastOnHomeRow)
+                        validTakes->push(curPos.returnUpdate(i, curDir));
                 }
             }
             break;     

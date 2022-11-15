@@ -56,7 +56,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Update old state
-        memcpy(state.previous, state.current, sizeof(state.current));
+        state.lastMove(std::make_pair(curPos, tarPos));
         takePiece(currentPiece, tarPos);
     }
         
@@ -72,7 +72,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Update old state
-        memcpy(state.previous, state.current, sizeof(state.current));
+        state.lastMove(std::make_pair(curPos, tarPos));
 
         // Begin movement task flow
         preMoveTasks(curPos, tarPos);

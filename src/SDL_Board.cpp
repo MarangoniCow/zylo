@@ -197,26 +197,6 @@ void SDL_Board::renderBoard(BoardState state)
     SDL_RenderPresent(windowRenderer);
 }
 
-void SDL_Board::renderBoardUpdate(BoardState state)
-{
-    // Compare differences between new and old state
-    for(int i = 0; i < 8; i++) {
-        for(int j = 0; j < 8; j++)
-        {
-            if(state.current[i][j] != state.previous[i][j]) {
-
-                // Clear the current square
-                loadSquare(i, j);
-
-                // Check for a new piece and render if necessary
-                Piece* currentPiece = state.current[i][j];
-                if (currentPiece != NULL)
-                    loadPiece(i, j, currentPiece->type(), currentPiece->colour());
-            }
-        }
-    }
-    SDL_RenderPresent(windowRenderer);
-}
 
 void SDL_Board::renderOverlay(PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue)
 {
