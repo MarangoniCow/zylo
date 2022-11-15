@@ -47,6 +47,7 @@ struct BoardState {
     // Maintainence methods
     void clearBoard();
     void addPiece(Piece* newPiece);
+    void addPiece(PIECE_TYPE type, PIECE_COLOUR col, int x, int y);
     void removePiece(Piece* pieceToDelete);
     void removePiece(PIECE_ID pieceToDelete);
 

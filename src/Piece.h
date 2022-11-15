@@ -56,9 +56,6 @@ class Piece
     protected:
         // STATIC MEMBERS FOR GLOBAL FUNCTIONALITY
         static std::vector<Piece*> Piece_instanceList;          // Global ID list
-        static std::vector<Piece*> whitePieces;
-        static std::vector<Piece*> blackPieces;
-        static int Piece_count;                                 // Global piece count
 
         // CLASS SPECFIC FUNCTIONALITY
         const PieceDescriptor& descriptor;                      // Sub-class specific descriptor
@@ -75,7 +72,6 @@ class Piece
     public:
         Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
             // Assert global methodology
-            Piece_count += 1;
             ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             flag_move = 0;
@@ -87,13 +83,10 @@ class Piece
             type = descriptor.type;
         };
         virtual ~Piece() {
-            Piece_count -= 1;
             Piece_instanceList[ID] = nullptr;
         }
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
-        static int returnCount() {return Piece_count;};
-        static std::vector<Piece*> returnInstanceList() {return Piece_instanceList;};
         static Piece* returnIDPtr(PIECE_ID ID_) {return Piece_instanceList[ID_];}; 
         static int returnTotalPieces() {return (int)size(Piece_instanceList);};
 
@@ -106,6 +99,7 @@ class Piece
         
 
         // FLAGS
+        int flag() {return ID;};
         bool hasMoved() {return flag_move;};
 
         // SETTER METHODS

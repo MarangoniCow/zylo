@@ -10,8 +10,6 @@
 #include <iostream>
 #include <vector>
 
-// Initialise static variables
-int Piece::Piece_count = 0;
 std::vector<Piece*> Piece::Piece_instanceList;
 
 /*******    GETTER METHODS    *******/

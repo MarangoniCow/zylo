@@ -15,55 +15,45 @@ void BoardState::initialiseBoard()
     // Make sure board is clear
     clearBoard();
     // Initialise all 32 pieces with correct positions
-    Pawn* pw2 = new Pawn(WHITE, 1, 1);
-    Pawn* pw1 = new Pawn(WHITE, 0, 1);
-    Pawn* pw3 = new Pawn(WHITE, 2, 1);
-    Pawn* pw4 = new Pawn(WHITE, 3, 1);
-    Pawn* pw5 = new Pawn(WHITE, 4, 1);
-    Pawn* pw6 = new Pawn(WHITE, 5, 1);
-    Pawn* pw7 = new Pawn(WHITE, 6, 1);
-    Pawn* pw8 = new Pawn(WHITE, 7, 1);
+    
+    addPiece(PAWN, WHITE, 0, 1);
+    addPiece(PAWN, WHITE, 1, 1);
+    addPiece(PAWN, WHITE, 2, 1);
+    addPiece(PAWN, WHITE, 3, 1);
+    addPiece(PAWN, WHITE, 4, 1);
+    addPiece(PAWN, WHITE, 5, 1);
+    addPiece(PAWN, WHITE, 6, 1);
+    addPiece(PAWN, WHITE, 7, 1);
 
-    Pawn* pb1 = new Pawn(BLACK, 0, 6);
-    Pawn* pb2 = new Pawn(BLACK, 1, 6);
-    Pawn* pb3 = new Pawn(BLACK, 2, 6);
-    Pawn* pb4 = new Pawn(BLACK, 3, 6);
-    Pawn* pb5 = new Pawn(BLACK, 4, 6);
-    Pawn* pb6 = new Pawn(BLACK, 5, 6);
-    Pawn* pb7 = new Pawn(BLACK, 6, 6);
-    Pawn* pb8 = new Pawn(BLACK, 7, 6);
+    addPiece(PAWN, BLACK, 0, 6);
+    addPiece(PAWN, BLACK, 1, 6);
+    addPiece(PAWN, BLACK, 2, 6);
+    addPiece(PAWN, BLACK, 3, 6);
+    addPiece(PAWN, BLACK, 4, 6);
+    addPiece(PAWN, BLACK, 5, 6);
+    addPiece(PAWN, BLACK, 6, 6);
+    addPiece(PAWN, BLACK, 7, 6);
 
-    Rook* rw1 = new Rook(WHITE, 0, 0);
-    Rook* rw2 = new Rook(WHITE, 7, 0);
-    Rook* rb1 = new Rook(BLACK, 0, 7);
-    Rook* rb2 = new Rook(BLACK, 7, 7);
+    addPiece(ROOK, WHITE, 0, 0);
+    addPiece(ROOK, WHITE, 7, 0);
+    addPiece(ROOK, BLACK, 0, 7);
+    addPiece(ROOK, BLACK, 7, 7);
 
-    Knight* kw1 = new Knight(WHITE, 1, 0);
-    Knight* kw2 = new Knight(WHITE, 6, 0);
-    Knight* kb1 = new Knight(BLACK, 1, 7);
-    Knight* kb2 = new Knight(BLACK, 6, 7);
+    addPiece(KNIGHT, WHITE, 1, 0);
+    addPiece(KNIGHT, WHITE, 6, 0);
+    addPiece(KNIGHT, BLACK, 1, 7);
+    addPiece(KNIGHT, BLACK, 6, 7);
 
-    Bishop* bw1 = new Bishop(WHITE, 2, 0);
-    Bishop* bw2 = new Bishop(WHITE, 5, 0);
-    Bishop* bb1 = new Bishop(BLACK, 2, 7);
-    Bishop* bb2 = new Bishop(BLACK, 5, 7);
+    addPiece(BISHOP, WHITE, 2, 0);
+    addPiece(BISHOP, WHITE, 5, 0);
+    addPiece(BISHOP, BLACK, 2, 7);
+    addPiece(BISHOP, BLACK, 5, 7);
 
-    Queen* qw1 = new Queen(WHITE, 3, 0);
-    Queen* qb1 = new Queen(BLACK, 3, 7);
+    addPiece(QUEEN, WHITE, 3, 0);
+    addPiece(QUEEN, BLACK, 3, 7);
 
-    King* kiw1 = new King(WHITE, 4, 0);
-    King* kib1 = new King(BLACK, 4, 7);
-
-  
-   // Return the list of pieces from Piece, iterate over it and update BoardState accordingly.
-    std::vector<Piece*> pieceList = Piece::returnInstanceList();
-    for(auto it = pieceList.begin(); it != pieceList.end(); it++)
-    {
-        Piece* temp = *it;
-
-        if(temp != NULL)
-            current[temp->returnPosition().x][temp->returnPosition().y] = temp;
-    }
+    addPiece(KING, WHITE, 4, 0);
+    addPiece(KING, BLACK, 4, 7);  
 }
 
 /******************** UPDATE METHODS **********************/
@@ -140,6 +130,41 @@ void BoardState::addPiece(Piece* piece)
         std::cout << "Cannot add piece: invalid position" << std::endl;
 }
 
+void BoardState::addPiece(PIECE_TYPE type, PIECE_COLOUR col, int x, int y)
+{
+    Piece* p;
+    // Check position here
+    switch (type)
+    {
+        case PAWN: {
+            p = new Pawn(col, x, y);
+            break;
+        }
+        case ROOK: {
+            p = new Rook(col, x, y);
+            break;
+        }
+        case KNIGHT: {
+            p = new Knight(col, x, y);
+            break;
+        }
+        case BISHOP: {
+            p =  new Bishop(col, x, y);
+            break;
+        }
+        case QUEEN: {
+            p = new Queen(col, x, y);
+            break;
+        }
+        case KING: {
+            p = new King(col, x, y);
+            break;
+        }
+        default: {};   
+    }
+    current[x][y] = p;
+}
+
 void BoardState::removePiece(Piece* pieceToDelete)
 {
     if(!pieceExists(pieceToDelete))
@@ -184,34 +209,43 @@ bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE typ
 PieceQueue BoardState::returnPieceQueue()
 {
     PieceQueue pieceQueue;
-    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
-
-    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
-        Piece* piece = *it;
-        if(pieceExists(piece)) pieceQueue.push(piece);
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            if(current[i][j] != NULL)
+                pieceQueue.push(current[i][j]);
+        }
     }
     return pieceQueue;
 }
 PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col)
 {
     PieceQueue pieceQueue;
-    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
-
-    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
-        Piece* piece = *it;
-        if(pieceExists(piece, col)) pieceQueue.push(piece);
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            BoardPosition pos(i, j);
+            if(pieceExists(pos, col))
+                pieceQueue.push(current[i][j]);
+        }
     }
     return pieceQueue;
 }
 PieceQueue BoardState::returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type)
 {
     PieceQueue pieceQueue;
-    std::vector<Piece*> pieceVector = Piece::returnInstanceList();
-
-    for(auto it = pieceVector.begin(); it != pieceVector.end(); it++) {
-        Piece* piece = *it;
-        if(pieceExists(piece, col, type)) pieceQueue.push(piece);
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            BoardPosition pos(i, j);
+            if(pieceExists(pos, col, type))
+                pieceQueue.push(current[i][j]);
+        }
     }
+
     return pieceQueue;
 }
 
