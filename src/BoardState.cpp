@@ -61,7 +61,7 @@ void BoardState::promotePiece(PIECE_ID ID, PIECE_TYPE newType)
 {
     Piece* currentPiece = Piece::returnIDPtr(ID);
     PIECE_COLOUR col = currentPiece->colour();
-    BoardPosition pos = currentPiece->position();
+    BoardPosition pos(currentPiece->x(), currentPiece->y());
 
     switch(newType)
     {
@@ -123,7 +123,7 @@ void BoardState::addPiece(Piece* piece)
         return;
     }
 
-    BoardPosition pos = piece->position();
+    BoardPosition pos(piece->x(), piece->y());
     if(pos.validPosition())
         current[pos.x][pos.y] = piece;
     else
@@ -170,7 +170,7 @@ void BoardState::removePiece(Piece* pieceToDelete)
     if(!pieceExists(pieceToDelete))
         return;
     // Get current position
-    BoardPosition pos = pieceToDelete->position();
+    BoardPosition pos(pieceToDelete->x(), pieceToDelete->y());
 
     // Update board state to null
     current[pos.x][pos.y] = NULL;

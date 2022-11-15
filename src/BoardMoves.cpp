@@ -224,7 +224,7 @@ void BoardMoves::generateMovementRange(Piece* piece)
     addSpecialTakes(piece, &moveQueue.validTakes);
 
     // Add queue to appropriate board location
-    BoardPosition pos = piece->position();
+    BoardPosition pos(piece->x(), piece->y());
     movementState[pos.x][pos.y] = moveQueue;
 }
 MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange)
@@ -241,7 +241,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
     SightedQueue sightedQueue;
 
     // Fetch current values
-    BoardPosition pos = piece->position();
+    BoardPosition pos(piece->x(), piece->y());
 
     // Initialise target values
     BoardPosition tarPos;
@@ -349,7 +349,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
 PieceChecks BoardMoves::pieceChecks(Piece* piece)
 {
     // Fetch the list of valid takes from movement state
-    BoardPosition pos = piece->position();
+    BoardPosition pos(piece->x(), piece->y());
     PositionQueue pieceTakes = movementState[pos.x][pos.y].validTakes;
 
     // Initialise a queue for pieces and the pieceChecks return (ID/queue pair)
@@ -473,11 +473,11 @@ PositionQueue BoardMoves::returnSafeTakes(Piece* piece)
     }
     return vectorToQueue(validTakes);
 }
-void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
+void BoardMoves::restrictRevealedCheckMoves(Piece* piece)
 {
     // Fetch the piece colour
-    PIECE_COLOUR col = revealedPiece->colour();
-    BoardPosition curPos = revealedPiece->position();
+    PIECE_COLOUR col = piece->colour();
+    BoardPosition curPos(piece->x(), piece->y());
 
     // Fetch all pieces of the opposite colour
     PieceQueue opposingPieces = statePtr->returnPieceQueue((col == WHITE) ? BLACK : WHITE);
@@ -486,7 +486,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
     while(!opposingPieces.empty())
     {
         // 1) Fetch front piece and it's position
-        BoardPosition oppPos = opposingPieces.front()->position();
+        BoardPosition oppPos(opposingPieces.front()->x(), opposingPieces.front()->y());
         MovementQueue oppMovQueue = returnMovementQueue(oppPos);
         opposingPieces.pop();
 
@@ -520,7 +520,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
             
             // Find the king in the vector
             for(; idx < sightedPiecesVector.size(); idx++) {
-                if(sightedPiecesVector[idx] == revealedPiece)
+                if(sightedPiecesVector[idx] == piece)
                     break;
             }
 
@@ -528,7 +528,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
             if(sightedPiecesVector.size() <= 2)
             {
                 Piece* temp = sightedPiecesVector[idx - 1];
-                BoardPosition tempPos = temp->position();
+                BoardPosition tempPos(temp->x(), temp->y());
                 MovementQueue moveQueue = returnMovementQueue(temp);
 
                 // Empty valid moves *BUG: DON'T NEED TO GET RID OF MOVEMENTS IN THE SAME RELATIVE DIRECTION*
@@ -570,7 +570,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
 }
 void BoardMoves::restrictKingMoves(PIECE_COLOUR col)
 {
-    BoardPosition kingPos = curKing->position();
+    BoardPosition kingPos(curKing->x(), curKing->y());
     movementState[kingPos.x][kingPos.y].validMoves = returnSafeMoves(curKing);
     movementState[kingPos.x][kingPos.y].validTakes = returnSafeTakes(curKing);
 }
@@ -578,9 +578,9 @@ void BoardMoves::restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMo
                                 PositionQueue* validMoves, PositionQueue* validTakes)
 {
     // 1) Fetch positions of all pieces
-    BoardPosition posToProtect  = pieceToProtect->position();
-    BoardPosition posToMove     = pieceToMove->position();
-    BoardPosition posOfCheck    = checkingPiece->position();
+    BoardPosition posToProtect(pieceToProtect->x(), pieceToProtect->y());
+    BoardPosition posToMove(pieceToMove->x(), pieceToMove->y());
+    BoardPosition posOfCheck(checkingPiece->x(), checkingPiece->y());
     
     PositionQueue posOfCheckQueue;
     posOfCheckQueue.push(posOfCheck);
@@ -618,7 +618,7 @@ void BoardMoves::removeInvalidCheckedMoves(PieceQueue kingCheckedBy)
             PositionQueue emptyPosQueue;
             if(currentPieces.front() != curKing)
             {
-                BoardPosition pos = currentPieces.front()->position();
+                BoardPosition pos(currentPieces.front()->x(), currentPieces.front()->y());
                 currentPieces.pop();
 
                 movementState[pos.x][pos.y].validMoves = emptyPosQueue;
@@ -635,7 +635,7 @@ void BoardMoves::removeInvalidCheckedMoves(PieceQueue kingCheckedBy)
         {
             if(currentPieces.front() != curKing)
             {
-                BoardPosition pos = currentPieces.front()->position();
+                BoardPosition pos(currentPieces.front()->x(), currentPieces.front()->y());
                 restrictToBlockingMoves(curKing, currentPieces.front(), kingCheckedBy.front(),
                     &movementState[pos.x][pos.y].validMoves, &movementState[pos.x][pos.y].validTakes);
                 currentPieces.pop();
@@ -656,7 +656,7 @@ MovementQueue BoardMoves::returnMovementQueue(BoardPosition pos)
 }
 MovementQueue BoardMoves::returnMovementQueue(Piece* piece)
 {
-    BoardPosition pos = piece->position();
+    BoardPosition pos(piece->x(), piece->y());
     return returnMovementQueue(pos);
 }
 ChecksQueue BoardMoves::returnChecksQueue(PIECE_COLOUR col)
@@ -684,7 +684,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     if(currentPiece == NULL)
         return;
     
-    BoardPosition curPos = currentPiece->position();
+    BoardPosition curPos(currentPiece->x(), currentPiece->y());
     Move lastMove = statePtr->lastMove();
     
 
@@ -716,10 +716,11 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                     if(targetPiece == NULL)
                         continue;
                     
-                    
+                    BoardPosition targetPos(targetPiece->x(), targetPiece->y());
+
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
                     bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() == oppCol) ? 1 : 0;
-                    bool isLastMoved = (targetPiece->position() == lastMove.second);
+                    bool isLastMoved = (targetPos == lastMove.second);
                     bool lastOnHomeRow = (lastMove.first.y - lastMove.second.y == 2*curDir);
                     
                     if(pawnAdjacent && isLastMoved && lastOnHomeRow)
@@ -737,7 +738,7 @@ void BoardMoves::addCastling(Piece* currentPiece)
     if(currentPiece == NULL)
         return;
     
-    BoardPosition curPos = currentPiece->position();
+    BoardPosition curPos(currentPiece->x(), currentPiece->y());
     PositionQueue* validMoves = &movementState[curPos.x][curPos.y].validMoves;
     PIECE_COLOUR oppCol = (currentPiece->colour() == WHITE) ? BLACK : WHITE;
     

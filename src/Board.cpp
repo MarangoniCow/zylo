@@ -110,7 +110,7 @@ void Board::postMoveTasks()
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {   
-    BoardPosition curPos = currentPiece->position();
+    BoardPosition curPos(currentPiece->x(), currentPiece->y());
 
     // Update current position in state as null
     state.current[curPos.x][curPos.y] = NULL;
@@ -145,7 +145,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
         case PAWN:
         {
             int endrow = (currentPiece->colour() == WHITE) ? 7 : 0;
-            if(currentPiece->position().y == endrow)
+            if(currentPiece->y() == endrow)
             {
                 boardFlags.pawnPromotion.first = 1;
                 boardFlags.pawnPromotion.second = currentPiece->ID();

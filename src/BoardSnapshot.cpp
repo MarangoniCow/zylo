@@ -21,9 +21,7 @@ BoardSnapshot::grabBoardState(const BoardState &state)
 			Piece	*p = pieceQueue.front();
 
 			pieceQueue.pop();
-
-			BoardPosition	pos = p->position();
-			BoardPiece		&bp=m_board[pos.x][pos.y];
+			BoardPiece  &bp=m_board[p->x()][p->y()];
 
 			bp.type(p->type());
 			bp.moved(p->hasMoved());

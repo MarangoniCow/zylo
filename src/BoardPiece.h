@@ -12,7 +12,7 @@ public:
 			MaskColor		= 0x08,
             MaskX           = 0xE0,
             MaskY           = 0X700,
-			ShiftColor		= 3,
+			ShiftColour		= 3,
             ShiftX          = 5,
             ShiftY          = 8,
             FlagMoved		= 0x10,
@@ -32,8 +32,8 @@ public:
 		void	        type(PIECE_TYPE v)		{ m_flags = (m_flags & ~MaskType) | (v & MaskType); }
 		PIECE_TYPE		type() const	        { return (PIECE_TYPE)(m_flags & MaskType); }
 
-		void	        color(PIECE_COLOUR v)	{ m_flags = (m_flags & ~MaskColor) | ((v << ShiftColor) & MaskColor); }
-		PIECE_COLOUR    color() const	        { return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColor); }
+		void	        color(PIECE_COLOUR v)	{ m_flags = (m_flags & ~MaskColor) | ((v << ShiftColour) & MaskColor); }
+		PIECE_COLOUR    color() const	        { return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColour); }
 
 		bool	moved() const	{ return ((m_flags & FlagMoved) != 0); }
 		void	moved(bool v)	{

@@ -59,26 +59,32 @@ class Piece
         bool			m_hasMoved;                                         // Movement flag
         
     public:
-        Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y) :
+        Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_) :
 			m_col(col_),
-			m_pos(x, y),
-			m_type(type),
+			m_pos(x_, y_),
+			m_type(type_),
 			m_hasMoved(false)
 			{
             // Assert global methodology
             m_ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             m_hasMoved = 0;
-        };
-        Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) :
+
+            type(type_);
+            colour(col_);
+            x(x_);
+            y(y_);
+
+            };
+        Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_, PIECE_ID ID_) :
 			m_col(col_),
-			m_pos(x, y),
+			m_pos(x_, y_),
 			m_ID(ID_),
-			m_type(type),
+			m_type(type_),
 			m_hasMoved(true)
 			{
             Piece_instanceList[ID_] = this;
-            m_hasMoved = 1; 
+            m_hasMoved = 1;
         };
         virtual ~Piece() {
             Piece_instanceList[m_ID] = nullptr;
@@ -86,25 +92,77 @@ class Piece
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
         static Piece* returnIDPtr(PIECE_ID ID_) {return Piece_instanceList[ID_];}; 
-        static int returnTotalPieces() {return (int)size(Piece_instanceList);};
-
-        // NON-STATIC RETURNS
-		PIECE_TYPE      type() const        { return m_type;}	
-		PIECE_ID        ID() const          { return m_ID;}
-        PIECE_COLOUR    colour() const      { return m_col;}
-        BoardPosition   position() const    { return m_pos;}
-        
+        static int returnTotalPieces() {return (int)size(Piece_instanceList);};      
 
         // FLAGS
+        PIECE_ID ID()   {return m_ID;};
         bool hasMoved() {return m_hasMoved;};
 
         // SETTER METHODS
         void updatePosition(BoardPosition pos);
         
         // FUNCTIONALITY METHODS
-        virtual PositionQueue moveRange() = 0; 
+        virtual PositionQueue moveRange() = 0;
 
 
+
+
+
+
+        /****************************************************
+        *       BOARD PIECE INTEGRATION                     */
+
+public:
+		enum Flags
+			{
+			MaskType		= 0x07,
+			MaskColor		= 0x08,
+            MaskX           = 0xE0,
+            MaskY           = 0X700,
+			ShiftColour		= 3,
+            ShiftX          = 5,
+            ShiftY          = 8,
+            FlagMoved		= 0x10,
+			};
+
+public:      
+		
+		void	        type(PIECE_TYPE v)		{ m_flags = (m_flags & ~MaskType) | (v & MaskType); }
+		PIECE_TYPE		type() const	        { return (PIECE_TYPE)(m_flags & MaskType); }
+
+		void	        colour(PIECE_COLOUR v)	{ m_flags = (m_flags & ~MaskColor) | ((v << ShiftColour) & MaskColor); }
+		PIECE_COLOUR    colour() const	        { return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColour); }
+
+		bool	moved() const	{ return ((m_flags & FlagMoved) != 0); }
+		void	moved(bool v)	{
+								if (v)
+									{
+									m_flags |= FlagMoved;
+									}
+								else
+									{
+									m_flags &= ~FlagMoved;
+									}
+								}
+
+        void	x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
+		int     x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
+
+        void	y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
+		int     y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
+
+        void    position(BoardPosition pos)     {
+                                                x(pos.x);
+                                                y(pos.y);
+                                                }
+        BoardPosition position()                {
+                                                BoardPosition pos(x(), y());
+                                                return pos;
+                                                }
+
+
+protected:
+		uint16_t	m_flags;
         
 };
 

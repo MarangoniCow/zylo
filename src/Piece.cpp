@@ -17,9 +17,15 @@ void Piece::updatePosition(BoardPosition newPos)
 {
     // Check flag
     if(!m_hasMoved)
+    {
         m_hasMoved = 1;
+        moved(true);
+    }
+        
     
     m_pos.updatePosition(newPos);
+    position(newPos);
+    
 }
 
 
