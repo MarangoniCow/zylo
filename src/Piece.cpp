@@ -19,7 +19,7 @@ void Piece::updatePosition(BoardPosition newPos)
     if(!m_hasMoved)
         m_hasMoved = 1;
     
-    pos.updatePosition(newPos);
+    m_pos.updatePosition(newPos);
 }
 
 
@@ -37,13 +37,13 @@ PositionQueue Pawn::moveRange()
     PositionQueue moveQueue;
 
     // WHITE = 0, BLACK = 1
-    if(!col) {
-        if(pos.validUpdate(0, 1)) moveQueue.push(pos.returnUpdate(0, 1));
-        if(!m_hasMoved && pos.validUpdate(0, 2)) moveQueue.push(pos.returnUpdate(0, 2));
+    if(!m_col) {
+        if(m_pos.validUpdate(0, 1)) moveQueue.push(m_pos.returnUpdate(0, 1));
+        if(!m_hasMoved && m_pos.validUpdate(0, 2)) moveQueue.push(m_pos.returnUpdate(0, 2));
     }
     else {
-        if(pos.validUpdate(0, -1)) moveQueue.push(pos.returnUpdate(0, -1));
-        if(!m_hasMoved && pos.validUpdate(0, -2)) moveQueue.push(pos.returnUpdate(0, -2));
+        if(m_pos.validUpdate(0, -1)) moveQueue.push(m_pos.returnUpdate(0, -1));
+        if(!m_hasMoved && m_pos.validUpdate(0, -2)) moveQueue.push(m_pos.returnUpdate(0, -2));
     }  
     return moveQueue;
 }
@@ -54,29 +54,29 @@ PositionQueue Rook::moveRange()
 
     // Moving right
     int i = 1;
-    while(pos.validUpdate(i, 0)) {
-        moveQueue.push(pos.returnUpdate(i, 0));
+    while(m_pos.validUpdate(i, 0)) {
+        moveQueue.push(m_pos.returnUpdate(i, 0));
         i++;
    }
 
     // Moving left
     i = -1;
-    while(pos.validUpdate(i, 0)) {
-        moveQueue.push(pos.returnUpdate(i, 0));
+    while(m_pos.validUpdate(i, 0)) {
+        moveQueue.push(m_pos.returnUpdate(i, 0));
         i--;
     }
 
     // Moving forward
     int j = 1;
-    while(pos.validUpdate(0, j)) {
-        moveQueue.push(pos.returnUpdate(0, j));
+    while(m_pos.validUpdate(0, j)) {
+        moveQueue.push(m_pos.returnUpdate(0, j));
         j++;
     }
 
     // Moving backward
     j = -1;
-    while(pos.validUpdate(0, j)) {
-        moveQueue.push(pos.returnUpdate(0, j));
+    while(m_pos.validUpdate(0, j)) {
+        moveQueue.push(m_pos.returnUpdate(0, j));
         j--;
     }
     
@@ -88,17 +88,17 @@ PositionQueue Knight::moveRange()
     PositionQueue moveQueue;
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
-    if(pos.validUpdate(1, 2)) moveQueue.push(pos.returnUpdate(1, 2));
-    if(pos.validUpdate(2, 1)) moveQueue.push(pos.returnUpdate(2, 1));
+    if(m_pos.validUpdate(1, 2)) moveQueue.push(m_pos.returnUpdate(1, 2));
+    if(m_pos.validUpdate(2, 1)) moveQueue.push(m_pos.returnUpdate(2, 1));
 
-    if(pos.validUpdate(-1, 2)) moveQueue.push(pos.returnUpdate(-1, 2));
-    if(pos.validUpdate(-2, 1)) moveQueue.push(pos.returnUpdate(-2, 1));
+    if(m_pos.validUpdate(-1, 2)) moveQueue.push(m_pos.returnUpdate(-1, 2));
+    if(m_pos.validUpdate(-2, 1)) moveQueue.push(m_pos.returnUpdate(-2, 1));
 
-    if(pos.validUpdate(1, -2)) moveQueue.push(pos.returnUpdate(1, -2));
-    if(pos.validUpdate(2, -1)) moveQueue.push(pos.returnUpdate(2, -1));
+    if(m_pos.validUpdate(1, -2)) moveQueue.push(m_pos.returnUpdate(1, -2));
+    if(m_pos.validUpdate(2, -1)) moveQueue.push(m_pos.returnUpdate(2, -1));
 
-    if(pos.validUpdate(-1, -2)) moveQueue.push(pos.returnUpdate(-1, -2));
-    if(pos.validUpdate(-2, -1)) moveQueue.push(pos.returnUpdate(-2, -1));
+    if(m_pos.validUpdate(-1, -2)) moveQueue.push(m_pos.returnUpdate(-1, -2));
+    if(m_pos.validUpdate(-2, -1)) moveQueue.push(m_pos.returnUpdate(-2, -1));
 
     return moveQueue;
     
@@ -111,8 +111,8 @@ PositionQueue Bishop::moveRange()
     // Moving diagonal right
     int i = 1;
     int j = 1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i++;
         j++;
     }
@@ -120,8 +120,8 @@ PositionQueue Bishop::moveRange()
     // Moving diagonal left
     i = -1;
     j = 1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i--;
         j++;
     }
@@ -129,8 +129,8 @@ PositionQueue Bishop::moveRange()
     // Moving diagonal down-right
     i = 1;
     j = -1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i++;
         j--;
     }
@@ -138,8 +138,8 @@ PositionQueue Bishop::moveRange()
     // Moving diagonal down-left
     i = -1;
     j = -1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i--;
         j--;
     }
@@ -153,37 +153,37 @@ PositionQueue Queen::moveRange()
 
     // Moving right
     int i = 1;
-    while(pos.validUpdate(i, 0)) {
-        moveQueue.push(pos.returnUpdate(i, 0));
+    while(m_pos.validUpdate(i, 0)) {
+        moveQueue.push(m_pos.returnUpdate(i, 0));
         i++;
     }
 
     // Moving left
     i = -1;
-    while(pos.validUpdate(i, 0)) {
-        moveQueue.push(pos.returnUpdate(i, 0));
+    while(m_pos.validUpdate(i, 0)) {
+        moveQueue.push(m_pos.returnUpdate(i, 0));
         i--;
     }
 
     // Moving forward
     int j = 1;
-    while(pos.validUpdate(0, j)) {
-        moveQueue.push(pos.returnUpdate(0, j));
+    while(m_pos.validUpdate(0, j)) {
+        moveQueue.push(m_pos.returnUpdate(0, j));
         j++;
     }
 
     // Moving backward
     j = -1;
-    while(pos.validUpdate(0, j)) {
-        moveQueue.push(pos.returnUpdate(0, j));
+    while(m_pos.validUpdate(0, j)) {
+        moveQueue.push(m_pos.returnUpdate(0, j));
         j--;
     }
 
     // Moving diagonal right
     i = 1;
     j = 1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i++;
         j++;
     }
@@ -191,8 +191,8 @@ PositionQueue Queen::moveRange()
     // Moving diagonal left
     i = -1;
     j = 1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i--;
         j++;
     }
@@ -200,8 +200,8 @@ PositionQueue Queen::moveRange()
     // Moving diagonal down-right
     i = 1;
     j = -1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i++;
         j--;
     }
@@ -209,8 +209,8 @@ PositionQueue Queen::moveRange()
     // Moving diagonal down-left
     i = -1;
     j = -1;
-    while(pos.validUpdate(i, j)) {
-        moveQueue.push(pos.returnUpdate(i, j));
+    while(m_pos.validUpdate(i, j)) {
+        moveQueue.push(m_pos.returnUpdate(i, j));
         i--;
         j--;
     }
@@ -224,14 +224,14 @@ PositionQueue King::moveRange()
     PositionQueue moveQueue;
 
     // Permutations of {0, 1, -1}
-    if(pos.validUpdate(1, 0))   moveQueue.push(pos.returnUpdate(1, 0));
-    if(pos.validUpdate(1, 1))   moveQueue.push(pos.returnUpdate(1, 1));
-    if(pos.validUpdate(0, 1))   moveQueue.push(pos.returnUpdate(0, 1));
-    if(pos.validUpdate(-1, 0))  moveQueue.push(pos.returnUpdate(-1, 0));
-    if(pos.validUpdate(-1, -1)) moveQueue.push(pos.returnUpdate(-1, -1));
-    if(pos.validUpdate(0, -1))  moveQueue.push(pos.returnUpdate(0, -1));
-    if(pos.validUpdate(1, -1))  moveQueue.push(pos.returnUpdate(1, -1));
-    if(pos.validUpdate(-1, 1))  moveQueue.push(pos.returnUpdate(-1, 1));
+    if(m_pos.validUpdate(1, 0))   moveQueue.push(m_pos.returnUpdate(1, 0));
+    if(m_pos.validUpdate(1, 1))   moveQueue.push(m_pos.returnUpdate(1, 1));
+    if(m_pos.validUpdate(0, 1))   moveQueue.push(m_pos.returnUpdate(0, 1));
+    if(m_pos.validUpdate(-1, 0))  moveQueue.push(m_pos.returnUpdate(-1, 0));
+    if(m_pos.validUpdate(-1, -1)) moveQueue.push(m_pos.returnUpdate(-1, -1));
+    if(m_pos.validUpdate(0, -1))  moveQueue.push(m_pos.returnUpdate(0, -1));
+    if(m_pos.validUpdate(1, -1))  moveQueue.push(m_pos.returnUpdate(1, -1));
+    if(m_pos.validUpdate(-1, 1))  moveQueue.push(m_pos.returnUpdate(-1, 1));
     
     return moveQueue;
     

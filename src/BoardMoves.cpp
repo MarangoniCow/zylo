@@ -181,13 +181,13 @@ void BoardMoves::processState()
     restrictRevealedCheckMoves(curKing);
     
     // 4) Check if the King is in check
-    PieceQueue kingCheckedBy = pieceCheckedBy(curKing->returnID(), oppChecks);
+    PieceQueue kingCheckedBy = pieceCheckedBy(curKing->ID(), oppChecks);
     
     // 5) Set flags
     if(curKing != NULL && !kingCheckedBy.empty()) {
         // Set check flags
         kingCheck.first = 1;
-        kingCheck.second = curKing->returnID();
+        kingCheck.second = curKing->ID();
 
         removeInvalidCheckedMoves(kingCheckedBy);
     }
@@ -221,7 +221,7 @@ void BoardMoves::generateMovementRange(Piece* piece)
     addSpecialTakes(piece, &moveQueue.validTakes);
 
     // Add queue to appropriate board location
-    BoardPosition pos = piece->returnPosition();
+    BoardPosition pos = piece->position();
     movementState[pos.x][pos.y] = moveQueue;
 }
 MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange)
@@ -238,7 +238,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
     SightedQueue sightedQueue;
 
     // Fetch current values
-    BoardPosition pos = piece->returnPosition();
+    BoardPosition pos = piece->position();
 
     // Initialise target values
     BoardPosition tarPos;
@@ -247,11 +247,11 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
     // Bool to check pieces
     bool pieceInPrev = 1;
 
-    PIECE_TYPE pieceType = piece->returnType();
+    PIECE_TYPE pieceType = piece->type();
 
 
     // Knight algorithm: Special case, don't need to think about all the other bits
-    if(piece != NULL && piece->returnType() == KNIGHT)
+    if(piece != NULL && piece->type() == KNIGHT)
     {
         while(!moveRange.empty())
         {
@@ -265,7 +265,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
             {
                 validMoves.push(tarPos);
             }
-            else if (tarPiece->returnColour() == piece->returnColour())
+            else if (tarPiece->colour() == piece->colour())
             {
                 invalidMoves.push(tarPos);
                 sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
@@ -299,7 +299,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
         // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
         if(relpos_prev != SAME && pieceInPrev && relpos_curr == relpos_prev)
         {
-            if(tarPiece != NULL && piece->returnColour() != tarPiece->returnColour())
+            if(tarPiece != NULL && piece->colour() != tarPiece->colour())
                 invalidTakes.push(tarPos);
             else
                 invalidMoves.push(tarPos);
@@ -317,10 +317,10 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
         // If it isn't null, that means there's something there. We need to check if it's the same colour.
         else 
         {
-            if (tarPiece->returnColour() != piece->returnColour())
+            if (tarPiece->colour() != piece->colour())
             {
                 // If it's a pawn, we can't take forward
-                if(piece->returnType() == PAWN)
+                if(piece->type() == PAWN)
                     invalidMoves.push(tarPos);
                 else
                     validTakes.push(tarPos);
@@ -346,7 +346,7 @@ MovementQueue BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange
 PieceChecks BoardMoves::pieceChecks(Piece* piece)
 {
     // Fetch the list of valid takes from movement state
-    BoardPosition pos = piece->returnPosition();
+    BoardPosition pos = piece->position();
     PositionQueue pieceTakes = movementState[pos.x][pos.y].validTakes;
 
     // Initialise a queue for pieces and the pieceChecks return (ID/queue pair)
@@ -361,7 +361,7 @@ PieceChecks BoardMoves::pieceChecks(Piece* piece)
     }
 
     // Return
-    pieceChecks.first = piece->returnID();
+    pieceChecks.first = piece->ID();
     pieceChecks.second = pieceQueue;
 
     // Store information for future use and return
@@ -379,7 +379,7 @@ PieceQueue BoardMoves::pieceCheckedBy(PIECE_ID ID, ChecksQueue oppChecks)
         while(!currentQueue.empty())
         {
             
-            if(ID == currentQueue.front()->returnID())
+            if(ID == currentQueue.front()->ID())
                 checkedByQueue.push(Piece::returnIDPtr(checkingPieceID));
             currentQueue.pop();
         }
@@ -411,7 +411,7 @@ PieceQueue BoardMoves::positionCheckedBy(BoardPosition pos, PIECE_COLOUR oppCol)
 PositionQueue BoardMoves::returnSafeMoves(Piece* piece)
 {
     // Fetch vector of curent pieces
-    PIECE_COLOUR  col = piece->returnColour();
+    PIECE_COLOUR  col = piece->colour();
     MovementQueue pieceMovementQueue = returnMovementQueue(piece);
     std::vector<BoardPosition> validMoves = queueToVector(pieceMovementQueue.validMoves);
 
@@ -442,7 +442,7 @@ PositionQueue BoardMoves::returnSafeMoves(Piece* piece)
 PositionQueue BoardMoves::returnSafeTakes(Piece* piece)
 {
     // Fetch vector of curent pieces
-    PIECE_COLOUR  col = piece->returnColour();
+    PIECE_COLOUR  col = piece->colour();
     MovementQueue pieceMovementQueue = returnMovementQueue(piece);
     std::vector<BoardPosition> validTakes = queueToVector(pieceMovementQueue.validTakes);
 
@@ -473,8 +473,8 @@ PositionQueue BoardMoves::returnSafeTakes(Piece* piece)
 void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
 {
     // Fetch the piece colour
-    PIECE_COLOUR col = revealedPiece->returnColour();
-    BoardPosition curPos = revealedPiece->returnPosition();
+    PIECE_COLOUR col = revealedPiece->colour();
+    BoardPosition curPos = revealedPiece->position();
 
     // Fetch all pieces of the opposite colour
     PieceQueue opposingPieces = statePtr->returnPieceQueue((col == WHITE) ? BLACK : WHITE);
@@ -483,7 +483,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
     while(!opposingPieces.empty())
     {
         // 1) Fetch front piece and it's position
-        BoardPosition oppPos = opposingPieces.front()->returnPosition();
+        BoardPosition oppPos = opposingPieces.front()->position();
         MovementQueue oppMovQueue = returnMovementQueue(oppPos);
         opposingPieces.pop();
 
@@ -525,7 +525,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
             if(sightedPiecesVector.size() <= 2)
             {
                 Piece* temp = sightedPiecesVector[idx - 1];
-                BoardPosition tempPos = temp->returnPosition();
+                BoardPosition tempPos = temp->position();
                 MovementQueue moveQueue = returnMovementQueue(temp);
 
                 // Empty valid moves *BUG: DON'T NEED TO GET RID OF MOVEMENTS IN THE SAME RELATIVE DIRECTION*
@@ -567,7 +567,7 @@ void BoardMoves::restrictRevealedCheckMoves(Piece* revealedPiece)
 }
 void BoardMoves::restrictKingMoves(PIECE_COLOUR col)
 {
-    BoardPosition kingPos = curKing->returnPosition();
+    BoardPosition kingPos = curKing->position();
     movementState[kingPos.x][kingPos.y].validMoves = returnSafeMoves(curKing);
     movementState[kingPos.x][kingPos.y].validTakes = returnSafeTakes(curKing);
 }
@@ -575,9 +575,9 @@ void BoardMoves::restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMo
                                 PositionQueue* validMoves, PositionQueue* validTakes)
 {
     // 1) Fetch positions of all pieces
-    BoardPosition posToProtect  = pieceToProtect->returnPosition();
-    BoardPosition posToMove     = pieceToMove->returnPosition();
-    BoardPosition posOfCheck    = checkingPiece->returnPosition();
+    BoardPosition posToProtect  = pieceToProtect->position();
+    BoardPosition posToMove     = pieceToMove->position();
+    BoardPosition posOfCheck    = checkingPiece->position();
     
     PositionQueue posOfCheckQueue;
     posOfCheckQueue.push(posOfCheck);
@@ -615,7 +615,7 @@ void BoardMoves::removeInvalidCheckedMoves(PieceQueue kingCheckedBy)
             PositionQueue emptyPosQueue;
             if(currentPieces.front() != curKing)
             {
-                BoardPosition pos = currentPieces.front()->returnPosition();
+                BoardPosition pos = currentPieces.front()->position();
                 currentPieces.pop();
 
                 movementState[pos.x][pos.y].validMoves = emptyPosQueue;
@@ -632,7 +632,7 @@ void BoardMoves::removeInvalidCheckedMoves(PieceQueue kingCheckedBy)
         {
             if(currentPieces.front() != curKing)
             {
-                BoardPosition pos = currentPieces.front()->returnPosition();
+                BoardPosition pos = currentPieces.front()->position();
                 restrictToBlockingMoves(curKing, currentPieces.front(), kingCheckedBy.front(),
                     &movementState[pos.x][pos.y].validMoves, &movementState[pos.x][pos.y].validTakes);
                 currentPieces.pop();
@@ -653,7 +653,7 @@ MovementQueue BoardMoves::returnMovementQueue(BoardPosition pos)
 }
 MovementQueue BoardMoves::returnMovementQueue(Piece* piece)
 {
-    BoardPosition pos = piece->returnPosition();
+    BoardPosition pos = piece->position();
     return returnMovementQueue(pos);
 }
 ChecksQueue BoardMoves::returnChecksQueue(PIECE_COLOUR col)
@@ -681,11 +681,11 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     if(currentPiece == NULL)
         return;
     
-    BoardPosition curPos = currentPiece->returnPosition();
+    BoardPosition curPos = currentPiece->position();
     
 
     // Special moves list
-    switch(currentPiece->returnType())
+    switch(currentPiece->type())
     {
         case PAWN:
         {
@@ -694,7 +694,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
             int enpassantRow;
             int forward;
 
-            if(currentPiece->returnColour() == WHITE)
+            if(currentPiece->colour() == WHITE)
             {
                 oppositeCol = BLACK;
                 enpassantRow = 4;
@@ -716,7 +716,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                     BoardPosition temp = curPos.returnUpdate(i, forward);
                     Piece* targetPiece = statePtr->current[temp.x][temp.y];
                     
-                    if(targetPiece != NULL && targetPiece->returnColour() == oppositeCol)
+                    if(targetPiece != NULL && targetPiece->colour() == oppositeCol)
                         validTakes->push(temp);
                 }
 
@@ -729,14 +729,14 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                         continue;
                     
                     // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece->returnType() == PAWN && targetPiece->returnColour() == oppositeCol) ? 1 : 0;
+                    bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() == oppositeCol) ? 1 : 0;
 
                     // Check to see if it was on the home row last move
                     Piece* targetPiecePrev = statePtr->previous[curPos.x + i][enpassantRow + 2*forward];
                     if(targetPiecePrev == NULL)
                         continue;
 
-                    bool lastOnHomeRow = ( targetPiece->returnID() == targetPiecePrev->returnID()) ? 1 : 0;
+                    bool lastOnHomeRow = ( targetPiece->ID() == targetPiecePrev->ID()) ? 1 : 0;
                     
                     if(pawnAdjacent && lastOnHomeRow)
                         validTakes->push(curPos.returnUpdate(i, forward));
@@ -755,13 +755,13 @@ void BoardMoves::addCastling(Piece* currentPiece)
     if(currentPiece == NULL)
         return;
     
-    BoardPosition curPos = currentPiece->returnPosition();
+    BoardPosition curPos = currentPiece->position();
     PositionQueue* validMoves = &movementState[curPos.x][curPos.y].validMoves;
-    PIECE_COLOUR oppCol = (currentPiece->returnColour() == WHITE) ? BLACK : WHITE;
+    PIECE_COLOUR oppCol = (currentPiece->colour() == WHITE) ? BLACK : WHITE;
     
 
     // Special moves list
-    switch(currentPiece->returnType())
+    switch(currentPiece->type())
     {
         case KING:
         {
@@ -773,8 +773,8 @@ void BoardMoves::addCastling(Piece* currentPiece)
 
                 auto rook_conditions = [=](Piece* tarRook)
                 {
-                    bool rookConditions = (tarRook != NULL && tarRook->returnType() == ROOK && !tarRook->hasMoved() 
-                    && tarRook->returnColour() == currentPiece->returnColour()) ? 1 : 0;
+                    bool rookConditions = (tarRook != NULL && tarRook->type() == ROOK && !tarRook->hasMoved() 
+                    && tarRook->colour() == currentPiece->colour()) ? 1 : 0;
                     return rookConditions;
                 };
 
@@ -815,6 +815,6 @@ void BoardMoves::verifyMate()
         }
     }
     kingCheckmate.first = !moveFound;
-    kingCheckmate.second = curKing->returnID();
+    kingCheckmate.second = curKing->ID();
 }
 

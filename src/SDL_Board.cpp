@@ -122,7 +122,7 @@ void SDL_Board::loadState(BoardState state)
             
             Piece* current = state.current[i][j];
             if (current != NULL) {
-                loadPiece(i, j, current->returnType(), current->returnColour());
+                loadPiece(i, j, current->type(), current->colour());
             }
         }
     }         
@@ -211,7 +211,7 @@ void SDL_Board::renderBoardUpdate(BoardState state)
                 // Check for a new piece and render if necessary
                 Piece* currentPiece = state.current[i][j];
                 if (currentPiece != NULL)
-                    loadPiece(i, j, currentPiece->returnType(), currentPiece->returnColour());
+                    loadPiece(i, j, currentPiece->type(), currentPiece->colour());
             }
         }
     }

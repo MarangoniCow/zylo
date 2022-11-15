@@ -42,17 +42,6 @@ enum PIECE_TYPE {
 	MAX_TYPE
 };
 
-/*      PIECE DESCRIPTOR
-* A means to provide static data to subclasses.
-* This is now redundant, as I've changed the implementation of graphic objects.
-* However, I've not removed it yet because it's a cute method which I'd like to keep around :)
-*/
-
-struct PieceDescriptor {
-
-    std::string bmpPath;        // REDUNDANT: TO BE REMOVED
-    PIECE_TYPE type;
-};
 
 
 class Piece 
@@ -60,33 +49,31 @@ class Piece
     protected:
         // STATIC MEMBERS FOR GLOBAL FUNCTIONALITY
         static std::vector<Piece*> Piece_instanceList;          // Global ID list
-        static std::vector<Piece*> whitePieces;
-        static std::vector<Piece*> blackPieces;
         static int Piece_count;                                 // Global piece count
 
         // INSTANCE SPECIFIC FUNCTIONALITY
-        PIECE_ID		ID;                                           // Unique Piece ID
-        PIECE_COLOUR	col;                                 // Enumerated colour
+        PIECE_ID		m_ID;                                           // Unique Piece ID
+        PIECE_COLOUR	m_col;                                 // Enumerated colour
         PIECE_TYPE		m_type;
-        BoardPosition	pos;                                     // Current position
+        BoardPosition	m_pos;                                     // Current position
         bool			m_hasMoved;                                         // Movement flag
         
     public:
         Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y) :
-			col(col_),
-			pos(x, y),
+			m_col(col_),
+			m_pos(x, y),
 			m_type(type),
 			m_hasMoved(false)
 			{
             // Assert global methodology
-            ID = (PIECE_ID)Piece_instanceList.size();
+            m_ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             m_hasMoved = 0;
         };
         Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) :
-			col(col_),
-			pos(x, y),
-			ID(ID_),
+			m_col(col_),
+			m_pos(x, y),
+			m_ID(ID_),
 			m_type(type),
 			m_hasMoved(true)
 			{
@@ -94,7 +81,7 @@ class Piece
             m_hasMoved = 1; 
         };
         virtual ~Piece() {
-            Piece_instanceList[ID] = nullptr;
+            Piece_instanceList[m_ID] = nullptr;
         }
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
@@ -102,15 +89,10 @@ class Piece
         static int returnTotalPieces() {return (int)size(Piece_instanceList);};
 
         // NON-STATIC RETURNS
-		PIECE_TYPE      type() const		{ return m_type; }
-		BoardPosition   position() const	{ return pos; }
-		PIECE_COLOUR    color() const		{ return col; }
-
-		PIECE_TYPE      returnType() const {return m_type;}
-		BoardPosition   returnPosition() const {return pos;}
-		PIECE_COLOUR    returnColour() const {return col;}
-		PIECE_ID        returnID() const {return ID;}
-        
+		PIECE_TYPE      type() const        { return m_type;}	
+		PIECE_ID        ID() const          { return m_ID;}
+        PIECE_COLOUR    colour() const      { return m_col;}
+        BoardPosition   position() const    { return m_pos;}
         
 
         // FLAGS

@@ -110,7 +110,7 @@ void Board::postMoveTasks()
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {   
-    BoardPosition curPos = currentPiece->returnPosition();
+    BoardPosition curPos = currentPiece->position();
 
     // Update current position in state as null
     state.current[curPos.x][curPos.y] = NULL;
@@ -122,7 +122,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
     currentPiece->updatePosition(newPos);
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
-    switch (currentPiece->returnType())
+    switch (currentPiece->type())
     {
         case KING:
         {   
@@ -144,11 +144,11 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
         }
         case PAWN:
         {
-            int endrow = (currentPiece->returnColour() == WHITE) ? 7 : 0;
-            if(currentPiece->returnPosition().y == endrow)
+            int endrow = (currentPiece->colour() == WHITE) ? 7 : 0;
+            if(currentPiece->position().y == endrow)
             {
                 boardFlags.pawnPromotion.first = 1;
-                boardFlags.pawnPromotion.second = currentPiece->returnID();
+                boardFlags.pawnPromotion.second = currentPiece->ID();
             }
 
             break;            
@@ -164,9 +164,9 @@ void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
 {
     Piece* pieceToDelete;
     /* SPECIAL CASE: EN-PASSANT */
-    if(currentPiece->returnType() == PAWN && state.current[newPos.x][newPos.y] == NULL)
+    if(currentPiece->type() == PAWN && state.current[newPos.x][newPos.y] == NULL)
     {
-        int forward = (currentPiece->returnColour() == WHITE) ? 1 : -1;
+        int forward = (currentPiece->colour() == WHITE) ? 1 : -1;
         pieceToDelete = state.current[newPos.x][newPos.y - forward];
     }
     else

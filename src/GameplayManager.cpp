@@ -20,7 +20,7 @@ GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosit
         if(board->returnState().pieceExists(newPos, board->returnTurn()))
         {
             BOARD_FLAGS boardFlags = board->returnBoardFlags();
-            if(board->returnState().returnPiece(newPos)->returnID() == boardFlags.kingCheck.second)
+            if(board->returnState().returnPiece(newPos)->ID() == boardFlags.kingCheck.second)
                 return INVALID;
             else
                 return OVERLAY;

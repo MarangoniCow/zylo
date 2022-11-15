@@ -22,11 +22,11 @@ BoardSnapshot::grabBoardState(const BoardState &state)
 
 			pieceQueue.pop();
 
-			BoardPosition	pos = p->returnPosition();
+			BoardPosition	pos = p->position();
 			BoardPiece		&bp=m_board[pos.x][pos.y];
 
 			bp.type(p->type());
 			bp.moved(p->hasMoved());
-			bp.color(p->color());
+			bp.color(p->colour());
 			}
 		}

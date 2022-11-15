@@ -60,8 +60,8 @@ void BoardState::initialiseBoard()
 void BoardState::promotePiece(PIECE_ID ID, PIECE_TYPE newType)
 {
     Piece* currentPiece = Piece::returnIDPtr(ID);
-    PIECE_COLOUR col = currentPiece->returnColour();
-    BoardPosition pos = currentPiece->returnPosition();
+    PIECE_COLOUR col = currentPiece->colour();
+    BoardPosition pos = currentPiece->position();
 
     switch(newType)
     {
@@ -123,7 +123,7 @@ void BoardState::addPiece(Piece* piece)
         return;
     }
 
-    BoardPosition pos = piece->returnPosition();
+    BoardPosition pos = piece->position();
     if(pos.validPosition())
         current[pos.x][pos.y] = piece;
     else
@@ -170,7 +170,7 @@ void BoardState::removePiece(Piece* pieceToDelete)
     if(!pieceExists(pieceToDelete))
         return;
     // Get current position
-    BoardPosition pos = pieceToDelete->returnPosition();
+    BoardPosition pos = pieceToDelete->position();
 
     // Update board state to null
     current[pos.x][pos.y] = NULL;
@@ -188,20 +188,20 @@ bool BoardState::pieceExists(Piece* piece) const {
     return (piece != NULL);
 }
 bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col) const {
-    return (pieceExists(piece) && piece->returnColour() == col);
+    return (pieceExists(piece) && piece->colour() == col);
 }
 bool BoardState::pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) const {
-    return (pieceExists(piece, col) && piece->returnType() == type);
+    return (pieceExists(piece, col) && piece->type() == type);
 }
 
 bool BoardState::pieceExists(BoardPosition pos) const {
     return (current[pos.x][pos.y] != NULL);
 }
 bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col) const {
-    return pieceExists(pos) && current[pos.x][pos.y]->returnColour() == col;
+    return pieceExists(pos) && current[pos.x][pos.y]->colour() == col;
 }
 bool BoardState::pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const {
-    return (pieceExists(pos, col) && current[pos.x][pos.y]->returnType() == type);
+    return (pieceExists(pos, col) && current[pos.x][pos.y]->type() == type);
 }
 
 
