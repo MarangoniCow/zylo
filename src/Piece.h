@@ -91,11 +91,10 @@ class Piece
         }
 
         // STATIC METHODS FOR GLOBAL FUNCTIONALITY
-        static Piece* returnIDPtr(PIECE_ID ID_) {return Piece_instanceList[ID_];}; 
         static int returnTotalPieces() {return (int)size(Piece_instanceList);};      
 
         // FLAGS
-        PIECE_ID ID()   {return m_ID;};
+        PIECE_ID ID()   {return m_flags;};
         bool hasMoved() {return m_hasMoved;};
 
         // SETTER METHODS

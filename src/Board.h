@@ -61,7 +61,7 @@ class Board {
         // CONSTRUCTORS & ADMIN
         Board() {};
         Board(BoardState state_);
-        ~Board() {state.clearBoard();};
+        ~Board() {state.resetBoard();};
         void newGame();
         void newState(BoardState state_);
 

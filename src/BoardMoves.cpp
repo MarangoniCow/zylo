@@ -383,7 +383,7 @@ PieceQueue BoardMoves::pieceCheckedBy(PIECE_ID ID, ChecksQueue oppChecks)
         {
             
             if(ID == currentQueue.front()->ID())
-                checkedByQueue.push(Piece::returnIDPtr(checkingPieceID));
+                checkedByQueue.push(statePtr->returnIDPtr(checkingPieceID));
             currentQueue.pop();
         }
         oppChecks.pop();

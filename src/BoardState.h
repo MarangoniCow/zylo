@@ -44,7 +44,7 @@ struct BoardState {
     void promotePiece(PIECE_ID ID, PIECE_TYPE newType);
 
     // Maintainence methods
-    void clearBoard();
+    void resetBoard();
     void addPiece(Piece* newPiece);
     void addPiece(PIECE_TYPE type, PIECE_COLOUR col, int x, int y);
     void removePiece(Piece* pieceToDelete);
@@ -64,6 +64,7 @@ struct BoardState {
 
 
     // Returns
+    Piece*      returnIDPtr(PIECE_ID ID);
     Piece *		returnPiece(BoardPosition pos) const;
     PieceQueue	returnPieceQueue() const;
     PieceQueue	returnPieceQueue(PIECE_COLOUR col) const;

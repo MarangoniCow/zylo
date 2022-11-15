@@ -13,7 +13,12 @@
 void BoardState::initialiseBoard()
 {
     // Make sure board is clear
-    clearBoard();
+    resetBoard();
+    
+
+    
+    
+
     // Initialise all 32 pieces with correct positions
     
     addPiece(PAWN, WHITE, 0, 1);
@@ -57,43 +62,59 @@ void BoardState::initialiseBoard()
 }
 
 /******************** UPDATE METHODS **********************/
+Piece* BoardState::returnIDPtr(PIECE_ID ID)
+{
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            Piece* curPiece = current[i][j];
+            if(curPiece != NULL && curPiece->ID() == ID)
+                return curPiece;
+        }
+    }
+    return NULL;
+}
+
 void BoardState::promotePiece(PIECE_ID ID, PIECE_TYPE newType)
 {
-    Piece* currentPiece = Piece::returnIDPtr(ID);
+    Piece* currentPiece = returnIDPtr(ID);
     PIECE_COLOUR col = currentPiece->colour();
     BoardPosition pos(currentPiece->x(), currentPiece->y());
+    removePiece(currentPiece);
+
 
     switch(newType)
     {
         case PAWN:
         {
-            addPiece(new Pawn(col, pos.x, pos.y, ID));
+            addPiece(PAWN, col, pos.x, pos.y);
             break;
         }
         case ROOK:
         {
-            addPiece(new Rook(col, pos.x, pos.y, ID));
+            addPiece(ROOK, col, pos.x, pos.y);
             break;
         }
         case KNIGHT:
         {
-            addPiece(new Knight(col, pos.x, pos.y, ID));
+            addPiece(KNIGHT, col, pos.x, pos.y);
             break;
 
         }
         case BISHOP:
         {
-            addPiece(new Bishop(col, pos.x, pos.y, ID));
+            addPiece(BISHOP, col, pos.x, pos.y);
             break;
         }
         case QUEEN:
         {
-            addPiece(new Queen(col, pos.x, pos.y, ID));
+            addPiece(QUEEN, col, pos.x, pos.y);
             break;
         }
         case KING:
         {
-            addPiece(new King(col, pos.x, pos.y, ID));
+            addPiece(KING, col, pos.x, pos.y);
             break;
         }
         default:
@@ -102,8 +123,9 @@ void BoardState::promotePiece(PIECE_ID ID, PIECE_TYPE newType)
 }
 
 /****************** MAINTAINENCE METHODS ******************/
-void BoardState::clearBoard()
+void BoardState::resetBoard()
 {
+    // Remove all pieces
     for(int i = 0; i < 8; i++)
     {
         for(int j = 0; j < 8; j++)
@@ -113,6 +135,12 @@ void BoardState::clearBoard()
                 removePiece(currentPiece);
         }
     }
+
+    // Reset turns and positions
+    currentTurn = WHITE;
+    BoardPosition pos;
+    m_lastMove.first = pos; 
+    m_lastMove.second = pos;
 }
 
 void BoardState::addPiece(Piece* piece)
@@ -180,7 +208,7 @@ void BoardState::removePiece(Piece* pieceToDelete)
 }
 void BoardState::removePiece(PIECE_ID pieceToDelete)
 {
-    removePiece(Piece::returnIDPtr(pieceToDelete));
+    removePiece(returnIDPtr(pieceToDelete));
 }
 
 /******************** BOOL CHECKS**************************/
