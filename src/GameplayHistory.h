@@ -21,8 +21,8 @@ typedef std::vector<StatePtr> HistoryVector;
 class GameplayHistory
 {
     protected:
-        TURN turnCount;
-        HistoryVector historyVec;
+        TURN			m_turnCount;
+        HistoryVector	m_historyVec;
         
     public:
         GameplayHistory() {};
@@ -31,12 +31,12 @@ class GameplayHistory
         }
         ~GameplayHistory()
         {
-            historyVec.clear();
+            m_historyVec.clear();
         }
         
         void appendHistory(const BoardState &state);
         void truncateHistory(TURN n);
         void newGame(const BoardState& newState);
         StatePtr returnState(TURN n) const;
-        TURN     returnTurn() const {return turnCount;};
+        TURN     returnTurn() const {return m_turnCount;};
 };

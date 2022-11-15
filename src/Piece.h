@@ -30,12 +30,16 @@ enum PIECE_COLOUR {
 };
 
 enum PIECE_TYPE {
-    PAWN = 0,
-    ROOK = 1,
-    KNIGHT = 2,
-    BISHOP = 3,
-    QUEEN = 4,
-    KING = 5
+	NONE = 0,
+    PAWN,
+    ROOK,
+    KNIGHT,
+    BISHOP,
+    QUEEN,
+    KING,
+
+	// Last one
+	MAX_TYPE
 };
 
 /*      PIECE DESCRIPTOR
@@ -56,31 +60,38 @@ class Piece
     protected:
         // STATIC MEMBERS FOR GLOBAL FUNCTIONALITY
         static std::vector<Piece*> Piece_instanceList;          // Global ID list
-
-        // CLASS SPECFIC FUNCTIONALITY
-        const PieceDescriptor& descriptor;                      // Sub-class specific descriptor
+        static std::vector<Piece*> whitePieces;
+        static std::vector<Piece*> blackPieces;
+        static int Piece_count;                                 // Global piece count
 
         // INSTANCE SPECIFIC FUNCTIONALITY
-        PIECE_ID ID;                                           // Unique Piece ID
-        PIECE_COLOUR col;                                 // Enumerated colour
-        PIECE_TYPE type;
-        BoardPosition pos;                                     // Current position
-        bool flag_move;                                         // Movement flag
-
-
+        PIECE_ID		ID;                                           // Unique Piece ID
+        PIECE_COLOUR	col;                                 // Enumerated colour
+        PIECE_TYPE		m_type;
+        BoardPosition	pos;                                     // Current position
+        bool			m_hasMoved;                                         // Movement flag
         
     public:
-        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y) : descriptor(descriptor_), col(col_), pos(x, y) {
+        Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y) :
+			col(col_),
+			pos(x, y),
+			m_type(type),
+			m_hasMoved(false)
+			{
             // Assert global methodology
             ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
-            flag_move = 0;
-            type = descriptor.type;
+            m_hasMoved = 0;
         };
-        Piece(const PieceDescriptor& descriptor_, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) : descriptor(descriptor_), col(col_), pos(x, y), ID(ID_) {
+        Piece(PIECE_TYPE type, PIECE_COLOUR col_, int x, int y, PIECE_ID ID_) :
+			col(col_),
+			pos(x, y),
+			ID(ID_),
+			m_type(type),
+			m_hasMoved(true)
+			{
             Piece_instanceList[ID_] = this;
-            flag_move = 1; 
-            type = descriptor.type;
+            m_hasMoved = 1; 
         };
         virtual ~Piece() {
             Piece_instanceList[ID] = nullptr;
@@ -91,16 +102,19 @@ class Piece
         static int returnTotalPieces() {return (int)size(Piece_instanceList);};
 
         // NON-STATIC RETURNS
-        PIECE_TYPE      returnType() {return type;};
-        BoardPosition   returnPosition() {return pos;};
-        PIECE_COLOUR    returnColour() {return col;};
-        PIECE_ID        returnID() {return ID;};
+		PIECE_TYPE      type() const		{ return m_type; }
+		BoardPosition   position() const	{ return pos; }
+		PIECE_COLOUR    color() const		{ return col; }
+
+		PIECE_TYPE      returnType() const {return m_type;}
+		BoardPosition   returnPosition() const {return pos;}
+		PIECE_COLOUR    returnColour() const {return col;}
+		PIECE_ID        returnID() const {return ID;}
         
         
 
         // FLAGS
-        int flag() {return ID;};
-        bool hasMoved() {return flag_move;};
+        bool hasMoved() {return m_hasMoved;};
 
         // SETTER METHODS
         void updatePosition(BoardPosition pos);
@@ -120,11 +134,9 @@ class Piece
 
 class Pawn : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        Pawn(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        Pawn(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+        Pawn(PIECE_COLOUR col_, int x, int y) : Piece(PAWN, col_, x, y) {};
+        Pawn(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(PAWN, col_, x, y, ID) {};
 
         ~Pawn() {};
         PositionQueue moveRange();
@@ -132,55 +144,45 @@ class Pawn : public Piece
 
 class Rook : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        Rook(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y){};
-        Rook(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID){};
+        Rook(PIECE_COLOUR col_, int x, int y) : Piece(ROOK, col_, x, y){};
+        Rook(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(ROOK, col_, x, y, ID){};
         ~Rook() {};
         PositionQueue moveRange();
 };
 
 class Knight : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        Knight(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        Knight(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+        Knight(PIECE_COLOUR col_, int x, int y) : Piece(KNIGHT, col_, x, y) {};
+        Knight(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(KNIGHT, col_, x, y, ID) {};
         ~Knight() {};
         PositionQueue moveRange();
 };
 
 class Bishop : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        Bishop(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        Bishop(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+        Bishop(PIECE_COLOUR col_, int x, int y) : Piece(BISHOP, col_, x, y) {};
+        Bishop(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(BISHOP, col_, x, y, ID) {};
         ~Bishop() {};
         PositionQueue moveRange();
 };
 
 class Queen : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        Queen(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        Queen(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+        Queen(PIECE_COLOUR col_, int x, int y) : Piece(QUEEN, col_, x, y) {};
+        Queen(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(QUEEN, col_, x, y, ID) {};
         ~Queen() {};
         PositionQueue moveRange();
 };
 
 class King : public Piece
 {
-    private:
-        static PieceDescriptor descriptor; 
     public:
-        King(PIECE_COLOUR col_, int x, int y) : Piece(descriptor, col_, x, y) {};
-        King(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(descriptor, col_, x, y, ID) {};
+        King(PIECE_COLOUR col_, int x, int y) : Piece(KING, col_, x, y) {};
+        King(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(KING, col_, x, y, ID) {};
         ~King() {};
         PositionQueue moveRange();
 };

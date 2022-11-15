@@ -21,7 +21,7 @@
 class SDL_Pieces
 {
     private:
-        static SDL_Texture* pieceTextureArray[6][2];
+        static SDL_Texture* pieceTextureArray[7][2];
         SDL_Renderer* renderer;
 
     public:

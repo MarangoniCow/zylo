@@ -16,23 +16,12 @@ std::vector<Piece*> Piece::Piece_instanceList;
 void Piece::updatePosition(BoardPosition newPos)
 {
     // Check flag
-    if(!flag_move)
-        flag_move = 1;
+    if(!m_hasMoved)
+        m_hasMoved = 1;
     
     pos.updatePosition(newPos);
 }
 
-
-
-/***********************************************************
- *                   PIECE DESCRIPTIONS
- ***********************************************************/
-PieceDescriptor Pawn::descriptor   {"./res/pawn_", PAWN}; 
-PieceDescriptor Rook::descriptor   {"./res/rook_", ROOK}; 
-PieceDescriptor Knight::descriptor {"./res/knight_", KNIGHT}; 
-PieceDescriptor Bishop::descriptor {"./res/bishop_", BISHOP}; 
-PieceDescriptor Queen::descriptor  {"./res/queen_", QUEEN}; 
-PieceDescriptor King::descriptor   {"./res/king_", KING}; 
 
 /***********************************************************
  *                      MOVE RANGES
@@ -50,11 +39,11 @@ PositionQueue Pawn::moveRange()
     // WHITE = 0, BLACK = 1
     if(!col) {
         if(pos.validUpdate(0, 1)) moveQueue.push(pos.returnUpdate(0, 1));
-        if(!flag_move && pos.validUpdate(0, 2)) moveQueue.push(pos.returnUpdate(0, 2));
+        if(!m_hasMoved && pos.validUpdate(0, 2)) moveQueue.push(pos.returnUpdate(0, 2));
     }
     else {
         if(pos.validUpdate(0, -1)) moveQueue.push(pos.returnUpdate(0, -1));
-        if(!flag_move && pos.validUpdate(0, -2)) moveQueue.push(pos.returnUpdate(0, -2));
+        if(!m_hasMoved && pos.validUpdate(0, -2)) moveQueue.push(pos.returnUpdate(0, -2));
     }  
     return moveQueue;
 }
