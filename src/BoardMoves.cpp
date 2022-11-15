@@ -693,9 +693,6 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
     {
         case PAWN:
         {
-            
-
-            // Initialise
             int enpassantRow = (curCol == WHITE) ? 4 : 3;
 
             // GENERATE TAKE & EN-PASSANT: For loop repeats move queue for left/right instructions
@@ -731,9 +728,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
             }
             break;     
         }
-        default: {
-            break;
-        };
+        default: {};
     };
 };
 void BoardMoves::addCastling(Piece* currentPiece)

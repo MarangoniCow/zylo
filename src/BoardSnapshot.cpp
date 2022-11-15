@@ -29,4 +29,6 @@ BoardSnapshot::grabBoardState(const BoardState &state)
 			bp.moved(p->hasMoved());
 			bp.color(p->colour());
 			}
+
+        m_lastMove = state.m_lastMove;
 		}
