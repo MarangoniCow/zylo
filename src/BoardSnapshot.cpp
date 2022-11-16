@@ -24,7 +24,7 @@ BoardSnapshot::grabBoardState(const BoardState &state)
 			BoardPiece  &bp=m_board[p->x()][p->y()];
 
 			bp.type(p->type());
-			bp.moved(p->hasMoved());
+			bp.moved(p->moved());
 			bp.color(p->colour());
 			}
 

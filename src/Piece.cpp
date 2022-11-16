@@ -10,24 +10,57 @@
 #include <iostream>
 #include <vector>
 
-std::vector<Piece*> Piece::Piece_instanceList;
 
-/*******    GETTER METHODS    *******/
-void Piece::updatePosition(BoardPosition newPos)
+void Piece::type(PIECE_TYPE type)
 {
-    // Check flag
-    if(!m_hasMoved)
-    {
-        m_hasMoved = 1;
-        moved(true);
-    }
-        
-    
-    m_pos.updatePosition(newPos);
-    position(newPos);
-    
+    m_flags = (m_flags & ~MaskType) | (v & MaskType);
+}
+void Piece::type() const
+{
+    return (PIECE_TYPE)(m_flags & MaskType);   
 }
 
+void Piece::colour(PIECE_COLOUR col)
+{
+    m_flags = (m_flags & ~MaskColor) | ((col << ShiftColour) & MaskColor);
+}
+PIECE_COLOUR Piece::colour() const
+{
+    return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColour);
+}
+
+void Piece::moved(bool b)
+{  
+    if (b)
+        m_flags |= FlagMoved;
+    else
+        m_flags &= ~FlagMoved;
+}
+bool Piece::moved() const
+{
+    return ((m_flags & FlagMoved) != 0);
+}
+
+void Piece::ID(PIECE_ID ID)
+{
+    m_flags = ID;
+}
+PIECE_ID Piece::ID() const
+{
+    m_flags & MaskID;
+}
+
+void Piece::position(BoardPosition pos)
+{
+    x(pos.x);
+    y(pos.y);
+    moved(true);
+}
+BoardPosition Piece::position(BoardPosition pos)
+{
+    BoardPosition pos(x(), y());
+    return pos;
+}
 
 /***********************************************************
  *                      MOVE RANGES

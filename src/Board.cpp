@@ -119,7 +119,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
     state.current[newPos.x][newPos.y] = currentPiece;
 
     // Update the piece position
-    currentPiece->updatePosition(newPos);
+    currentPiece->position(newPos);
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
     switch (currentPiece->type())

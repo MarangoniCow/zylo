@@ -41,12 +41,12 @@ bool BoardPosition::validUpdate(BoardPosition newPos) const
     else
         return 0;
 }
-void BoardPosition::updatePosition(BoardPosition newPos)
+void BoardPosition::position(BoardPosition newPos)
 {
     x = newPos.x;
     y = newPos.y;
 }
-void BoardPosition::updatePosition(int i, int j)
+void BoardPosition::position(int i, int j)
 {
     x = i;
     y = j;

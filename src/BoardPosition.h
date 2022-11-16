@@ -40,8 +40,8 @@ struct BoardPosition
 
     // Admin
     void ResetPosition();
-    void updatePosition(BoardPosition newPos);
-    void updatePosition(int i, int j);
+    void position(BoardPosition newPos);
+    void position(int i, int j);
 
     // Const methods
     bool validPosition() const; 

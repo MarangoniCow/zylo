@@ -748,7 +748,7 @@ void BoardMoves::addCastling(Piece* currentPiece)
     {
         case KING:
         {
-            if(!currentPiece->hasMoved())
+            if(!currentPiece->moved())
             {
                 
                 Piece* rookRight = statePtr->current[7][curPos.y];
@@ -756,7 +756,7 @@ void BoardMoves::addCastling(Piece* currentPiece)
 
                 auto rook_conditions = [=](Piece* tarRook)
                 {
-                    bool rookConditions = (tarRook != NULL && tarRook->type() == ROOK && !tarRook->hasMoved() 
+                    bool rookConditions = (tarRook != NULL && tarRook->type() == ROOK && !tarRook->moved() 
                     && tarRook->colour() == currentPiece->colour()) ? 1 : 0;
                     return rookConditions;
                 };
