@@ -145,7 +145,7 @@ void BoardMoves::resetMoves()
 void BoardMoves::setTurnDependencies()
 {
     // Current colour
-    curCol = statePtr->currentTurn;
+    curCol = statePtr->turn;
     oppCol = (curCol == WHITE) ? BLACK : WHITE;
 
     // Current King
@@ -685,7 +685,7 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
         return;
     
     BoardPosition curPos(currentPiece->x(), currentPiece->y());
-    Move lastMove = statePtr->lastMove();
+    Move lastMove = statePtr->lastMove;
     
 
     // Special moves list

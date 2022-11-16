@@ -69,6 +69,7 @@ class Piece
             m_ID = (PIECE_ID)Piece_instanceList.size();
             Piece_instanceList.push_back(this); 
             m_hasMoved = 0;
+            m_flags = 0;
 
             type(type_);
             colour(col_);
@@ -77,15 +78,20 @@ class Piece
 
             };
         Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_, PIECE_ID ID_) :
-			m_col(col_),
-			m_pos(x_, y_),
 			m_ID(ID_),
+            m_col(col_),
+			m_pos(x_, y_),
 			m_type(type_),
 			m_hasMoved(true)
 			{
             Piece_instanceList[ID_] = this;
             m_hasMoved = 1;
-        };
+            type(type_);
+            colour(col_);
+            x(x_);
+            y(y_);
+            moved(true);
+            };
         virtual ~Piece() {
             Piece_instanceList[m_ID] = nullptr;
         }
@@ -94,7 +100,7 @@ class Piece
         static int returnTotalPieces() {return (int)size(Piece_instanceList);};      
 
         // FLAGS
-        PIECE_ID ID()   {return m_flags;};
+        PIECE_ID ID()   {return m_flags & MaskID;};
         bool hasMoved() {return m_hasMoved;};
 
         // SETTER METHODS
@@ -118,6 +124,7 @@ public:
 			MaskColor		= 0x08,
             MaskX           = 0xE0,
             MaskY           = 0X700,
+            MaskID          = 0x7FF,
 			ShiftColour		= 3,
             ShiftX          = 5,
             ShiftY          = 8,

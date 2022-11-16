@@ -137,10 +137,10 @@ void BoardState::resetBoard()
     }
 
     // Reset turns and positions
-    currentTurn = WHITE;
+    turn = WHITE;
     BoardPosition pos;
-    m_lastMove.first = pos; 
-    m_lastMove.second = pos;
+    lastMove.first = pos; 
+    lastMove.second = pos;
 }
 
 void BoardState::addPiece(Piece* piece)

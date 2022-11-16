@@ -73,7 +73,7 @@ class Board {
         BoardState      returnState()   {return state;};   
         MovementQueue   returnMovementQueue (BoardPosition pos);
         BOARD_FLAGS     returnBoardFlags()  {return boardFlags;};
-        PIECE_COLOUR    returnTurn()    {return state.currentTurn;};
+        PIECE_COLOUR    returnTurn()    {return state.turn;};
         Move            returnLastMove()    {return lastMove;}
         
 };

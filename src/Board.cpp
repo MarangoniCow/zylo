@@ -39,7 +39,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 
     // Fetch the target piece, return if empty.
     Piece* currentPiece = state.current[curPos.x][curPos.y];
-    if(!state.pieceExists(currentPiece, state.currentTurn))
+    if(!state.pieceExists(currentPiece, state.turn))
         return 0;
     
     // Iterate through queue until the new position is found.
@@ -56,7 +56,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Update old state
-        state.lastMove(std::make_pair(curPos, tarPos));
+        state.lastMove = std::make_pair(curPos, tarPos);
         takePiece(currentPiece, tarPos);
     }
         
@@ -72,7 +72,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Update old state
-        state.lastMove(std::make_pair(curPos, tarPos));
+        state.lastMove = std::make_pair(curPos, tarPos);
 
         // Begin movement task flow
         preMoveTasks(curPos, tarPos);
@@ -104,7 +104,7 @@ void Board::preMoveTasks(BoardPosition curPos, BoardPosition tarPos)
 }
 void Board::postMoveTasks()
 {
-    state.currentTurn = (state.currentTurn == WHITE) ? BLACK : WHITE;
+    state.turn = (state.turn == WHITE) ? BLACK : WHITE;
     boardMoves.processState();
 }
 
