@@ -49,13 +49,6 @@ class Piece
     protected:
 		uint16_t	m_flags;
 
-    protected:
-        void	x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
-		int     x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
-
-        void	y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
-		int     y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
-
     public:
 		enum Flags
 			{
@@ -84,24 +77,34 @@ class Piece
             };
         ~Piece() {}
 		
-		void	        type(PIECE_TYPE type);
-		PIECE_TYPE		type() const;
 
-		void	        colour(PIECE_COLOUR col);
-		PIECE_COLOUR    colour() const;
+        // Flag-related methods
+		void	        type    (PIECE_TYPE type);
+		PIECE_TYPE		type    () const;
 
-        void	        moved(bool v);
-		bool	        moved() const;
+		void	        colour  (PIECE_COLOUR col);
+		PIECE_COLOUR    colour  () const;
 
-        void            ID(PIECE_ID ID);
-        PIECE_ID        ID() const;
+        void	        moved   (bool b);
+		bool	        moved   () const;
+
+        void            ID      (PIECE_ID ID);
+        PIECE_ID        ID      () const;
 
         void            position(BoardPosition pos);
         BoardPosition   position() const;
 
-        PositionQueue   moveRange();
+        // Other        
+        PositionQueue   moveRange ();
+        void            resetFlags() { m_flags = 0; }
 
     protected:
+        void	x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
+		int     x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
+
+        void	y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
+		int     y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
+
         PositionQueue pawnRange  ();
         PositionQueue rookRange  ();
         PositionQueue knightRange();

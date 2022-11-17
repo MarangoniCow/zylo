@@ -22,51 +22,46 @@ typedef std::queue<Piece*> PieceQueue;
 
 
 struct BoardState {
-    // Pieces, current and previous turn
-    Piece*          current[8][8];
-    PIECE_COLOUR    turn;
-    Move            lastMove;
 
-    BoardState()
-    {
-        turn = WHITE;
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                current[i][j] = NULL;
+    public: 
+        // Pieces, current and previous turn
+        Piece           current[8][8];
+        PIECE_COLOUR    turn;
+        Move            lastMove;
+
+    public:
+        BoardState()
+        {
+            turn = WHITE;
+            for(int i = 0; i < 8; i++) {
+                for(int j = 0; j < 8; j++) {
+                    current[i][j] = Piece();
+                };
             };
         };
-    };
-    
-    // Initialisation methods
-    void initialiseBoard();
 
-    // Updating methods
-    void promotePiece(PIECE_ID ID, PIECE_TYPE newType);
+        
+        // Initialisation methods
+        void initialiseBoard();
+        void resetBoard     ();
 
-    // Maintainence methods
-    void resetBoard();
-    void addPiece(Piece* newPiece);
-    void addPiece(PIECE_TYPE type, PIECE_COLOUR col, int x, int y);
-    void removePiece(Piece* pieceToDelete);
-    void removePiece(PIECE_ID pieceToDelete);
+        // Updating methods
+        void promotePiece   (BoardPosition pos, PIECE_TYPE newType);
 
-    // Bool checks
-    bool pieceExists(Piece* piece) const;
-    bool pieceExists(Piece* piece, PIECE_COLOUR col) const;
-    bool pieceExists(Piece* piece, PIECE_COLOUR col, PIECE_TYPE type) const;
-    bool pieceExists(BoardPosition pos) const;
-    bool pieceExists(BoardPosition pos, PIECE_COLOUR col) const;
-    bool pieceExists(BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const;
+        // Maintainence methods
+        void addPiece       (PIECE_TYPE type, PIECE_COLOUR col, BoardPosition pos);
+        void removePiece    (BoardPosition pos);
+        void movePiece      (BoardPosition oldPos, BoardPosition newPos);
 
+        // Boolean checks
+        bool pieceExists    (BoardPosition pos) const;
+        bool pieceExists    (BoardPosition pos, PIECE_COLOUR col) const;
+        bool pieceExists    (BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const;
 
-    // Returns
-    Piece*      returnIDPtr(PIECE_ID ID);
-    Piece *		returnPiece(BoardPosition pos) const;
-    PieceQueue	returnPieceQueue() const;
-    PieceQueue	returnPieceQueue(PIECE_COLOUR col) const;
-    PieceQueue	returnPieceQueue(PIECE_COLOUR col, PIECE_TYPE type) const;
+        // Piece queues
+        void pieceQueue     (PositionQueue& queue) const;
+        void pieceQueue     (PositionQueue& queue, PIECE_COLOUR col) const;
+        void pieceQueue     (PositionQueue& queue, PIECE_COLOUR col, PIECE_TYPE type) const;
 
-	void		getPieceQueue(PieceQueue &pieceQueue) const;
-   
 };
 
