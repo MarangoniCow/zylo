@@ -56,7 +56,7 @@ void Piece::position(BoardPosition pos)
     y(pos.y);
     moved(true);
 }
-BoardPosition Piece::position(BoardPosition pos)
+BoardPosition Piece::position() const
 {
     BoardPosition pos(x(), y());
     return pos;
@@ -71,9 +71,46 @@ BoardPosition Piece::position(BoardPosition pos)
  * direction sequentially, saving a lot of hassle!
  * 
  ***********************************************************/
-PositionQueue Pawn::moveRange()
+PositionQueue Piece::moveRange()
+{ 
+    switch(type())
+    {
+        case PAWN:
+        {
+            return pawnRange();
+        }
+        case ROOK:
+        {
+            return rookRange();
+        }
+        case KNIGHT:
+        {
+            return knightRange();
+        }
+        case BISHOP:
+        {
+            return bishopRange();
+        }
+        case QUEEN:
+        {
+            return queenRange();
+        }
+        case KING:
+        {
+            return kingRange();
+        }
+        default
+        {
+            PositionQueue queue;
+            return queue;
+        }
+    }
+}
+
+PositionQueue Piece::pawnRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
 
     // WHITE = 0, BLACK = 1
     if(!m_col) {
@@ -87,9 +124,10 @@ PositionQueue Pawn::moveRange()
     return moveQueue;
 }
 
-PositionQueue Rook::moveRange()
+PositionQueue Piece::rookRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
 
     // Moving right
     int i = 1;
@@ -122,9 +160,10 @@ PositionQueue Rook::moveRange()
     return moveQueue;
 }
 
-PositionQueue Knight::moveRange()
+PositionQueue Piece::knighteRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
     if(m_pos.validUpdate(1, 2)) moveQueue.push(m_pos.returnUpdate(1, 2));
@@ -143,9 +182,10 @@ PositionQueue Knight::moveRange()
     
 }
 
-PositionQueue Bishop::moveRange()
+PositionQueue Piece::bishopRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
 
     // Moving diagonal right
     int i = 1;
@@ -186,9 +226,10 @@ PositionQueue Bishop::moveRange()
     return moveQueue;
 }
 
-PositionQueue Queen::moveRange()
+PositionQueue Piece::queenRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
 
     // Moving right
     int i = 1;
@@ -258,9 +299,10 @@ PositionQueue Queen::moveRange()
     
 }
 
-PositionQueue King::moveRange()
+PositionQueue Piece::kingRange()
 {
     PositionQueue moveQueue;
+    BoardPosition m_pos = position();
 
     // Permutations of {0, 1, -1}
     if(m_pos.validUpdate(1, 0))   moveQueue.push(m_pos.returnUpdate(1, 0));

@@ -71,6 +71,10 @@ class Piece
 			};
         
     public:
+        Piece()
+            {
+                m_flags = 0;
+            }
         Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_)
 			{
                 type(type_);
@@ -78,16 +82,7 @@ class Piece
                 x(x_);
                 y(y_);
             };
-        Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_, PIECE_ID ID_) 
-			{
-                ID(ID_);
-                type(type_);
-                colour(col_);
-                x(x_);
-                y(y_);
-                moved(true);
-            };
-        virtual ~Piece() {}
+        ~Piece() {}
 		
 		void	        type(PIECE_TYPE type);
 		PIECE_TYPE		type() const;
@@ -99,71 +94,20 @@ class Piece
 		bool	        moved() const;
 
         void            ID(PIECE_ID ID);
-        PIECE_ID        ID();
+        PIECE_ID        ID() const;
 
         void            position(BoardPosition pos);
-        BoardPosition   position();
+        BoardPosition   position() const;
 
-        virtual PositionQueue moveRange() = 0;      
-};
+        PositionQueue   moveRange();
 
+    protected:
+        PositionQueue pawnRange  ();
+        PositionQueue rookRange  ();
+        PositionQueue knightRange();
+        PositionQueue bishopRange();
+        PositionQueue queenRange ();
+        PositionQueue kingRange  ();
 
-
-/***********************************************************
- *                   PIECE SUB-CLASSES
- ***********************************************************/
-
-class Pawn : public Piece
-{
-    public:
-        Pawn(PIECE_COLOUR col_, int x, int y) : Piece(PAWN, col_, x, y) {};
-        Pawn(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(PAWN, col_, x, y, ID) {};
-
-        ~Pawn() {};
-        PositionQueue moveRange();
-};
-
-class Rook : public Piece
-{
-    public:
-        Rook(PIECE_COLOUR col_, int x, int y) : Piece(ROOK, col_, x, y){};
-        Rook(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(ROOK, col_, x, y, ID){};
-        ~Rook() {};
-        PositionQueue moveRange();
-};
-
-class Knight : public Piece
-{
-    public:
-        Knight(PIECE_COLOUR col_, int x, int y) : Piece(KNIGHT, col_, x, y) {};
-        Knight(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(KNIGHT, col_, x, y, ID) {};
-        ~Knight() {};
-        PositionQueue moveRange();
-};
-
-class Bishop : public Piece
-{
-    public:
-        Bishop(PIECE_COLOUR col_, int x, int y) : Piece(BISHOP, col_, x, y) {};
-        Bishop(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(BISHOP, col_, x, y, ID) {};
-        ~Bishop() {};
-        PositionQueue moveRange();
-};
-
-class Queen : public Piece
-{
-    public:
-        Queen(PIECE_COLOUR col_, int x, int y) : Piece(QUEEN, col_, x, y) {};
-        Queen(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(QUEEN, col_, x, y, ID) {};
-        ~Queen() {};
-        PositionQueue moveRange();
-};
-
-class King : public Piece
-{
-    public:
-        King(PIECE_COLOUR col_, int x, int y) : Piece(KING, col_, x, y) {};
-        King(PIECE_COLOUR col_, int x, int y, PIECE_ID ID) : Piece(KING, col_, x, y, ID) {};
-        ~King() {};
-        PositionQueue moveRange();
+        
 };
