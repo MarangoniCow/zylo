@@ -69,8 +69,8 @@ class BoardMoves {
         ChecksVector curChecks;
         ChecksVector oppChecks;
 
-        PIECE_COLOUR curCol;
-        PIECE_COLOUR oppCol;
+        COLOUR curCol;
+        COLOUR oppCol;
 
         Piece* curKing;
         Piece* oppKing;
@@ -110,18 +110,18 @@ class BoardMoves {
         // MAIN METHODS
         void processState();
         void generateMovementRange(Piece* piece);
-        MovementQueue processMoveRange(Piece* piece, PositionQueue moveRange);
+        void processMoveRange(Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
  
         // CHECK-RELATED FUNCTIONS
         PieceChecks     pieceChecks(Piece* piece);
         PieceVector     pieceCheckedBy(Piece* piece, const ChecksVector& oppChecks);
-        PieceVector     positionCheckedBy(BoardPosition pos, PIECE_COLOUR oppCol);
+        PieceVector     positionCheckedBy(BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
         PositionQueue   returnSafeMoves(Piece* piece);
         PositionQueue   returnSafeTakes(Piece* piece);
         void            restrictRevealedCheckMoves(Piece* piece);
-        void            restrictKingMoves(PIECE_COLOUR col);
+        void            restrictKingMoves(COLOUR col);
         void            restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
                                          PositionQueue* validMoves, PositionQueue* validTakes);
         void            removeInvalidCheckedMoves(PieceVector kingCheckedBy);
@@ -132,6 +132,6 @@ class BoardMoves {
         ChecksVector   returnChecksVector(const PieceVector& pieceVector);
 
     protected:
-        bool validPiece(Piece* piece)       { return !(piece == NULL || piece->type() != NONE); }
-        Piece* pieceByPosition(BoardPosition pos);
+        bool    validPiece(Piece* piece)       { return !(piece == NULL || piece->type() == NONE); }
+        Piece*  pieceByPosition(BoardPosition pos);
 };

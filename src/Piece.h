@@ -24,7 +24,7 @@
 typedef uint16_t PIECE_ID;
 typedef std::queue<BoardPosition> PositionQueue;
 
-enum PIECE_COLOUR {
+enum COLOUR {
     WHITE = 0,
     BLACK = 1
 };
@@ -68,7 +68,7 @@ class Piece
             {
                 m_flags = 0;
             }
-        Piece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_)
+        Piece(PIECE_TYPE type_, COLOUR col_, int x_, int y_)
 			{
                 type(type_);
                 colour(col_);
@@ -82,8 +82,8 @@ class Piece
 		void	        type    (PIECE_TYPE type);
 		PIECE_TYPE		type    () const;
 
-		void	        colour  (PIECE_COLOUR col);
-		PIECE_COLOUR    colour  () const;
+		void	        colour  (COLOUR col);
+		COLOUR    colour  () const;
 
         void	        moved   (bool b);
 		bool	        moved   () const;

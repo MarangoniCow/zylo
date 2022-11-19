@@ -79,8 +79,8 @@ void SDL_EventManager::BoardEvents()
         case PROMOTION:
         {
             requestPiecePromotion();
-            gameWindow->renderBoard(board->getState());
-            gameWindow->renderLast(board->getLastMove());
+            gameWindow->renderBoard (board->getState());
+            gameWindow->renderLast  (board->getLastMove());
             break;
         }
         case INVALID:

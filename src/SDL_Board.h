@@ -85,7 +85,7 @@ class SDL_Board
 
         // INTERNAL LOADING METHODS
         void loadBackground();                   
-        void loadPiece(int x, int y, PIECE_TYPE type, PIECE_COLOUR col);
+        void loadPiece(int x, int y, PIECE_TYPE type, COLOUR col);
         void loadState(BoardState state);
         void loadSquare(int x, int y);
         void loadOverlay(int x, int y, OVERLAY_COL col);

@@ -89,7 +89,7 @@ void SDL_Board::loadBackground()
     }
 }
 
-void SDL_Board::loadPiece(int x, int y, PIECE_TYPE type, PIECE_COLOUR col)
+void SDL_Board::loadPiece(int x, int y, PIECE_TYPE type, COLOUR col)
 {
     // Load texture from graphics holder    
     SDL_Texture* pieceTexture = pieceGraphics.returnTexture(type, col);

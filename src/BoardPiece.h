@@ -20,7 +20,7 @@ public:
 
 public:
 		BoardPiece();
-        BoardPiece(PIECE_TYPE type_, PIECE_COLOUR col_, int x_, int y_)
+        BoardPiece(PIECE_TYPE type_, COLOUR col_, int x_, int y_)
                                 {
                                 type(type_);
                                 color(col_);
@@ -32,8 +32,8 @@ public:
 		void	        type(PIECE_TYPE v)		{ m_flags = (m_flags & ~MaskType) | (v & MaskType); }
 		PIECE_TYPE		type() const	        { return (PIECE_TYPE)(m_flags & MaskType); }
 
-		void	        color(PIECE_COLOUR v)	{ m_flags = (m_flags & ~MaskColor) | ((v << ShiftColour) & MaskColor); }
-		PIECE_COLOUR    color() const	        { return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColour); }
+		void	        color(COLOUR v)	{ m_flags = (m_flags & ~MaskColor) | ((v << ShiftColour) & MaskColor); }
+		COLOUR    color() const	        { return (COLOUR)((m_flags & MaskColor) >> ShiftColour); }
 
 		bool	moved() const	{ return ((m_flags & FlagMoved) != 0); }
 		void	moved(bool v)	{

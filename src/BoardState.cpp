@@ -12,9 +12,9 @@ void BoardState::initialiseBoard()
     resetBoard();
 
     // Add pawns
-    for(int i = 0; i < 7; i++) {
-        addPiece(PAWN, WHITE, BoardPosition(i, 0));
-        addPiece(PAWN, WHITE, BoardPosition(i, 6));
+    for(int i = 0; i < 8; i++) {
+        addPiece(PAWN, WHITE, BoardPosition(i, 1));
+        addPiece(PAWN, BLACK, BoardPosition(i, 6));
     }
 
     // Add other pieces
@@ -63,7 +63,7 @@ void BoardState::promotePiece(BoardPosition pos, PIECE_TYPE newType)
 }
 
 /******************** MAINTAINENCE METHODS *******************/
-void BoardState::addPiece(PIECE_TYPE type, PIECE_COLOUR col, BoardPosition pos)
+void BoardState::addPiece(PIECE_TYPE type, COLOUR col, BoardPosition pos)
 {
     current[pos.x][pos.y] = Piece(type, col, pos.x, pos.y);
 }
@@ -81,11 +81,8 @@ void BoardState::movePiece(Move move)
     // Methodology
     current[newPos.x][newPos.y] = current[oldPos.x][oldPos.y];
     current[newPos.x][newPos.y].moved(true);
-
+    current[newPos.x][newPos.y].position(newPos);
     removePiece(oldPos);    
-    m_lastMove = move;
-    m_turn = (m_turn == WHITE) ? BLACK : WHITE;
-    
 }
 
 /******************** BOOL METHODS *******************/
@@ -93,12 +90,12 @@ void BoardState::movePiece(Move move)
  {
     return current[pos.x][pos.y].type() != NONE;
  }
- bool BoardState::pieceExists (BoardPosition pos, PIECE_COLOUR col) const
+ bool BoardState::pieceExists (BoardPosition pos, COLOUR col) const
  {
     return      ( current[pos.x][pos.y].type()  != NONE)
             &&  ( current[pos.x][pos.y].colour() == col);
  }
- bool BoardState::pieceExists (BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const
+ bool BoardState::pieceExists (BoardPosition pos, COLOUR col, PIECE_TYPE type) const
  {
     return      ( current[pos.x][pos.y].type()  == type)
             &&  ( current[pos.x][pos.y].colour() == col);

@@ -36,13 +36,13 @@ void SDL_Pieces::initialiseGraphicsObjs(SDL_Renderer* renderer_)
         {
             // Cast into the right type
             PIECE_TYPE type = static_cast<PIECE_TYPE>(i);
-            PIECE_COLOUR col = static_cast<PIECE_COLOUR>(j);
+            COLOUR col = static_cast<COLOUR>(j);
             loadTexture(type, col);
         }
     }
 }
 
-void SDL_Pieces::loadTexture(PIECE_TYPE type, PIECE_COLOUR col)
+void SDL_Pieces::loadTexture(PIECE_TYPE type, COLOUR col)
 {
     // Initialise texture and surface
     SDL_Texture* pieceTexture = nullptr;
@@ -69,7 +69,7 @@ void SDL_Pieces::loadTexture(PIECE_TYPE type, PIECE_COLOUR col)
 }
 
 
-std::string SDL_Pieces::returnBMPPath(PIECE_TYPE type, PIECE_COLOUR col)
+std::string SDL_Pieces::returnBMPPath(PIECE_TYPE type, COLOUR col)
 {
 	if (type == NONE) return "";
 

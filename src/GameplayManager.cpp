@@ -10,30 +10,35 @@
 
 
 BOARD_EVENT
-GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos)
+GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPosition &curClick)
 {
-    // If nothing exists in the new position, return overlay of old position
-    if (newPos.validPosition() && !curPos.validPosition())
+    // If there isn't a previous coordinate registered, return an overlay of the current position
+    if (curClick.validPosition() && !prevClick.validPosition())
     {
         return OVERLAY;
     }
-    // Check for piece of the correct colour, can also throw in other checks here if necessary
-    else if(board->getState().pieceExists(curPos, board->getTurn())) {
+    // Else, check that the previous click was of the right colour
+    else if(board->getState().pieceExists(prevClick, board->getTurn()))
+    {
         
-        // processUpdate returns 0 if no move was made.
-        if(!board->processUpdate(curPos, newPos))
+        // processUpdate returns 0 if the requested update is invalid
+        if(!board->processUpdate(prevClick, curClick))
             return INVALID;
-        else
-        {
-            if(turnHead != gameHistory.returnTurn())
-            {
-                gameHistory.truncateHistory(turnHead);
-            }
-            gameHistory.appendHistory(board->getState());
-            turnHead = gameHistory.returnTurn();
-        }
-        
-            
+        // else
+        //     historyActions;
+
+        /******************** GAME HISTORY ******************/
+        // else
+        // // procesUpdate returns 1 if the requested update is valid. 
+        // {
+        //     if(turnHead != gameHistory.returnTurn())
+        //     {
+        //         gameHistory.truncateHistory(turnHead);
+        //     }
+        //     gameHistory.appendHistory(board->getState());
+        //     turnHead = gameHistory.returnTurn();
+        // }
+        /******************** GAME HISTORY ******************/
 
         // Check flags
         BOARD_FLAGS flags = board->getFlags();

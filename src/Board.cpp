@@ -72,10 +72,8 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Begin movement task flow
-        preMoveTasks(curPos, tarPos);
         movePiece(currentPiece, tarPos);
-        postMoveTasks();
-
+        postMoveTasks(curPos, tarPos);
         return 1;
     }
     else
@@ -94,29 +92,17 @@ void Board::processPromotion(PIECE_TYPE newType)
 /*           MOVEMENT-RELATED FUNCTIONS (TASKS)     */
 /****************************************************/
 
-void Board::preMoveTasks(BoardPosition curPos, BoardPosition tarPos)
+void Board::postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarPos)
 {
-    lastMove.first = curPos;
-    lastMove.second = tarPos;
-}
-void Board::postMoveTasks()
-{
+    state.lastMove(Move(curPos, tarPos));
     state.turn((state.turn() == WHITE) ? BLACK : WHITE);
-    boardMoves.processState();
 }
 
-void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
+void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
 {   
+    // Move piece inside the state
     BoardPosition curPos = currentPiece->position();
-
-    // Reset piece in current
-    state.current[curPos.x][curPos.y].resetFlags();
-
-    // Update the target position in state with the current piece
-    state.current[newPos.x][newPos.y] = *currentPiece;
-
-    // Update the piece position
-    currentPiece->position(newPos);
+    state.movePiece(Move(curPos, newPos));
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
     switch (currentPiece->type())
@@ -157,7 +143,7 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 }
 
 
-void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
+void Board::takePiece(Piece* currentPiece, const BoardPosition& newPos)
 {
     Piece* pieceToDelete;
     /* SPECIAL CASE: EN-PASSANT */

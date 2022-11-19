@@ -20,13 +20,13 @@ PIECE_TYPE Piece::type() const
     return (PIECE_TYPE)(m_flags & MaskType);   
 }
 
-void Piece::colour(PIECE_COLOUR col)
+void Piece::colour(COLOUR col)
 {
     m_flags = (m_flags & ~MaskColor) | ((col << ShiftColour) & MaskColor);
 }
-PIECE_COLOUR Piece::colour() const
+COLOUR Piece::colour() const
 {
-    return (PIECE_COLOUR)((m_flags & MaskColor) >> ShiftColour);
+    return (COLOUR)((m_flags & MaskColor) >> ShiftColour);
 }
 
 void Piece::moved(bool b)
@@ -112,7 +112,7 @@ PositionQueue Piece::pawnRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
 
     // WHITE = 0, BLACK = 1
@@ -131,7 +131,7 @@ PositionQueue Piece::rookRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
 
     // Moving right
@@ -169,7 +169,7 @@ PositionQueue Piece::knightRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
@@ -193,7 +193,7 @@ PositionQueue Piece::bishopRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
 
     // Moving diagonal right
@@ -239,7 +239,7 @@ PositionQueue Piece::queenRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
 
     // Moving right
@@ -314,7 +314,7 @@ PositionQueue Piece::kingRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
-    PIECE_COLOUR  m_col = colour();
+    COLOUR  m_col = colour();
     bool          m_hasMoved = moved();
 
     // Permutations of {0, 1, -1}

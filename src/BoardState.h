@@ -19,11 +19,11 @@
 struct BoardState {
 
     protected:
-        PIECE_COLOUR    m_turn;
-        Move            m_lastMove;
+        COLOUR    m_turn;
+        Move      m_lastMove;
 
     public:
-        Piece           current[8][8];
+        Piece     current[8][8];
 
     public:
         BoardState()
@@ -45,21 +45,21 @@ struct BoardState {
         void promotePiece   (BoardPosition pos, PIECE_TYPE newType);
 
         // Maintainence methods
-        void addPiece       (PIECE_TYPE type, PIECE_COLOUR col, BoardPosition pos);
+        void addPiece       (PIECE_TYPE type, COLOUR col, BoardPosition pos);
         void removePiece    (BoardPosition pos);
         void movePiece      (Move move);
 
         // Boolean checks
         bool pieceExists    (BoardPosition pos) const;
-        bool pieceExists    (BoardPosition pos, PIECE_COLOUR col) const;
-        bool pieceExists    (BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const;
+        bool pieceExists    (BoardPosition pos, COLOUR col) const;
+        bool pieceExists    (BoardPosition pos, COLOUR col, PIECE_TYPE type) const;
 
         // Queries
-        void                turn    (PIECE_COLOUR col)  { m_turn = col;}
-        PIECE_COLOUR        turn    () const            { return m_turn; }
+        void                turn     (const COLOUR col)  { m_turn = col;}
+        COLOUR              turn     () const            { return m_turn; }
 
-        void                lastMove(Move move)         { m_lastMove = move; }
-        Move                lastMove() const            { return m_lastMove; }
+        void                lastMove (const Move& move)  { m_lastMove = move; }
+        Move                lastMove () const            { return m_lastMove; }
 
 
 };

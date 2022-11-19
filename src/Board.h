@@ -48,14 +48,12 @@ class Board {
         // MEMBER VARIABLES
         BoardState state;
         BoardMoves boardMoves;
-        Move lastMove;
         BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
-        void preMoveTasks(BoardPosition curPos, BoardPosition tarPos);
-        void postMoveTasks();
-        void movePiece(Piece* curPiece, BoardPosition newPos);
-        void takePiece(Piece* curPiece, BoardPosition newPos);
+        void postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarPos);
+        void movePiece(Piece* curPiece, const BoardPosition& newPos);
+        void takePiece(Piece* curPiece, const BoardPosition& newPos);
     
     public:
         // CONSTRUCTORS & ADMIN
@@ -68,12 +66,13 @@ class Board {
         // STATE-RELATED FUNCTIONS
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         void processPromotion(PIECE_TYPE newType);
+
+        MovementQueue   returnMovementQueue (BoardPosition pos);
         
         // RETURNS
-        BoardState      getState         ()   {return state;};   
-        MovementQueue   returnMovementQueue (BoardPosition pos);
-        BOARD_FLAGS     getFlags    ()  {return boardFlags;};
-        PIECE_COLOUR    getTurn          ()    {return state.turn();};
-        Move            getLastMove      ()    {return lastMove;}
+        BoardState      getState    () { return state; };   
+        BOARD_FLAGS     getFlags    () { return boardFlags; };
+        COLOUR    getTurn     () { return state.turn(); };
+        Move            getLastMove () { return state.lastMove(); }
         
 };

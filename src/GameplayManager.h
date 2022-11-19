@@ -32,7 +32,7 @@ class GameplayManager
     private:
         PLAY_FLAG* pawnPromotion;
         Board* board;
-        PIECE_COLOUR currentTurn;
+        COLOUR currentTurn;
         GameplayHistory gameHistory;
         TURN turnHead;
 
