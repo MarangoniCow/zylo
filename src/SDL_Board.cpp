@@ -120,7 +120,7 @@ void SDL_Board::loadState(BoardState state)
         for(int j = 0; j < 8; j++) {
             
             
-            Piece* current = state.current[i][j];
+            Piece* current = &state.current[i][j];
             if (current != NULL) {
                 loadPiece(i, j, current->type(), current->colour());
             }

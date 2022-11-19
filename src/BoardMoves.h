@@ -13,14 +13,12 @@
 #include "Piece.h"
 #include "BoardPosition.h"
 #include "BoardState.h"
+#include "BoardDefs.h"
 
 // EXTERNAL INCLUDES
-#include <utility>
+#include <vector>
 
-typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
-typedef std::queue<PieceChecks> ChecksQueue;
-typedef std::queue<std::pair<Piece*, RELPOS>> SightedQueue;
+
 
 
 
@@ -68,8 +66,8 @@ class BoardMoves {
         PieceChecks checksState[8][8];
 
         // Common memeber variables regularly accessed
-        ChecksQueue curChecks;
-        ChecksQueue oppChecks;
+        ChecksVector curChecks;
+        ChecksVector oppChecks;
 
         PIECE_COLOUR curCol;
         PIECE_COLOUR oppCol;
@@ -77,7 +75,16 @@ class BoardMoves {
         Piece* curKing;
         Piece* oppKing;
 
-        int curDir;
+        Piece* whiteKing;
+        Piece* blackKing;
+
+        PieceVector whitePieces;
+        PieceVector blackPieces;
+        
+        PieceVector curPieces;
+        PieceVector oppPieces;
+
+        int curForward;
 
         
         
@@ -98,7 +105,7 @@ class BoardMoves {
         BoardMoves(BoardState* statePtr_);
 
         // INITIALISATION & ADMIN
-        void changeState(BoardState* statePtr_) {statePtr = statePtr_;};
+        void changeState(BoardState* statePtr_);
 
         // MAIN METHODS
         void processState();
@@ -106,21 +113,25 @@ class BoardMoves {
         MovementQueue processMoveRange(Piece* piece, PositionQueue moveRange);
  
         // CHECK-RELATED FUNCTIONS
-        PieceChecks pieceChecks(Piece* piece);
-        PieceQueue  pieceCheckedBy(PIECE_ID ID, ChecksQueue checksQueue);
-        PieceQueue  positionCheckedBy(BoardPosition pos, PIECE_COLOUR oppCol);
+        PieceChecks     pieceChecks(Piece* piece);
+        PieceVector     pieceCheckedBy(Piece* piece, const ChecksVector& oppChecks);
+        PieceVector     positionCheckedBy(BoardPosition pos, PIECE_COLOUR oppCol);
 
         // REFINEMENTS
-        PositionQueue returnSafeMoves(Piece* piece);
-        PositionQueue returnSafeTakes(Piece* piece);
-        void restrictRevealedCheckMoves(Piece* piece);
-        void restrictKingMoves(PIECE_COLOUR col);
-        void restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
+        PositionQueue   returnSafeMoves(Piece* piece);
+        PositionQueue   returnSafeTakes(Piece* piece);
+        void            restrictRevealedCheckMoves(Piece* piece);
+        void            restrictKingMoves(PIECE_COLOUR col);
+        void            restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
                                          PositionQueue* validMoves, PositionQueue* validTakes);
-        void removeInvalidCheckedMoves(PieceQueue kingCheckedBy);
+        void            removeInvalidCheckedMoves(PieceVector kingCheckedBy);
 
         // RETURNS
         MovementQueue returnMovementQueue(Piece* piece);
         MovementQueue returnMovementQueue(BoardPosition pos);
-        ChecksQueue   returnChecksQueue(PIECE_COLOUR col);
+        ChecksVector   returnChecksVector(const PieceVector& pieceVector);
+
+    protected:
+        bool validPiece(Piece* piece)       { return !(piece == NULL || piece->type() != NONE); }
+        Piece* pieceByPosition(BoardPosition pos);
 };

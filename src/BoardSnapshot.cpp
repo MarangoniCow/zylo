@@ -3,30 +3,30 @@
 #include <cstring>
 
 
-BoardSnapshot::BoardSnapshot()
-		{
-		memset(m_board, 0, 64);
-		}
+// BoardSnapshot::BoardSnapshot()
+// 		{
+// 		memset(m_board, 0, 64);
+// 		}
 
 
-void
-BoardSnapshot::grabBoardState(const BoardState &state)
-		{
-		PieceQueue pieceQueue;
-		
-		state.getPieceQueue(pieceQueue);
+// void
+// BoardSnapshot::grabBoardState(const BoardState &state)
+// {
+// PieceVector pieceQueue;
 
-		while (!pieceQueue.empty())
-			{
-			Piece	*p = pieceQueue.front();
+// state.getPieceQueue(pieceQueue);
 
-			pieceQueue.pop();
-			BoardPiece  &bp=m_board[p->x()][p->y()];
+// while (!pieceQueue.empty())
+//     {
+//     Piece	*p = pieceQueue.front();
 
-			bp.type(p->type());
-			bp.moved(p->moved());
-			bp.color(p->colour());
-			}
+//     pieceQueue.pop();
+//     BoardPiece  &bp=m_board[p->x()][p->y()];
 
-        m_lastMove = state.lastMove;
-		}
+//     bp.type(p->type());
+//     bp.moved(p->moved());
+//     bp.color(p->colour());
+//     }
+
+// m_lastMove = state.lastMove;
+// }

@@ -13,9 +13,9 @@
 
 void Piece::type(PIECE_TYPE type)
 {
-    m_flags = (m_flags & ~MaskType) | (v & MaskType);
+    m_flags = (m_flags & ~MaskType) | (type & MaskType);
 }
-void Piece::type() const
+PIECE_TYPE Piece::type() const
 {
     return (PIECE_TYPE)(m_flags & MaskType);   
 }
@@ -47,7 +47,8 @@ void Piece::ID(PIECE_ID ID)
 }
 PIECE_ID Piece::ID() const
 {
-    m_flags & MaskID;
+    return m_flags & MaskID;
+
 }
 
 void Piece::position(BoardPosition pos)
@@ -99,7 +100,7 @@ PositionQueue Piece::moveRange()
         {
             return kingRange();
         }
-        default
+        default:
         {
             PositionQueue queue;
             return queue;
@@ -111,6 +112,8 @@ PositionQueue Piece::pawnRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
 
     // WHITE = 0, BLACK = 1
     if(!m_col) {
@@ -128,6 +131,8 @@ PositionQueue Piece::rookRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
 
     // Moving right
     int i = 1;
@@ -160,10 +165,12 @@ PositionQueue Piece::rookRange()
     return moveQueue;
 }
 
-PositionQueue Piece::knighteRange()
+PositionQueue Piece::knightRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
     if(m_pos.validUpdate(1, 2)) moveQueue.push(m_pos.returnUpdate(1, 2));
@@ -186,6 +193,8 @@ PositionQueue Piece::bishopRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
 
     // Moving diagonal right
     int i = 1;
@@ -230,6 +239,8 @@ PositionQueue Piece::queenRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
 
     // Moving right
     int i = 1;
@@ -303,6 +314,8 @@ PositionQueue Piece::kingRange()
 {
     PositionQueue moveQueue;
     BoardPosition m_pos = position();
+    PIECE_COLOUR  m_col = colour();
+    bool          m_hasMoved = moved();
 
     // Permutations of {0, 1, -1}
     if(m_pos.validUpdate(1, 0))   moveQueue.push(m_pos.returnUpdate(1, 0));

@@ -14,25 +14,21 @@
 #include "BoardPosition.h"
 #include "BoardDefs.h"
 
-// EXTERNAL INCLUDES
-#include <utility>
-
-typedef std::queue<BoardPosition> PositionQueue;
-typedef std::queue<Piece*> PieceQueue;
 
 
 struct BoardState {
 
-    public: 
-        // Pieces, current and previous turn
+    protected:
+        PIECE_COLOUR    m_turn;
+        Move            m_lastMove;
+
+    public:
         Piece           current[8][8];
-        PIECE_COLOUR    turn;
-        Move            lastMove;
 
     public:
         BoardState()
         {
-            turn = WHITE;
+            m_turn = WHITE;
             for(int i = 0; i < 8; i++) {
                 for(int j = 0; j < 8; j++) {
                     current[i][j] = Piece();
@@ -51,17 +47,20 @@ struct BoardState {
         // Maintainence methods
         void addPiece       (PIECE_TYPE type, PIECE_COLOUR col, BoardPosition pos);
         void removePiece    (BoardPosition pos);
-        void movePiece      (BoardPosition oldPos, BoardPosition newPos);
+        void movePiece      (Move move);
 
         // Boolean checks
         bool pieceExists    (BoardPosition pos) const;
         bool pieceExists    (BoardPosition pos, PIECE_COLOUR col) const;
         bool pieceExists    (BoardPosition pos, PIECE_COLOUR col, PIECE_TYPE type) const;
 
-        // Piece queues
-        void pieceQueue     (PositionQueue& queue) const;
-        void pieceQueue     (PositionQueue& queue, PIECE_COLOUR col) const;
-        void pieceQueue     (PositionQueue& queue, PIECE_COLOUR col, PIECE_TYPE type) const;
+        // Queries
+        void                turn    (PIECE_COLOUR col)  { m_turn = col;}
+        PIECE_COLOUR        turn    () const            { return m_turn; }
+
+        void                lastMove(Move move)         { m_lastMove = move; }
+        Move                lastMove() const            { return m_lastMove; }
+
 
 };
 

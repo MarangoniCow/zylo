@@ -34,13 +34,14 @@ void Board::newState(BoardState state_) {
 /****************************************************/
 bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 {
-    // Fetch movement queue for current position
-    MovementQueue moveQueue = boardMoves.returnMovementQueue(curPos);
-
-    // Fetch the target piece, return if empty.
-    Piece* currentPiece = state.current[curPos.x][curPos.y];
-    if(!state.pieceExists(currentPiece, state.turn))
+    // Fetch the target piece, return if no piece present
+    if(!state.pieceExists(curPos))
         return 0;
+
+    Piece* currentPiece = &state.current[curPos.x][curPos.y];
+    
+    // Fetch queue from current position
+    MovementQueue moveQueue = boardMoves.returnMovementQueue(curPos);
     
     // Iterate through queue until the new position is found.
     bool found = 0;
@@ -56,7 +57,6 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(found)
     {
         // Update old state
-        state.lastMove = std::make_pair(curPos, tarPos);
         takePiece(currentPiece, tarPos);
     }
         
@@ -71,9 +71,6 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     
     if(found)
     {
-        // Update old state
-        state.lastMove = std::make_pair(curPos, tarPos);
-
         // Begin movement task flow
         preMoveTasks(curPos, tarPos);
         movePiece(currentPiece, tarPos);
@@ -87,7 +84,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 void Board::processPromotion(PIECE_TYPE newType)
 {
     // Update state
-    state.promotePiece(boardFlags.pawnPromotion.second, newType);
+    state.promotePiece(boardFlags.pawnPromotion.second->position(), newType);
 
     // Update promotion flags
     boardFlags.pawnPromotion.first = 0;
@@ -104,19 +101,19 @@ void Board::preMoveTasks(BoardPosition curPos, BoardPosition tarPos)
 }
 void Board::postMoveTasks()
 {
-    state.turn = (state.turn == WHITE) ? BLACK : WHITE;
+    state.turn((state.turn() == WHITE) ? BLACK : WHITE);
     boardMoves.processState();
 }
 
 void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
 {   
-    BoardPosition curPos(currentPiece->x(), currentPiece->y());
+    BoardPosition curPos = currentPiece->position();
 
-    // Update current position in state as null
-    state.current[curPos.x][curPos.y] = NULL;
+    // Reset piece in current
+    state.current[curPos.x][curPos.y].resetFlags();
 
     // Update the target position in state with the current piece
-    state.current[newPos.x][newPos.y] = currentPiece;
+    state.current[newPos.x][newPos.y] = *currentPiece;
 
     // Update the piece position
     currentPiece->position(newPos);
@@ -131,24 +128,24 @@ void Board::movePiece(Piece* currentPiece, BoardPosition newPos)
             {
                 BoardPosition oldRookPos = newPos.returnUpdate(1, 0);
                 BoardPosition newRookPos = newPos.returnUpdate(-1, 0);
-                movePiece(state.current[oldRookPos.x][oldRookPos.y], newRookPos);
+                movePiece(&state.current[oldRookPos.x][oldRookPos.y], newRookPos);
             }
             // Left-side castling
             else if(curPos.x - newPos.x == 2)
             {
                 BoardPosition oldRookPos = newPos.returnUpdate(-2, 0);
                 BoardPosition newRookPos = newPos.returnUpdate(1, 0);
-                movePiece(state.current[oldRookPos.x][oldRookPos.y], newRookPos);
+                movePiece(&state.current[oldRookPos.x][oldRookPos.y], newRookPos);
             }
             break;
         }
         case PAWN:
         {
             int endrow = (currentPiece->colour() == WHITE) ? 7 : 0;
-            if(currentPiece->y() == endrow)
+            if(currentPiece->position().y == endrow)
             {
                 boardFlags.pawnPromotion.first = 1;
-                boardFlags.pawnPromotion.second = currentPiece->ID();
+                boardFlags.pawnPromotion.second = currentPiece;
             }
 
             break;            
@@ -164,16 +161,16 @@ void Board::takePiece(Piece* currentPiece, BoardPosition newPos)
 {
     Piece* pieceToDelete;
     /* SPECIAL CASE: EN-PASSANT */
-    if(currentPiece->type() == PAWN && state.current[newPos.x][newPos.y] == NULL)
+    if(currentPiece->type() == PAWN && state.current[newPos.x][newPos.y].type() == NONE)
     {
         int forward = (currentPiece->colour() == WHITE) ? 1 : -1;
-        pieceToDelete = state.current[newPos.x][newPos.y - forward];
+        pieceToDelete = &state.current[newPos.x][newPos.y - forward];
     }
     else
     {
-        pieceToDelete = state.current[newPos.x][newPos.y];
+        pieceToDelete = &state.current[newPos.x][newPos.y];
     }
-    state.removePiece(pieceToDelete);
+    state.removePiece(pieceToDelete->position());
     movePiece(currentPiece, newPos);
 
 }

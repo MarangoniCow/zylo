@@ -39,7 +39,7 @@ struct BoardPosition
     BoardPosition(int i, int j) : x(i), y(j) {};
 
     // Admin
-    void ResetPosition();
+    void resetPosition();
     void position(BoardPosition newPos);
     void position(int i, int j);
 

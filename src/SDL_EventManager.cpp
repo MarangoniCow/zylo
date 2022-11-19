@@ -79,26 +79,26 @@ void SDL_EventManager::BoardEvents()
         case PROMOTION:
         {
             requestPiecePromotion();
-            gameWindow->renderBoard(board->returnState());
-            gameWindow->renderLast(board->returnLastMove());
+            gameWindow->renderBoard(board->getState());
+            gameWindow->renderLast(board->getLastMove());
             break;
         }
         case INVALID:
         {
-            curPos.ResetPosition();
-            prevPos.ResetPosition();
-            gameWindow->renderBoard(board->returnState());
-            gameWindow->renderLast(board->returnLastMove());
+            curPos.resetPosition();
+            prevPos.resetPosition();
+            gameWindow->renderBoard(board->getState());
+            gameWindow->renderLast(board->getLastMove());
             break;
         }
         case MOVE:
         {
-            gameWindow->renderBoard(board->returnState());
-            gameWindow->renderLast(board->returnLastMove());
+            gameWindow->renderBoard(board->getState());
+            gameWindow->renderLast(board->getLastMove());
             
             // Reset the click location
-            curPos.ResetPosition();
-            prevPos.ResetPosition();
+            curPos.resetPosition();
+            prevPos.resetPosition();
 
             break;
         }
@@ -145,19 +145,19 @@ void SDL_EventManager::KeyboardEvents()
         case SDLK_r:
         {
             manager->newGame();
-            gameWindow->renderBoard(manager->gameBoard()->returnState());
+            gameWindow->renderBoard(manager->gameBoard()->getState());
             break;
         }
         case SDLK_LEFT:
         {
             manager->traverseHistory(BACKWARD);
-            gameWindow->renderBoard(manager->gameBoard()->returnState());
+            gameWindow->renderBoard(manager->gameBoard()->getState());
             break;
         }
         case SDLK_RIGHT:
         {
             manager->traverseHistory(FORWARD);
-            gameWindow->renderBoard(manager->gameBoard()->returnState());
+            gameWindow->renderBoard(manager->gameBoard()->getState());
             break;
         }
         default:
@@ -171,7 +171,7 @@ void SDL_EventManager::KeyboardEvents()
 
 bool SDL_EventManager::checkGameplayFlags()
 {
-    BOARD_FLAGS boardFlags = board->returnBoardFlags();
+    BOARD_FLAGS boardFlags = board->getFlags();
 
     // Check for promotion
     if(boardFlags.pawnPromotion.first)

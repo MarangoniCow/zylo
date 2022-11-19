@@ -13,7 +13,7 @@
 
 
 
-void BoardPosition::ResetPosition() {
+void BoardPosition::resetPosition() {
         x = -1;
         y = -1;
 }

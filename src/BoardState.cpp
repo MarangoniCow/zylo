@@ -5,10 +5,6 @@
 #include "BoardState.h"
 #include "Piece.h"
 
-// EXTERNAL INCLUDES
-#include <iostream>
-#include <queue>
-
 /***************** INITIALISATION METHODS *****************/
 void BoardState::initialiseBoard()
 {
@@ -56,10 +52,9 @@ void BoardState::resetBoard()
     }
 
     // Reset turns and positions
-    turn = WHITE;
-    BoardPosition pos;
-    lastMove.first = pos; 
-    lastMove.second = pos;
+    m_turn = WHITE;
+    m_lastMove.first.resetPosition();
+    m_lastMove.second.resetPosition();
 }
 
 void BoardState::promotePiece(BoardPosition pos, PIECE_TYPE newType)
@@ -77,12 +72,19 @@ void BoardState::removePiece(BoardPosition pos)
 {
     current[pos.x][pos.y].resetFlags();
 }
-void BoardState::movePiece(BoardPosition oldPos, BoardPosition newPos)
+void BoardState::movePiece(Move move)
 {
-    Piece oldPiece = current[oldPos.x][oldPos.y];
-    addPiece(oldPiece.type(), oldPiece.colour(), newPos);
+    // Initialise
+    BoardPosition oldPos = move.first;
+    BoardPosition newPos = move.second;
+
+    // Methodology
+    current[newPos.x][newPos.y] = current[oldPos.x][oldPos.y];
     current[newPos.x][newPos.y].moved(true);
-    removePiece(oldPos);
+
+    removePiece(oldPos);    
+    m_lastMove = move;
+    m_turn = (m_turn == WHITE) ? BLACK : WHITE;
     
 }
 

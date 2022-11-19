@@ -33,11 +33,11 @@ struct BOARD_FLAGS
     void RESET_FLAGS()
     {
         kingCheck.first = 0;
-        kingCheck.second = UINT16_MAX;
+        kingCheck.second = nullptr;
         kingCheckmate.first = 0;
-        kingCheckmate.second = UINT16_MAX;
+        kingCheckmate.second = nullptr;
         pawnPromotion.first = 0;
-        pawnPromotion.second = UINT16_MAX;
+        pawnPromotion.second = nullptr;
     }
 };
 
@@ -70,10 +70,10 @@ class Board {
         void processPromotion(PIECE_TYPE newType);
         
         // RETURNS
-        BoardState      returnState()   {return state;};   
+        BoardState      getState         ()   {return state;};   
         MovementQueue   returnMovementQueue (BoardPosition pos);
-        BOARD_FLAGS     returnBoardFlags()  {return boardFlags;};
-        PIECE_COLOUR    returnTurn()    {return state.turn;};
-        Move            returnLastMove()    {return lastMove;}
+        BOARD_FLAGS     getFlags    ()  {return boardFlags;};
+        PIECE_COLOUR    getTurn          ()    {return state.turn();};
+        Move            getLastMove      ()    {return lastMove;}
         
 };

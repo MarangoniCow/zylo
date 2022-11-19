@@ -20,11 +20,7 @@
 #include "Piece.h"
 
 
-typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
-typedef std::queue<PieceChecks> ChecksQueue;
-typedef std::pair<bool, PIECE_ID> PLAY_FLAG;
-typedef std::pair<PIECE_ID, PieceQueue> PieceChecks;
+
 
 
 
@@ -40,7 +36,7 @@ int main () {
 
     // Initialise a game window and render the current state
     SDL_Board gameWindow;
-    gameWindow.renderBoard(board.returnState());
+    gameWindow.renderBoard(board.getState());
 
     // Gamne boolean
     

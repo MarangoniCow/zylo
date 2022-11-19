@@ -12,25 +12,13 @@
 BOARD_EVENT
 GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos)
 {
-    
-
     // If nothing exists in the new position, return overlay of old position
     if (newPos.validPosition() && !curPos.validPosition())
     {
-        if(board->returnState().pieceExists(newPos, board->returnTurn()))
-        {
-            BOARD_FLAGS boardFlags = board->returnBoardFlags();
-            if(board->returnState().returnPiece(newPos)->ID() == boardFlags.kingCheck.second)
-                return INVALID;
-            else
-                return OVERLAY;
-        }
-        else
-            return INVALID;
-            
+        return OVERLAY;
     }
     // Check for piece of the correct colour, can also throw in other checks here if necessary
-    else if(board->returnState().pieceExists(curPos, board->returnTurn())) {
+    else if(board->getState().pieceExists(curPos, board->getTurn())) {
         
         // processUpdate returns 0 if no move was made.
         if(!board->processUpdate(curPos, newPos))
@@ -41,14 +29,14 @@ GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosit
             {
                 gameHistory.truncateHistory(turnHead);
             }
-            gameHistory.appendHistory(board->returnState());
+            gameHistory.appendHistory(board->getState());
             turnHead = gameHistory.returnTurn();
         }
         
             
 
         // Check flags
-        BOARD_FLAGS flags = board->returnBoardFlags();
+        BOARD_FLAGS flags = board->getFlags();
         if(flags.pawnPromotion.first == 1)
             return PROMOTION;
         else if (flags.kingCheckmate.first == 1)
@@ -56,14 +44,14 @@ GameplayManager::processBoardClick(const BoardPosition &curPos, const BoardPosit
         else
             return MOVE;
     }
-    else
-        return DEFAULT;
+    
+    return DEFAULT;
 }
 
 void GameplayManager::newGame()
 {
     board->newGame();
-    gameHistory.newGame(board->returnState());
+    gameHistory.newGame(board->getState());
     turnHead = gameHistory.returnTurn();
 }
 
