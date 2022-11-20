@@ -15,7 +15,10 @@ GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPo
     // If there isn't a previous coordinate registered, return an overlay of the current position
     if (curClick.validPosition() && !prevClick.validPosition())
     {
-        return OVERLAY;
+        if(board->getState().pieceExists(curClick, board->getTurn()))
+            return OVERLAY;
+        else
+            return INVALID;
     }
     // Else, check that the previous click was of the right colour
     else if(board->getState().pieceExists(prevClick, board->getTurn()))

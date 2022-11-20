@@ -58,6 +58,7 @@ class BoardMoves {
 
         // Member variables
         BoardState* statePtr;
+
         PLAY_FLAG kingCheck;
         PLAY_FLAG kingCheckmate;
 
@@ -69,18 +70,12 @@ class BoardMoves {
         ChecksVector curChecks;
         ChecksVector oppChecks;
 
-        COLOUR curCol;
-        COLOUR oppCol;
+        COLOUR curTurn;
+        COLOUR oppTurn;
 
         Piece* curKing;
         Piece* oppKing;
 
-        Piece* whiteKing;
-        Piece* blackKing;
-
-        PieceVector whitePieces;
-        PieceVector blackPieces;
-        
         PieceVector curPieces;
         PieceVector oppPieces;
 
@@ -95,8 +90,8 @@ class BoardMoves {
         void setTurnDependencies();
 
         // Private methods: Special takes/moves (castling)
-        void addSpecialTakes(Piece* piece, PositionQueue* validTakes);
-        void addCastling(Piece* piece);
+        void addSpecialTakes(Piece* piece, PositionQueue& validTake);
+        void addCastling    (Piece* piece);
         void verifyMate();
 
     public:
@@ -114,22 +109,22 @@ class BoardMoves {
  
         // CHECK-RELATED FUNCTIONS
         PieceChecks     pieceChecks(Piece* piece);
-        PieceVector     pieceCheckedBy(Piece* piece, const ChecksVector& oppChecks);
+        PieceVector     pieceCheckedBy(Piece* piece, const ChecksVector& oppChecks); 
         PieceVector     positionCheckedBy(BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
-        PositionQueue   returnSafeMoves(Piece* piece);
-        PositionQueue   returnSafeTakes(Piece* piece);
-        void            restrictRevealedCheckMoves(Piece* piece);
-        void            restrictKingMoves(COLOUR col);
-        void            restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
-                                         PositionQueue* validMoves, PositionQueue* validTakes);
-        void            removeInvalidCheckedMoves(PieceVector kingCheckedBy);
+        PositionQueue   returnSafeMoves             (Piece* piece);
+        PositionQueue   returnSafeTakes             (Piece* piece);
+        void            restrictRevealedCheckMoves  (Piece* piece);
+        void            restrictKingMoves           (COLOUR col);
+        void            restrictToBlockingMoves     (Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
+                                                     PositionQueue* validMoves, PositionQueue* validTakes);
+        void            removeInvalidCheckedMoves   (PieceVector kingCheckedBy);
 
         // RETURNS
-        MovementQueue returnMovementQueue(Piece* piece);
-        MovementQueue returnMovementQueue(BoardPosition pos);
-        ChecksVector   returnChecksVector(const PieceVector& pieceVector);
+        MovementQueue returnMovementQueue   (Piece* piece);
+        MovementQueue returnMovementQueue   (BoardPosition pos);
+        ChecksVector  returnChecksVector    (const PieceVector& pieceVector);
 
     protected:
         bool    validPiece(Piece* piece)       { return !(piece == NULL || piece->type() == NONE); }

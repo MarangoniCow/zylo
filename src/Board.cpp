@@ -55,19 +55,17 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     }
 
     if(found)
-    {
-        // Update old state
         takePiece(currentPiece, tarPos);
-    }
-        
-    
-    while(!moveQueue.validMoves.empty() && !found)
+    else
     {
-        BoardPosition temp = moveQueue.validMoves.front();
-        moveQueue.validMoves.pop();        
-        if(temp == tarPos)
-            found = 1;
-    }
+        while(!moveQueue.validMoves.empty() && !found)
+        {
+            BoardPosition temp = moveQueue.validMoves.front();
+            moveQueue.validMoves.pop();        
+            if(temp == tarPos)
+                found = 1;
+        }
+    }       
     
     if(found)
     {
@@ -78,6 +76,8 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     }
     else
         return 0;
+
+    
 }
 void Board::processPromotion(PIECE_TYPE newType)
 {
@@ -96,6 +96,7 @@ void Board::postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarP
 {
     state.lastMove(Move(curPos, tarPos));
     state.turn((state.turn() == WHITE) ? BLACK : WHITE);
+    boardMoves.processState();
 }
 
 void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
@@ -146,19 +147,17 @@ void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
 void Board::takePiece(Piece* currentPiece, const BoardPosition& newPos)
 {
     Piece* pieceToDelete;
-    /* SPECIAL CASE: EN-PASSANT */
+    // Need to implement special rules for enpassant
     if(currentPiece->type() == PAWN && state.current[newPos.x][newPos.y].type() == NONE)
     {
         int forward = (currentPiece->colour() == WHITE) ? 1 : -1;
         pieceToDelete = &state.current[newPos.x][newPos.y - forward];
     }
+    // Otherwise we can just take the piece in front of us
     else
-    {
         pieceToDelete = &state.current[newPos.x][newPos.y];
-    }
+    
     state.removePiece(pieceToDelete->position());
-    movePiece(currentPiece, newPos);
-
 }
 
 MovementQueue Board::returnMovementQueue(BoardPosition pos)

@@ -142,32 +142,6 @@ BoardMoves::BoardMoves(BoardState* statePtr)
 void BoardMoves::changeState(BoardState* statePtr_)
 {
     statePtr = statePtr_;
-
-
-    // Clear vectors
-    whitePieces.clear();
-    blackPieces.clear();
-
-    // Iterate through all positions, extract 
-
-    for(int i = 0; i < 8; i++) {
-        for(int j = 0; j < 8; j++) {
-            if(statePtr->current[i][j].type() == NONE)
-                continue;
-            else if (statePtr->current[i][j].colour() == WHITE)
-            {
-                whitePieces.push_back(&statePtr->current[i][j]);
-                if(statePtr->current[i][j].type() == KING)
-                    whiteKing = &statePtr->current[i][j];
-            }
-            else
-            {
-                blackPieces.push_back(&statePtr->current[i][j]);
-                if(statePtr->current[i][j].type() == KING)
-                    blackKing = &statePtr->current[i][j];
-            }
-        }
-    }
 }
 
 /****************************************************/
@@ -195,25 +169,34 @@ void BoardMoves::resetMoves()
 void BoardMoves::setTurnDependencies()
 {
     // Set colours
-    curCol = statePtr->turn();
-    oppCol = (curCol == WHITE) ? BLACK : WHITE;
+    curTurn = statePtr->turn();
+    oppTurn = (curTurn == WHITE) ? BLACK : WHITE;
 
     // Set forward direction
-    curForward = (curCol == WHITE) ? 1 : -1;
+    curForward = (curTurn == WHITE) ? 1 : -1;
 
-    if(curCol == WHITE)
+    curPieces.clear();
+    oppPieces.clear();
+
+    for(int i = 0; i < 8; i++)
     {
-        curPieces   = whitePieces;
-        curKing     = whiteKing;
-        oppPieces   = blackPieces;
-        oppKing     = blackKing;
-    }
-    else
-    {
-        curPieces   = blackPieces;
-        curKing     = blackKing;
-        oppPieces   = whitePieces;
-        oppKing     = whiteKing;
+        for(int j = 0; j < 8; j++)
+        {
+            if(statePtr->current[i][j].type() == NONE)
+                continue;
+            else if (statePtr->current[i][j].colour() == curTurn)
+            {
+                curPieces.push_back(&statePtr->current[i][j]);
+                if(statePtr->current[i][j].type() == KING)
+                    curKing = &statePtr->current[i][j];
+            }
+            else
+            {
+                oppPieces.push_back(&statePtr->current[i][j]);
+                if(statePtr->current[i][j].type() == KING)
+                    oppKing = &statePtr->current[i][j];
+            }
+        }
     }
 }
 
@@ -229,10 +212,10 @@ void BoardMoves::processState()
 
 
     // 2) Iterate through entire list, generating movement range of all pieces
-    for(auto it:whitePieces) {
+    for(auto it:curPieces) {
         generateMovementRange(it);
     }
-    for(auto it:blackPieces) {
+    for(auto it:oppPieces) {
         generateMovementRange(it);
     }
 
@@ -281,7 +264,7 @@ void BoardMoves::generateMovementRange(Piece* piece)
     processMoveRange(piece, piece->moveRange(), moveQueue);
 
     // Add special takes (pawn takes & enpassant)
-    // addSpecialTakes(piece, &moveQueue.validTakes);
+    addSpecialTakes(piece, moveQueue.validTakes);
 
     // Add queue to appropriate board location
     BoardPosition pos(piece->position());
@@ -674,13 +657,17 @@ ChecksVector BoardMoves::returnChecksVector(const PieceVector& pieceVector)
 /*            PRIVATE HELPER-METHODS                */
 /****************************************************/
 
-void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
+void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue& validTakes)
 {
-    if(currentPiece == NULL)
+    if(!validPiece(currentPiece))
         return;
     
     BoardPosition curPos(currentPiece->position());
     Move lastMove = statePtr->lastMove();
+
+    // Need current 
+    COLOUR curCol = currentPiece->colour();
+    
     
 
     // Special moves list
@@ -699,12 +686,12 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                     BoardPosition temp = curPos.returnUpdate(i, curForward);
                     Piece* targetPiece = &statePtr->current[temp.x][temp.y];
                     
-                    if(targetPiece != NULL && targetPiece->colour() == oppCol)
-                        validTakes->push(temp);
+                    if(validPiece(targetPiece) && targetPiece->colour() != curCol)
+                        validTakes.push(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
-                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0) && currentPiece->colour() == curCol)
+                if(curPos.y == enpassantRow && curPos.validUpdate(i, 0) && currentPiece->colour() == curTurn)
                 {
                     Piece* targetPiece;
                     targetPiece = &statePtr->current[curPos.x + i][enpassantRow];
@@ -713,13 +700,13 @@ void BoardMoves::addSpecialTakes(Piece* currentPiece, PositionQueue* validTakes)
                     
                     BoardPosition targetPos(targetPiece->position());
 
-                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour (black)
-                    bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() == oppCol) ? 1 : 0;
+                    // Check for an existence piece, and that it's a pawn, and that it's the opposite colour
+                    bool pawnAdjacent = (targetPiece->type() == PAWN && targetPiece->colour() != curCol) ? 1 : 0;
                     bool isLastMoved = (targetPos == lastMove.second);
                     bool lastOnHomeRow = (lastMove.first.y - lastMove.second.y == 2*curForward);
                     
                     if(pawnAdjacent && isLastMoved && lastOnHomeRow)
-                        validTakes->push(curPos.returnUpdate(i, curForward));
+                        validTakes.push(curPos.returnUpdate(i, curForward));
                 }
             }
             break;     
