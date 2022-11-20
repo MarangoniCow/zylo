@@ -27,20 +27,16 @@ GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPo
         // processUpdate returns 0 if the requested update is invalid
         if(!board->processUpdate(prevClick, curClick))
             return INVALID;
-        // else
-        //     historyActions;
-
-        /******************** GAME HISTORY ******************/
-        // else
-        // // procesUpdate returns 1 if the requested update is valid. 
-        // {
-        //     if(turnHead != gameHistory.returnTurn())
-        //     {
-        //         gameHistory.truncateHistory(turnHead);
-        //     }
-        //     gameHistory.appendHistory(board->getState());
-        //     turnHead = gameHistory.returnTurn();
-        // }
+        else
+        // procesUpdate returns 1 if the requested update is valid. 
+        {
+            if(turnHead != gameHistory.returnTurn())
+            {
+                gameHistory.truncateHistory(turnHead);
+            }
+            gameHistory.appendHistory(board->getState());
+            turnHead = gameHistory.returnTurn();
+        }
         /******************** GAME HISTORY ******************/
 
         // Check flags
