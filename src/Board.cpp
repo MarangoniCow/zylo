@@ -103,7 +103,6 @@ void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
 {   
     // Move piece inside the state
     BoardPosition curPos = currentPiece->position();
-    state.movePiece(Move(curPos, newPos));
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
     switch (currentPiece->type())
@@ -141,6 +140,8 @@ void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
             break;
         }
     }
+    state.movePiece(Move(curPos, newPos));
+    
 }
 
 

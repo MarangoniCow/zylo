@@ -108,25 +108,25 @@ class BoardMoves {
         void processMoveRange(Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
  
         // CHECK-RELATED FUNCTIONS
-        PieceChecks     pieceChecks(Piece* piece);
-        PieceVector     pieceCheckedBy(Piece* piece, const ChecksVector& oppChecks); 
-        PieceVector     positionCheckedBy(BoardPosition pos, COLOUR oppCol);
+        PieceChecks     pieceChecks                 (Piece* piece);
+        PieceVector     pieceCheckedBy              (Piece* piece, const ChecksVector& oppChecks); 
+        PieceVector     positionCheckedBy           (BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
         PositionQueue   returnSafeMoves             (Piece* piece);
         PositionQueue   returnSafeTakes             (Piece* piece);
         void            restrictRevealedCheckMoves  (Piece* piece);
         void            restrictKingMoves           (COLOUR col);
+        void            restrictInvalidCheckedMoves (const PieceVector& kingCheckedBy);
         void            restrictToBlockingMoves     (Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
                                                      PositionQueue* validMoves, PositionQueue* validTakes);
-        void            removeInvalidCheckedMoves   (PieceVector kingCheckedBy);
 
         // RETURNS
-        MovementQueue returnMovementQueue   (Piece* piece);
-        MovementQueue returnMovementQueue   (BoardPosition pos);
-        ChecksVector  returnChecksVector    (const PieceVector& pieceVector);
+        MovementQueue   returnMovementQueue         (Piece* piece);
+        MovementQueue   returnMovementQueue         (BoardPosition pos);
+        void            returnChecksQueue           (const PieceVector& pieceVector, ChecksVector& checksVector);
 
     protected:
-        bool    validPiece(Piece* piece)       { return !(piece == NULL || piece->type() == NONE); }
-        Piece*  pieceByPosition(BoardPosition pos);
+        bool            validPiece(Piece* piece)       { return !(piece == NULL || piece->type() == NONE); }
+        Piece*          pieceByPosition(BoardPosition pos);
 };
