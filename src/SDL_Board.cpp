@@ -195,6 +195,7 @@ void SDL_Board::renderBoard(BoardState state)
     loadBackground();
     loadState(state);
     SDL_RenderPresent(windowRenderer);
+    renderLast(state.lastMove());
 }
 
 

@@ -80,7 +80,6 @@ void SDL_EventManager::BoardEvents()
         {
             requestPiecePromotion();
             gameWindow->renderBoard (board->getState());
-            gameWindow->renderLast  (board->getLastMove());
             break;
         }
         case INVALID:
@@ -88,13 +87,11 @@ void SDL_EventManager::BoardEvents()
             curPos.resetPosition();
             prevPos.resetPosition();
             gameWindow->renderBoard(board->getState());
-            gameWindow->renderLast(board->getLastMove());
             break;
         }
         case MOVE:
         {
             gameWindow->renderBoard(board->getState());
-            gameWindow->renderLast(board->getLastMove());
             
             // Reset the click location
             curPos.resetPosition();
