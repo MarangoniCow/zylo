@@ -1,12 +1,12 @@
 /***********************************************************
  *                      PIECE.H
  * 
- *  Class to handle all pieces and movement ranges
- *      - file path
- *      - colour
- *      - piece type
- *      - Global piece list & ID
- * 
+ * Class to represent Chess pieces. Methodology utilises bit
+ * shifting to encapsulate:
+ *  - type (can be none)
+ *  - movement (true or false)
+ *  - colour    (white/black)
+ *  - board position (x/y)
  * 
  ***********************************************************/
 
@@ -20,7 +20,7 @@
 #include <vector>
 #include <queue>
 
-
+// TYPEDEFS
 typedef uint16_t PIECE_ID;
 typedef std::queue<BoardPosition> PositionQueue;
 
@@ -83,7 +83,7 @@ class Piece
 		PIECE_TYPE		type    () const;
 
 		void	        colour  (COLOUR col);
-		COLOUR    colour  () const;
+		COLOUR          colour  () const;
 
         void	        moved   (bool b);
 		bool	        moved   () const;
@@ -93,24 +93,23 @@ class Piece
 
         void            position(BoardPosition pos);
         BoardPosition   position() const;
-
-        // Other        
-        PositionQueue   moveRange ();
+  
+        void            moveRange (PositionQueue& moveQueue);
         void            resetFlags() { m_flags = 0; }
 
     protected:
-        void	x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
-		int     x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
+        void	        x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
+		int             x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
 
-        void	y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
-		int     y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
+        void	        y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
+		int             y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
 
-        PositionQueue pawnRange  ();
-        PositionQueue rookRange  ();
-        PositionQueue knightRange();
-        PositionQueue bishopRange();
-        PositionQueue queenRange ();
-        PositionQueue kingRange  ();
+        void   pawnRange  (PositionQueue& moveQueue);
+        void   rookRange  (PositionQueue& moveQueue);
+        void   knightRange(PositionQueue& moveQueue);
+        void   bishopRange(PositionQueue& moveQueue);
+        void   queenRange (PositionQueue& moveQueue);
+        void   kingRange  (PositionQueue& moveQueue);
 
         
 };

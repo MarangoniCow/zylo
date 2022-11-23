@@ -1,5 +1,5 @@
 /***********************************************************
- *                      PIECE IMPLEMENTATION
+ *                  PIECE IMPLEMENTATION
  ***********************************************************/
 
 // INTERNAL INCLUDES
@@ -11,6 +11,9 @@
 #include <vector>
 
 
+/***********************************************************
+ * Bit-shift methodology to capture key characteristics
+ ***********************************************************/
 void Piece::type(PIECE_TYPE type)
 {
     m_flags = (m_flags & ~MaskType) | (type & MaskType);
@@ -72,48 +75,46 @@ BoardPosition Piece::position() const
  * direction sequentially, saving a lot of hassle!
  * 
  ***********************************************************/
-PositionQueue Piece::moveRange()
+void Piece::moveRange(PositionQueue& moveQueue)
 { 
     switch(type())
     {
         case PAWN:
         {
-            return pawnRange();
+            return pawnRange(moveQueue);
         }
         case ROOK:
         {
-            return rookRange();
+            return rookRange(moveQueue);
         }
         case KNIGHT:
         {
-            return knightRange();
+            return knightRange(moveQueue);
         }
         case BISHOP:
         {
-            return bishopRange();
+            return bishopRange(moveQueue);
         }
         case QUEEN:
         {
-            return queenRange();
+            return queenRange(moveQueue);
         }
         case KING:
         {
-            return kingRange();
+            return kingRange(moveQueue);
         }
         default:
         {
-            PositionQueue queue;
-            return queue;
+            return;
         }
     }
 }
 
-PositionQueue Piece::pawnRange()
+void Piece::pawnRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
 
     // WHITE = 0, BLACK = 1
     if(!m_col) {
@@ -124,15 +125,14 @@ PositionQueue Piece::pawnRange()
         if(m_pos.validUpdate(0, -1)) moveQueue.push(m_pos.returnUpdate(0, -1));
         if(!m_hasMoved && m_pos.validUpdate(0, -2)) moveQueue.push(m_pos.returnUpdate(0, -2));
     }  
-    return moveQueue;
 }
 
-PositionQueue Piece::rookRange()
+void Piece::rookRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
 
     // Moving right
     int i = 1;
@@ -161,16 +161,14 @@ PositionQueue Piece::rookRange()
         moveQueue.push(m_pos.returnUpdate(0, j));
         j--;
     }
-    
-    return moveQueue;
 }
 
-PositionQueue Piece::knightRange()
+void Piece::knightRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
     
     // Binary permutations of {1,2,-1,-2} without repettition of 1s/2s.
     if(m_pos.validUpdate(1, 2)) moveQueue.push(m_pos.returnUpdate(1, 2));
@@ -183,18 +181,15 @@ PositionQueue Piece::knightRange()
     if(m_pos.validUpdate(2, -1)) moveQueue.push(m_pos.returnUpdate(2, -1));
 
     if(m_pos.validUpdate(-1, -2)) moveQueue.push(m_pos.returnUpdate(-1, -2));
-    if(m_pos.validUpdate(-2, -1)) moveQueue.push(m_pos.returnUpdate(-2, -1));
-
-    return moveQueue;
-    
+    if(m_pos.validUpdate(-2, -1)) moveQueue.push(m_pos.returnUpdate(-2, -1));    
 }
 
-PositionQueue Piece::bishopRange()
+void Piece::bishopRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+    
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
 
     // Moving diagonal right
     int i = 1;
@@ -231,16 +226,13 @@ PositionQueue Piece::bishopRange()
         i--;
         j--;
     }
-
-    return moveQueue;
 }
 
-PositionQueue Piece::queenRange()
+void  Piece::queenRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
 
     // Moving right
     int i = 1;
@@ -305,17 +297,13 @@ PositionQueue Piece::queenRange()
         i--;
         j--;
     }
-
-    return moveQueue;
-    
 }
 
-PositionQueue Piece::kingRange()
+void Piece::kingRange(PositionQueue& moveQueue)
 {
-    PositionQueue moveQueue;
-    BoardPosition m_pos = position();
-    COLOUR  m_col = colour();
-    bool          m_hasMoved = moved();
+    BoardPosition   m_pos = position();
+    COLOUR          m_col = colour();
+    bool            m_hasMoved = moved();
 
     // Permutations of {0, 1, -1}
     if(m_pos.validUpdate(1, 0))   moveQueue.push(m_pos.returnUpdate(1, 0));
@@ -325,8 +313,5 @@ PositionQueue Piece::kingRange()
     if(m_pos.validUpdate(-1, -1)) moveQueue.push(m_pos.returnUpdate(-1, -1));
     if(m_pos.validUpdate(0, -1))  moveQueue.push(m_pos.returnUpdate(0, -1));
     if(m_pos.validUpdate(1, -1))  moveQueue.push(m_pos.returnUpdate(1, -1));
-    if(m_pos.validUpdate(-1, 1))  moveQueue.push(m_pos.returnUpdate(-1, 1));
-    
-    return moveQueue;
-    
+    if(m_pos.validUpdate(-1, 1))  moveQueue.push(m_pos.returnUpdate(-1, 1));    
 }

@@ -266,8 +266,11 @@ void BoardMoves::generateMovementRange(Piece* piece)
         return;
 
     // Process the movement range from the current position
+    PositionQueue moveRange;
+    piece->moveRange(moveRange);
+    
     MovementQueue moveQueue;   
-    processMoveRange(piece, piece->moveRange(), moveQueue);
+    processMoveRange(piece, moveRange, moveQueue);
 
     // Add special takes (pawn takes & enpassant)
     addSpecialTakes(piece, moveQueue.validTakes);
