@@ -170,7 +170,7 @@
     <ClCompile Include="..\src\GameplayManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
-    <ClCompile Include="..\src\QueueFunctions.cpp" />
+    <ClCompile Include="..\src\ContainerFunctions.cpp" />
     <ClCompile Include="..\src\SDL_Board.cpp" />
     <ClCompile Include="..\src\SDL_EventManager.cpp" />
     <ClCompile Include="..\src\SDL_Pieces.cpp" />
@@ -190,7 +190,7 @@
     <ClInclude Include="..\src\GameplayHistory.h" />
     <ClInclude Include="..\src\GameplayManager.h" />
     <ClInclude Include="..\src\Piece.h" />
-    <ClInclude Include="..\src\QueueFunctions.h" />
+    <ClInclude Include="..\src\ContainerFunctions.h" />
     <ClInclude Include="..\src\SDL_Board.h" />
     <ClInclude Include="..\src\SDL_EventManager.h" />
     <ClInclude Include="..\src\SDL_Pieces.h" />

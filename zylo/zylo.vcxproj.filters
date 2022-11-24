@@ -48,7 +48,7 @@
     <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\QueueFunctions.cpp">
+    <ClCompile Include="..\src\ContainerFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ZyloBoard.cpp">
@@ -101,7 +101,7 @@
     <ClInclude Include="..\src\BoardMoves.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\QueueFunctions.h">
+    <ClInclude Include="..\src\ContainerFunctions.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Zylo.h">
