@@ -46,8 +46,6 @@ struct MovementQueue {
 };
 
 
-
-
 class BoardMoves {
 
     protected:
@@ -83,14 +81,16 @@ class BoardMoves {
         void            resetMoves                  ();
         void            setTurnDependencies         ();
 
+        // Private methods: Generate movement ranges and checks state
+        void            generateMovementRange       ();
+        void            generateChecksState         ();
+
         // Private methods: Special takes/moves (castling)
         void            addPawnMoves                (Piece* piece, PositionQueue& validTake);
         void            addCastling                 (Piece* piece);
         void            verifyMate                  ();
 
-        // Private methods: Generate movement ranges and checks state
-        void            generateMovementRange       ();
-        void            generateChecksState         ();
+        
 
     public:
         // CONSTRUCTORS
@@ -103,7 +103,6 @@ class BoardMoves {
         // MAIN METHODS
         void            processState                ();
         void            processMoveRange            (Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
-        
  
         // CHECK-RELATED FUNCTIONS
         void            pieceCheckedBy              (Piece* piece, const ChecksVector& oppChecks, PieceVector& checkedByVector); 
@@ -112,7 +111,7 @@ class BoardMoves {
         // REFINEMENTS
         PositionQueue   safeMoves                   (Piece* piece);
         PositionQueue   safeTakes                   (Piece* piece);
-        void            removeRevealedCheckMoves  (Piece* piece);
+        void            removeRevealedCheckMoves    (Piece* piece);
         void            restrictKingMoves           (COLOUR col);
         void            restrictInvalidCheckedMoves (const PieceVector& kingCheckedBy);
         void            restrictToBlockingMoves     (Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
@@ -123,7 +122,7 @@ class BoardMoves {
         MovementQueue   movementQueue               (BoardPosition pos);
 
     protected:
-        bool            validPiece(Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
-        bool            validPiece(Piece* piece, PIECE_TYPE type)       { return  (piece != NULL && piece->type() == type);}
-        Piece*          pieceByPosition(BoardPosition pos);
+        bool            validPiece                  (Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
+        bool            validPiece                  (Piece* piece, PIECE_TYPE type)       { return  (piece != NULL && piece->type() == type);}
+        Piece*          pieceByPosition             (BoardPosition pos);
 };
