@@ -41,7 +41,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     Piece* currentPiece = &state.current[curPos.x][curPos.y];
     
     // Fetch queue from current position
-    MovementQueue moveQueue = boardMoves.returnMovementQueue(curPos);
+    MovementQueue moveQueue = boardMoves.movementQueue(curPos);
     
     // Iterate through queue until the new position is found.
     bool found = 0;
@@ -161,7 +161,7 @@ void Board::takePiece(Piece* currentPiece, const BoardPosition& newPos)
     state.removePiece(pieceToDelete->position());
 }
 
-MovementQueue Board::returnMovementQueue(BoardPosition pos)
+MovementQueue Board::movementQueue(BoardPosition pos)
 {
-    return boardMoves.returnMovementQueue(pos);
+    return boardMoves.movementQueue(pos);
 }

@@ -67,7 +67,7 @@ class Board {
         bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
         void processPromotion(PIECE_TYPE newType);
 
-        MovementQueue   returnMovementQueue (BoardPosition pos);
+        MovementQueue   movementQueue (BoardPosition pos);
         
         // RETURNS
         BoardState      getState    () { return state; };   

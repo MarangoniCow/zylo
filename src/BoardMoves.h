@@ -1,7 +1,8 @@
 /***********************************************************
  *                      BOARDMOVES_H
  * 
- * Complete description of all possible moves on the board
+ * Complete description of all possible moves on the board.
+ * Important private members:
  *  - movementState: accessed like BoardState, an [8][8] array of moves
  *   -checksState: accessed like BoardState, an [8][8] array of checks
  * 
@@ -20,14 +21,9 @@
 
 
 
-
-
 /**************** MOVEMENT QUEUE STRUCT *******************
  * Holds all valid and invalid, moves and takes.
  *********************************************************/
-
-
-
 
 struct MovementQueue {
 
@@ -63,8 +59,8 @@ class BoardMoves {
         PLAY_FLAG kingCheckmate;
 
         // Movement and checks state
-        MovementQueue movementState[8][8];
-        PieceChecks checksState[8][8];
+        MovementQueue   movementState[8][8];
+        PieceChecks     checksState[8][8];
 
         // Common memeber variables regularly accessed
         ChecksVector curChecks;
@@ -81,18 +77,20 @@ class BoardMoves {
 
         int curForward;
 
-        
-        
 
         // Private methods: Resets
-        void resetFlags();
-        void resetMoves();
-        void setTurnDependencies();
+        void            resetFlags                  ();
+        void            resetMoves                  ();
+        void            setTurnDependencies         ();
 
         // Private methods: Special takes/moves (castling)
-        void addSpecialTakes(Piece* piece, PositionQueue& validTake);
-        void addCastling    (Piece* piece);
-        void verifyMate();
+        void            addPawnMoves                (Piece* piece, PositionQueue& validTake);
+        void            addCastling                 (Piece* piece);
+        void            verifyMate                  ();
+
+        // Private methods: Generate movement ranges and checks state
+        void            generateMovementRange       ();
+        void            generateChecksState         ();
 
     public:
         // CONSTRUCTORS
@@ -100,33 +98,32 @@ class BoardMoves {
         BoardMoves(BoardState* statePtr_);
 
         // INITIALISATION & ADMIN
-        void changeState(BoardState* statePtr_);
+        void            changeState(BoardState* statePtr_);
 
         // MAIN METHODS
-        void processState();
-        void generateMovementRange(Piece* piece);
-        void processMoveRange(Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
+        void            processState                ();
+        void            processMoveRange            (Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
+        
  
         // CHECK-RELATED FUNCTIONS
-        PieceChecks     pieceChecks                 (Piece* piece);
-        PieceVector     pieceCheckedBy              (Piece* piece, const ChecksVector& oppChecks); 
+        void            pieceCheckedBy              (Piece* piece, const ChecksVector& oppChecks, PieceVector& checkedByVector); 
         PieceVector     positionCheckedBy           (BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
-        PositionQueue   returnSafeMoves             (Piece* piece);
-        PositionQueue   returnSafeTakes             (Piece* piece);
-        void            restrictRevealedCheckMoves  (Piece* piece);
+        PositionQueue   safeMoves                   (Piece* piece);
+        PositionQueue   safeTakes                   (Piece* piece);
+        void            removeRevealedCheckMoves  (Piece* piece);
         void            restrictKingMoves           (COLOUR col);
         void            restrictInvalidCheckedMoves (const PieceVector& kingCheckedBy);
         void            restrictToBlockingMoves     (Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
                                                      PositionQueue* validMoves, PositionQueue* validTakes);
 
         // RETURNS
-        MovementQueue   returnMovementQueue         (Piece* piece);
-        MovementQueue   returnMovementQueue         (BoardPosition pos);
-        void            returnChecksQueue           (const PieceVector& pieceVector, ChecksVector& checksVector);
+        MovementQueue   movementQueue               (Piece* piece);
+        MovementQueue   movementQueue               (BoardPosition pos);
 
     protected:
-        bool            validPiece(Piece* piece)       { return !(piece == NULL || piece->type() == NONE); }
+        bool            validPiece(Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
+        bool            validPiece(Piece* piece, PIECE_TYPE type)       { return  (piece != NULL && piece->type() == type);}
         Piece*          pieceByPosition(BoardPosition pos);
 };
