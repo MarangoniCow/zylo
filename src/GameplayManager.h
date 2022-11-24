@@ -12,7 +12,8 @@
 // INTERNAL INCLUDES
 #include "Board.h"
 #include "GameplayHistory.h"
-// #include "Zylo.h"
+#include "Zylo.h"
+
 
 
 // EXTERNAL INCLUDES
@@ -29,22 +30,32 @@ enum DIRECTION
 
 class GameplayManager
 {
-    private:
-        PLAY_FLAG* pawnPromotion;
-        Board* board;
-        COLOUR currentTurn;
-        GameplayHistory gameHistory;
-        TURN turnHead;
+    protected:
+        PLAY_FLAG*      pawnPromotion;
+        Board*          m_board;
+
+        COLOUR          m_turn; 
+        TURN            m_turnhead;
+        GameplayHistory m_history;
+
+        Zylo*           m_zylo;
 
     public:
         // CONSTRUCTORS 
-        GameplayManager(Board* board_) : board(board_) {};
+        GameplayManager(Board* board) : m_board(board) {};
 
-        BOARD_EVENT processBoardClick(const BoardPosition &curPos, const BoardPosition &newPos);
-        Board* gameBoard() {return board;};
-        void newGame();
-        TURN turnNumber() {return gameHistory.returnTurn();};
-        StatePtr returnHistory(TURN n);
-        void newHistoryBranch(TURN n);
-        void traverseHistory(DIRECTION direction);
+        // Gameplay events
+        BOARD_EVENT         processBoardClick       (const BoardPosition &curPos, const BoardPosition &newPos);
+        void                newGame                 ();
+
+        void                board                   (Board* board)  { m_board = board; };
+        Board*              board                   ()              { return m_board;} ;
+        
+        TURN                turnNumber              () {return m_history.returnTurn();};
+        
+
+        // History events
+        void                traverseHistory         (DIRECTION direction);
+        void                newHistoryBranch        (TURN n);
+        StatePtr            fetchHistory            (TURN n);
 };

@@ -51,28 +51,30 @@ class Board {
         BOARD_FLAGS boardFlags;
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
-        void postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarPos);
-        void movePiece(Piece* curPiece, const BoardPosition& newPos);
-        void takePiece(Piece* curPiece, const BoardPosition& newPos);
+        void            postMoveTasks       (const BoardPosition& curPos, const BoardPosition& tarPos);
+        void            movePiece           (Piece* curPiece, const BoardPosition& newPos);
+        void            takePiece           (Piece* curPiece, const BoardPosition& newPos);
     
     public:
         // CONSTRUCTORS & ADMIN
-        Board() {};
-        Board(BoardState state_);
-        ~Board() {state.resetBoard();};
-        void newGame();
-        void newState(BoardState state_);
+        Board       () {};
+        Board       (BoardState state_);
+        ~Board      () {state.resetBoard();};
+
+
+        void            newGame             ();
+        void            newState            (BoardState state_);
 
         // STATE-RELATED FUNCTIONS
-        bool processUpdate(BoardPosition oldPos, BoardPosition newPos);
-        void processPromotion(PIECE_TYPE newType);
+        bool            processUpdate       (BoardPosition oldPos, BoardPosition newPos);
+        void            processPromotion    (PIECE_TYPE newType);
 
-        MovementQueue   movementQueue (BoardPosition pos);
+        MovementQueue   movementQueue       (BoardPosition pos);
         
         // RETURNS
-        BoardState      getState    () { return state; };   
-        BOARD_FLAGS     getFlags    () { return boardFlags; };
-        COLOUR    getTurn     () { return state.turn(); };
-        Move            getLastMove () { return state.lastMove(); }
+        BoardState      getState    ()      { return state; };   
+        BOARD_FLAGS     getFlags    ()      { return boardFlags; };
+        COLOUR          getTurn     ()      { return state.turn(); };
+        Move            getLastMove ()      { return state.lastMove(); }
         
 };

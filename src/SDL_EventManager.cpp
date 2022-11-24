@@ -142,19 +142,19 @@ void SDL_EventManager::KeyboardEvents()
         case SDLK_r:
         {
             manager->newGame();
-            gameWindow->renderBoard(manager->gameBoard()->getState());
+            gameWindow->renderBoard(manager->board()->getState());
             break;
         }
         case SDLK_LEFT:
         {
             manager->traverseHistory(BACKWARD);
-            gameWindow->renderBoard(manager->gameBoard()->getState());
+            gameWindow->renderBoard(manager->board()->getState());
             break;
         }
         case SDLK_RIGHT:
         {
             manager->traverseHistory(FORWARD);
-            gameWindow->renderBoard(manager->gameBoard()->getState());
+            gameWindow->renderBoard(manager->board()->getState());
             break;
         }
         default:

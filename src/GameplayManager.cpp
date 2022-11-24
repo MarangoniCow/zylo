@@ -15,32 +15,32 @@ GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPo
     // If there isn't a previous coordinate registered, return an overlay of the current position
     if (curClick.validPosition() && !prevClick.validPosition())
     {
-        if(board->getState().pieceExists(curClick, board->getTurn()))
+        if(m_board->getState().pieceExists(curClick, m_board->getTurn()))
             return OVERLAY;
         else
             return INVALID;
     }
     // Else, check that the previous click was of the right colour
-    else if(board->getState().pieceExists(prevClick, board->getTurn()))
+    else if(m_board->getState().pieceExists(prevClick, m_board->getTurn()))
     {
         
         // processUpdate returns 0 if the requested update is invalid
-        if(!board->processUpdate(prevClick, curClick))
+        if(!m_board->processUpdate(prevClick, curClick))
             return INVALID;
         else
         // procesUpdate returns 1 if the requested update is valid. 
         {
-            if(turnHead != gameHistory.returnTurn())
+            if(m_turnhead != m_history.returnTurn())
             {
-                gameHistory.truncateHistory(turnHead);
+                m_history.truncateHistory(m_turnhead);
             }
-            gameHistory.appendHistory(board->getState());
-            turnHead = gameHistory.returnTurn();
+            m_history.appendHistory(m_board->getState());
+            m_turnhead = m_history.returnTurn();
         }
         /******************** GAME HISTORY ******************/
 
         // Check flags
-        BOARD_FLAGS flags = board->getFlags();
+        BOARD_FLAGS flags = m_board->getFlags();
         if(flags.pawnPromotion.first == 1)
             return PROMOTION;
         else if (flags.kingCheckmate.first == 1)
@@ -54,9 +54,9 @@ GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPo
 
 void GameplayManager::newGame()
 {
-    board->newGame();
-    gameHistory.newGame(board->getState());
-    turnHead = gameHistory.returnTurn();
+    m_board->newGame();
+    m_history.newGame(m_board->getState());
+    m_turnhead = m_history.returnTurn();
 }
 
 
@@ -65,19 +65,19 @@ void GameplayManager::traverseHistory(DIRECTION direction)
 {
     // Update turn head
     if(direction == FORWARD) {
-        if(turnHead >= gameHistory.returnTurn())
+        if(m_turnhead >= m_history.returnTurn())
             return;
         else
-            turnHead++;
+            m_turnhead++;
     }
     else {
-        if(turnHead <= 1)
+        if(m_turnhead <= 1)
             return;
         else
-            turnHead--;
+            m_turnhead--;
     }
 
-    // Set board state to turn head from history
-    StatePtr newStatePtr = gameHistory.returnState(turnHead);
-    board->newState(*newStatePtr);
+    // Set m_board state to turn head from history
+    StatePtr newStatePtr = m_history.returnState(m_turnhead);
+    m_board->newState(*newStatePtr);
 }
