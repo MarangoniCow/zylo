@@ -119,11 +119,10 @@ class BoardMoves {
         MovementQueue   movementQueue               (Piece* piece);
         MovementQueue   movementQueue               (BoardPosition pos);
 
-        void            currentPieces               (PieceVector& vectorToFill);
-
-		const PieceVector& getCurrentPieces() const { return curPieces; }
+		const PieceVector& getCurrentPieces () const { return curPieces; }
+        const PieceVector& getOpposingPieces() const { return curPieces; }     
 		
-		void            opposingPieces              (PieceVector& vectorToFill);
+		
 
     protected:
         bool            validPiece                  (Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
