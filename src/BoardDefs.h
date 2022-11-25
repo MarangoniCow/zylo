@@ -22,13 +22,14 @@
 ************************************************************/
 
 typedef std::pair<BoardPosition, BoardPosition> Move;
+typedef std::pair<bool, BoardPosition> PLAY_FLAG;
 
 /***********************************************************
 *       Piece types
 ************************************************************/
 
 typedef std::vector<Piece*> PieceVector;
-typedef std::pair<bool, Piece*> PLAY_FLAG;
+
 
 
 typedef std::pair<Piece*, PieceVector> PieceChecks;

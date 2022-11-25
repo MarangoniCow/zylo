@@ -43,10 +43,10 @@ void BoardMoves::changeState(BoardState* statePtr_)
 
 void BoardMoves::resetFlags()
 {
-    kingCheck.first = 0;
-    kingCheck.second = nullptr;
-    kingCheckmate.first = 0;
-    kingCheckmate.second = nullptr;
+    kingCheck.first = false;
+    kingCheck.second.resetPosition();
+    kingCheckmate.first = false;
+    kingCheckmate.second.resetPosition();
 }
 
 void BoardMoves::resetMoves()
@@ -130,7 +130,7 @@ void BoardMoves::processState()
     if(curKing != NULL && !kingCheckedBy.empty()) {
         // Set check flags
         kingCheck.first = 1;
-        kingCheck.second = curKing;
+        kingCheck.second = curKing->position();
 
         restrictInvalidCheckedMoves(kingCheckedBy);
     }
@@ -442,7 +442,7 @@ void BoardMoves::verifyMate()
     }
 
     kingCheckmate.first = !moveFound;
-    kingCheckmate.second = curKing;
+    kingCheckmate.second = curKing->position();
 }
 
 

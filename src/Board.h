@@ -33,12 +33,12 @@ struct BOARD_FLAGS
 
     void RESET_FLAGS()
     {
-        kingCheck.first = 0;
-        kingCheck.second = nullptr;
-        kingCheckmate.first = 0;
-        kingCheckmate.second = nullptr;
-        pawnPromotion.first = 0;
-        pawnPromotion.second = nullptr;
+        kingCheck.first = false;
+        kingCheck.second.resetPosition();
+        kingCheckmate.first = false;
+        kingCheckmate.second.resetPosition();
+        pawnPromotion.first = false;
+        pawnPromotion.second.resetPosition();
     }
 };
 

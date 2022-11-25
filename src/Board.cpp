@@ -82,11 +82,14 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
 void Board::processPromotion(PIECE_TYPE newType)
 {
     // Update state
-    state.promotePiece(boardFlags.pawnPromotion.second->position(), newType);
+    state.promotePiece(boardFlags.pawnPromotion.second, newType);
 
     // Update promotion flags
     boardFlags.pawnPromotion.first = 0;
-    boardFlags.pawnPromotion.second = 0;
+    boardFlags.pawnPromotion.second.resetPosition();
+
+    // Process the new state
+    boardMoves.processState();
 }
 /****************************************************/
 /*           MOVEMENT-RELATED FUNCTIONS (TASKS)     */
@@ -94,9 +97,13 @@ void Board::processPromotion(PIECE_TYPE newType)
 
 void Board::postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarPos)
 {
+    
     state.lastMove(Move(curPos, tarPos));
     state.turn((state.turn() == WHITE) ? BLACK : WHITE);
-    boardMoves.processState();
+    
+    // Process the new state: We don't process the new state if there is a promotion, as we need to wait for the new unit first
+    if(!boardFlags.pawnPromotion.first)
+        boardMoves.processState();
 }
 
 void Board::movePiece(Piece &currentPiece, const BoardPosition& newPos)
@@ -135,7 +142,7 @@ void Board::movePiece(Piece &currentPiece, const BoardPosition& newPos)
             if(newPos.y == endrow)
             {
                 boardFlags.pawnPromotion.first = true;
-                boardFlags.pawnPromotion.second = &currentPiece;
+                boardFlags.pawnPromotion.second = newPos;
             }
 
             break;            
