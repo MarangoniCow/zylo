@@ -30,5 +30,5 @@ class Zylo
 
         Move                    fetchBestMove       ();
         void                    generateRandomMove  (Move& move);
-        void                    evaluateState       (const BoardState& state);
+        void                    evaluateState       (BoardState& state);
 };

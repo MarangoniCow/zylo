@@ -10,11 +10,12 @@
 #pragma once
 
 // INTERNAL INCLUDES
+#include "Player.h"
 #include "Board.h"
 #include "GameplayHistory.h"
 #include "Zylo.h"
 
-
+ 
 
 // EXTERNAL INCLUDES
 enum BOARD_EVENT
@@ -30,32 +31,46 @@ enum DIRECTION
 
 class GameplayManager
 {
-    protected:
-        PLAY_FLAG*      pawnPromotion;
-        Board*          m_board;
+protected:
+    PLAY_FLAG* pawnPromotion;
+    Board* m_board;
 
-        COLOUR          m_turn; 
-        TURN            m_turnhead;
-        GameplayHistory m_history;
+    COLOUR          m_turn;
+    TURN            m_turnhead;
+    GameplayHistory m_history;
 
-        Zylo*           m_zylo;
+    Zylo* m_zylo;
 
-    public:
-        // CONSTRUCTORS 
-        GameplayManager(Board* board) : m_board(board) {};
+    Player          m_player1;
+    Player          m_player2;
 
-        // Gameplay events
-        BOARD_EVENT         processBoardClick       (const BoardPosition &curPos, const BoardPosition &newPos);
-        void                newGame                 ();
+public:
+    // CONSTRUCTORS 
+    GameplayManager(Board* board, Player player1, Player player2) :
+                    m_board(board),
+                    m_player1(player1),
+                    m_player2(player2)
+                    {};
+    
+    // Gameplay events 
+    BOARD_EVENT         processBoardClick(const BoardPosition& curPos, const BoardPosition& newPos);
+    void                fetchZyloMove();
+    void                newGame();
 
-        void                board                   (Board* board)  { m_board = board; };
-        Board*              board                   ()              { return m_board;} ;
+    void                board(Board* board) { m_board = board; };
+    Board* board() { return m_board; };
+
+    TURN                turnNumber() { return m_history.returnTurn(); };
+
+    void                playerOne(Player player)    { m_player1 = player; };
+    Player              playerOne() const           { return m_player1; }
+
+    void                playerTwo(Player player)    { m_player2 = player; };
+    Player              playerTwo() const           { return m_player2; }
         
-        TURN                turnNumber              () {return m_history.returnTurn();};
-        
 
-        // History events
-        void                traverseHistory         (DIRECTION direction);
-        void                newHistoryBranch        (TURN n);
-        StatePtr            fetchHistory            (TURN n);
+    // History events
+    void                traverseHistory         (DIRECTION direction);
+    void                newHistoryBranch        (TURN n);
+    StatePtr            fetchHistory            (TURN n);
 };

@@ -12,44 +12,58 @@
 BOARD_EVENT
 GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPosition &curClick)
 {
-    // If there isn't a previous coordinate registered, return an overlay of the current position
-    if (curClick.validPosition() && !prevClick.validPosition())
-    {
-        if(m_board->getState().pieceExists(curClick, m_board->getTurn()))
+    // 0) Define locals
+    bool no_previous_click = curClick.validPosition() && !prevClick.validPosition();
+    bool previous_click_right_colour = m_board->getState().pieceExists(prevClick, m_board->getTurn());
+    bool current_click_right_colour  = m_board->getState().pieceExists(curClick, m_board->getTurn());
+
+
+    // 1) If there isn't a previous click reigsterered, we can only return an overlay of the current position
+    
+    if (no_previous_click) {
+        if (current_click_right_colour)
             return OVERLAY;
         else
             return INVALID;
     }
-    // Else, check that the previous click was of the right colour
-    else if(m_board->getState().pieceExists(prevClick, m_board->getTurn()))
-    {
-        
-        // processUpdate returns 0 if the requested update is invalid
-        if(!m_board->processUpdate(prevClick, curClick))
-            return INVALID;
-        else
-        // procesUpdate returns 1 if the requested update is valid. 
-        {
-            if(m_turnhead != m_history.returnTurn())
-            {
-                m_history.truncateHistory(m_turnhead);
-            }
-            m_history.appendHistory(m_board->getState());
-            m_turnhead = m_history.returnTurn();
-        }
-        /******************** GAME HISTORY ******************/
 
-        // Check flags
+    // 2) If the previous click exists and was the right colour, we can attempt to find a movement
+    if (previous_click_right_colour)
+    {
+
+        // 3) Attempt to process an update with the requested board coordinates:
+        //      - Returns 0 if the requested update is invalid
+        //      - Returns 1 if the requested update is valid 
+
+        if (!m_board->processUpdate(prevClick, curClick))
+            return INVALID;
+
+
+        // 4) Check if we're at the turn head, if not, truncate future history and append anyway
+        if (m_turnhead != m_history.returnTurn())
+        {
+            m_history.truncateHistory(m_turnhead);
+        }
+        m_history.appendHistory(m_board->getState());
+        m_turnhead = m_history.returnTurn();
+        
+        // 5) Check gameplay flags for promotion or checkmate
+
         BOARD_FLAGS flags = m_board->getFlags();
-        if(flags.pawnPromotion.first == 1)
-            return PROMOTION;
-        else if (flags.kingCheckmate.first == 1)
+        if (flags.kingCheckmate.first)
             return CHECKMATE;
+        else if (flags.pawnPromotion.first)
+            return PROMOTION;
         else
             return MOVE;
     }
     
+
+    // Otherwise, return default
     return DEFAULT;
+
+
+   
 }
 
 void GameplayManager::newGame()

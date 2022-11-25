@@ -28,10 +28,16 @@ int main () {
 
     std::cout << "Welcome to Zylo!" << std::endl;
 
+    std::cout << "Initialising with a local player as white and Zylo as black" << std::endl;
+
+    // Initialise players
+    Player localWhite(LOCAL, WHITE);
+    Player zyloBlack(ZYLO, BLACK);
+
     // Initalise board and board logic
     Board board;
     // Initialise gameplay manager
-    GameplayManager manager(&board);
+    GameplayManager manager(&board, localWhite, zyloBlack);
     manager.newGame();
 
     // Initialise a game window and render the current state
