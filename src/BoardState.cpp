@@ -72,18 +72,21 @@ void BoardState::removePiece(BoardPosition pos)
 {
     current[pos.x][pos.y].resetFlags();
 }
-void BoardState::movePiece(Move move)
-{
-    // Initialise
-    BoardPosition oldPos = move.first;
-    BoardPosition newPos = move.second;
 
-    // Methodology
-    current[newPos.x][newPos.y] = current[oldPos.x][oldPos.y];
-    current[newPos.x][newPos.y].moved(true);
-    current[newPos.x][newPos.y].position(newPos);
-    removePiece(oldPos);    
+
+void
+BoardState::movePiece(Piece& piece, const BoardPosition& newPos)
+{
+	// Initialise
+	BoardPosition	oldPos = piece.position();
+
+	piece.moved(true);
+	piece.position(newPos);
+
+    current[newPos.x][newPos.y] = piece;
+	removePiece(oldPos);
 }
+
 
 /******************** BOOL METHODS *******************/
  bool BoardState::pieceExists (BoardPosition pos) const

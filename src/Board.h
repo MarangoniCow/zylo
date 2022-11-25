@@ -28,8 +28,9 @@ struct BOARD_FLAGS
 
     BOARD_FLAGS()
     {
-        RESET_FLAGS();
+		RESET_FLAGS();
     }
+
     void RESET_FLAGS()
     {
         kingCheck.first = 0;
@@ -52,8 +53,8 @@ class Board {
 
         // PRIVATE HELPER FUNCTIONS FOR MOVEMENT
         void            postMoveTasks       (const BoardPosition& curPos, const BoardPosition& tarPos);
-        void            movePiece           (Piece* curPiece, const BoardPosition& newPos);
-        void            takePiece           (Piece* curPiece, const BoardPosition& newPos);
+        void            movePiece           (Piece &curPiece, const BoardPosition& newPos);
+        void            takePiece           (Piece &curPiece, const BoardPosition& newPos);
     
     public:
         // CONSTRUCTORS & ADMIN

@@ -3,7 +3,7 @@
  * 
  * Complete description of all possible moves on the board.
  * Important private members:
- *  - movementState: accessed like BoardState, an [8][8] array of moves
+ *  - movements.state: accessed like BoardState, an [8][8] array of moves
  *   -checksState: accessed like BoardState, an [8][8] array of checks
  * 
  ***********************************************************/
@@ -19,33 +19,6 @@
 // EXTERNAL INCLUDES
 #include <vector>
 
-
-
-/**************** MOVEMENT QUEUE STRUCT *******************
- * Holds all valid and invalid, moves and takes.
- *********************************************************/
-
-struct MovementQueue {
-
-
-    PositionQueue validMoves;
-    PositionQueue validTakes;
-    PositionQueue invalidMoves;
-    PositionQueue invalidTakes;
-    SightedQueue sightedQueue;
-
-    MovementQueue() {};
-    MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, 
-        PositionQueue invalidMoves_, PositionQueue invalidTakes_) :
-        validMoves(validMoves_), validTakes(validTakes_),
-        invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
-    MovementQueue(PositionQueue validMoves_, PositionQueue validTakes_, PositionQueue invalidMoves_,
-        PositionQueue invalidTakes_, SightedQueue sightedQueue_) :
-        sightedQueue(sightedQueue_), validMoves(validMoves_), validTakes(validTakes_),
-        invalidMoves(invalidMoves_), invalidTakes(invalidTakes_) {};
-};
-
-
 class BoardMoves {
 
     protected:
@@ -57,8 +30,8 @@ class BoardMoves {
         PLAY_FLAG kingCheckmate;
 
         // Movement and checks state
-        MovementQueue   movementState[8][8];
-        PieceChecks     checksState[8][8];
+		MovementState   movements;
+        ChecksState     checks;
 
         // Common memeber variables regularly accessed
         ChecksVector curChecks;
@@ -119,8 +92,11 @@ class BoardMoves {
         MovementQueue   movementQueue               (Piece* piece);
         MovementQueue   movementQueue               (BoardPosition pos);
 
-		const PieceVector& getCurrentPieces () const { return curPieces; }
-        const PieceVector& getOpposingPieces() const { return curPieces; }     
+		const PieceVector&      getCurrentPieces () const   { return curPieces; }
+        const PieceVector&      getOpposingPieces() const   { return curPieces; }
+
+        const MovementState&    getMovementState () const   { return movements; }
+        const ChecksState&      getChecksState   () const   { return checks; }
 		
 		
 

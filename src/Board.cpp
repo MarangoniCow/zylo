@@ -38,7 +38,7 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     if(!state.pieceExists(curPos))
         return 0;
 
-    Piece* currentPiece = &state.current[curPos.x][curPos.y];
+    Piece currentPiece = state.current[curPos.x][curPos.y];
     
     // Fetch queue from current position
     MovementQueue moveQueue = boardMoves.movementQueue(curPos);
@@ -99,39 +99,43 @@ void Board::postMoveTasks(const BoardPosition& curPos, const BoardPosition& tarP
     boardMoves.processState();
 }
 
-void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
+void Board::movePiece(Piece &currentPiece, const BoardPosition& newPos)
 {   
     // Move piece inside the state
-    BoardPosition curPos = currentPiece->position();
+    BoardPosition curPos = currentPiece.position();
+    
+	state.movePiece(currentPiece, newPos);
 
     /* SPECIAL CASES: PROMOTION & CASTLING */
-    switch (currentPiece->type())
+    switch (currentPiece.type())
     {
         case KING:
         {   
             // Right-side castling
             if(curPos.x - newPos.x == -2)
             {
-                BoardPosition oldRookPos = newPos.returnUpdate(1, 0);
-                BoardPosition newRookPos = newPos.returnUpdate(-1, 0);
-                movePiece(&state.current[oldRookPos.x][oldRookPos.y], newRookPos);
+                BoardPosition oldRookPos(7, newPos.y);
+                BoardPosition newRookPos = oldRookPos.returnUpdate(-2, 0);
+                Piece temp = state.current[oldRookPos.x][oldRookPos.y];
+                state.movePiece(temp, newRookPos);
             }
             // Left-side castling
             else if(curPos.x - newPos.x == 2)
             {
-                BoardPosition oldRookPos = newPos.returnUpdate(-2, 0);
-                BoardPosition newRookPos = newPos.returnUpdate(1, 0);
-                movePiece(&state.current[oldRookPos.x][oldRookPos.y], newRookPos);
+                BoardPosition oldRookPos(0, newPos.y);
+                BoardPosition newRookPos = oldRookPos.returnUpdate(2, 0);
+                Piece temp = state.current[oldRookPos.x][oldRookPos.y];
+                state.movePiece(temp, newRookPos);
             }
             break;
         }
         case PAWN:
         {
-            int endrow = (currentPiece->colour() == WHITE) ? 7 : 0;
-            if(currentPiece->position().y == endrow)
+            int endrow = (currentPiece.colour() == WHITE) ? 7 : 0;
+            if(newPos.y == endrow)
             {
-                boardFlags.pawnPromotion.first = 1;
-                boardFlags.pawnPromotion.second = currentPiece;
+                boardFlags.pawnPromotion.first = true;
+                boardFlags.pawnPromotion.second = &currentPiece;
             }
 
             break;            
@@ -140,25 +144,27 @@ void Board::movePiece(Piece* currentPiece, const BoardPosition& newPos)
             break;
         }
     }
-    state.movePiece(Move(curPos, newPos));
     
 }
 
 
-void Board::takePiece(Piece* currentPiece, const BoardPosition& newPos)
+void Board::takePiece(Piece &currentPiece, const BoardPosition& newPos)
 {
-    Piece* pieceToDelete;
+    Piece	pieceToDelete;
+
     // Need to implement special rules for enpassant
-    if(currentPiece->type() == PAWN && state.current[newPos.x][newPos.y].type() == NONE)
+    if(currentPiece.type() == PAWN && state.current[newPos.x][newPos.y].type() == NONE)
     {
-        int forward = (currentPiece->colour() == WHITE) ? 1 : -1;
-        pieceToDelete = &state.current[newPos.x][newPos.y - forward];
+        int forward = (currentPiece.colour() == WHITE) ? 1 : -1;
+        pieceToDelete = state.current[newPos.x][newPos.y - forward];
     }
     // Otherwise we can just take the piece in front of us
     else
-        pieceToDelete = &state.current[newPos.x][newPos.y];
-    
-    state.removePiece(pieceToDelete->position());
+    {
+        pieceToDelete = state.current[newPos.x][newPos.y];
+    }
+
+    state.removePiece(pieceToDelete.position());
 }
 
 MovementQueue Board::movementQueue(BoardPosition pos)

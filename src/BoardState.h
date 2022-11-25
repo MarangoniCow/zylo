@@ -47,7 +47,7 @@ struct BoardState {
         // Maintainence methods
         void addPiece       (PIECE_TYPE type, COLOUR col, BoardPosition pos);
         void removePiece    (BoardPosition pos);
-        void movePiece      (Move move);
+        void movePiece      (Piece &piece, const BoardPosition &newPos);
 
         // Boolean checks
         bool pieceExists    (BoardPosition pos) const;
