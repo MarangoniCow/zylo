@@ -90,8 +90,6 @@ class BoardMoves {
         void            addCastling                 (Piece* piece);
         void            verifyMate                  ();
 
-        
-
     public:
         // CONSTRUCTORS
         BoardMoves();
@@ -122,7 +120,10 @@ class BoardMoves {
         MovementQueue   movementQueue               (BoardPosition pos);
 
         void            currentPieces               (PieceVector& vectorToFill);
-        void            opposingPieces              (PieceVector& vectorToFill);
+
+		const PieceVector& getCurrentPieces() const { return curPieces; }
+		
+		void            opposingPieces              (PieceVector& vectorToFill);
 
     protected:
         bool            validPiece                  (Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
