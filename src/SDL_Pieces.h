@@ -21,8 +21,8 @@
 class SDL_Pieces
 {
     private:
-        static SDL_Texture* pieceTextureArray[7][2];
-        SDL_Renderer* renderer;
+        static  SDL_Texture*        pieceTextureArray[7][2];
+                SDL_Renderer*       renderer;
 
     public:
         // CONSTRUCTORS
@@ -30,10 +30,10 @@ class SDL_Pieces
         ~SDL_Pieces();
 
         // PUBLIC FUNCTIONAL METHODS
-        void initialiseGraphicsObjs(SDL_Renderer* renderer_);
-        void loadTexture(PIECE_TYPE type, COLOUR col);
+        void                initialiseGraphicsObjs      (SDL_Renderer* renderer_);
+        void                loadTexture                 (PIECE_TYPE type, COLOUR col);
         
         // RETURNS
-        SDL_Texture* returnTexture(PIECE_TYPE type, COLOUR col) {return pieceTextureArray[type][col];};
-        static std::string returnBMPPath(PIECE_TYPE type_, COLOUR col_);
+        SDL_Texture*        returnTexture               (PIECE_TYPE type, COLOUR col)       { return pieceTextureArray[type][col]; }
+        static std::string  returnBMPPath               (PIECE_TYPE type_, COLOUR col_);
 };
