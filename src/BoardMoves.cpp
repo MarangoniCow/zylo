@@ -582,7 +582,7 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
             }
 
             // If this is the only piece in the way, then it can't move
-            if(sightedPieces.size() <= 2)
+            if(idx <= 2)
             {
                 Piece* temp = sightedPieces[idx - 1];
                 BoardPosition tempPos(temp->position());
