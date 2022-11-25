@@ -708,6 +708,10 @@ MovementQueue BoardMoves::movementQueue(Piece* piece)
     return movementQueue(pos);
 }
 
+
+
+
+
 Piece* BoardMoves::pieceByPosition(BoardPosition pos)
 {
     Piece* piece = &statePtr->current[pos.x][pos.y];

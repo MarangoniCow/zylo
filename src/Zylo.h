@@ -20,7 +20,15 @@
 class Zylo
 {
     private:
+        BoardState m_state;
+        BoardMoves m_moves;
     
     public:
-        Zylo() {};
+        Zylo    (BoardState state) :
+                m_state(state)
+                {};
+
+        Move                    fetchBestMove       ();
+        void                    generateRandomMove  (Move& move);
+        void                    evaluateState       (const BoardState& state);
 };

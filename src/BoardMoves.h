@@ -121,6 +121,9 @@ class BoardMoves {
         MovementQueue   movementQueue               (Piece* piece);
         MovementQueue   movementQueue               (BoardPosition pos);
 
+        void            currentPieces               (PieceVector& vectorToFill);
+        void            opposingPieces              (PieceVector& vectorToFill);
+
     protected:
         bool            validPiece                  (Piece* piece)                        { return !(piece == NULL || piece->type() == NONE);}
         bool            validPiece                  (Piece* piece, PIECE_TYPE type)       { return  (piece != NULL && piece->type() == type);}
