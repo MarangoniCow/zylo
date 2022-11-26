@@ -29,6 +29,7 @@ class Player
         COLOUR          colour;
 
     public:
+        Player() : type(LOCAL), colour(WHITE) {};
         Player(PLAYER_TYPE type_, COLOUR colour_) :
                 type(type_),
                 colour(colour_)

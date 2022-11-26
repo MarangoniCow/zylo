@@ -67,6 +67,7 @@ void SDL_EventManager::MouseEvents()
 void SDL_EventManager::BoardEvents()
 {
 
+    
     BOARD_EVENT ev_board = manager->processBoardClick(prevPos, curPos);
     switch(ev_board)
     {
@@ -91,16 +92,24 @@ void SDL_EventManager::BoardEvents()
         }
         case MOVE:
         {
-            gameWindow->renderBoard(board->getState());
-            
-            // Reset the click location
             curPos.resetPosition();
             prevPos.resetPosition();
-
+            gameWindow->renderBoard(board->getState());
             break;
         }
         default: {}
-    }   
+    }
+
+    // I have no idea how to program the automated part of this, literally none, so we'll start with this.
+    // Some overhead, but I don't know how to encapsulate these ideas properly.
+    if(manager->currentPlayerType() == ZYLO)
+    {
+        Move move = manager->fetchZyloMove();
+        prevPos = move.first;
+        curPos  = move.second;
+        BoardEvents();
+    }
+
 }
 
 CLICK_TYPE SDL_EventManager::processWindowClick()

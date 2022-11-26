@@ -15,6 +15,8 @@
 #include "GameplayHistory.h"
 #include "Zylo.h"
 
+// EXTERNAL INCLUDES
+#include <stdexcept>
  
 
 // EXTERNAL INCLUDES
@@ -39,22 +41,29 @@ protected:
     TURN            m_turnhead;
     GameplayHistory m_history;
 
-    Zylo* m_zylo;
+    Zylo m_zylo;
 
     Player          m_player1;
     Player          m_player2;
 
 public:
     // CONSTRUCTORS 
-    GameplayManager(Board* board, Player player1, Player player2) :
-                    m_board(board),
-                    m_player1(player1),
-                    m_player2(player2)
-                    {};
+    GameplayManager(Board* board, const Player& player1, const Player& player2) :
+                    m_board(board)
+                    {
+                        if(player1.colour == player2.colour)
+                            throw std::invalid_argument("Gameplay manager: players must be different colours");
+                        m_player1 = player1;
+                        m_player2 = player2;
+
+                        if(player1.type == ZYLO || player2.type == ZYLO)
+                            m_zylo = Zylo();
+
+                    }
     
     // Gameplay events 
     BOARD_EVENT         processBoardClick(const BoardPosition& curPos, const BoardPosition& newPos);
-    void                fetchZyloMove();
+    Move                fetchZyloMove();
     void                newGame();
 
     void                board(Board* board) { m_board = board; };
@@ -67,6 +76,8 @@ public:
 
     void                playerTwo(Player player)    { m_player2 = player; };
     Player              playerTwo() const           { return m_player2; }
+
+    PLAYER_TYPE         currentPlayerType();
         
 
     // History events

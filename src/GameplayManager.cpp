@@ -73,6 +73,21 @@ void GameplayManager::newGame()
     m_turnhead = m_history.returnTurn();
 }
 
+Move GameplayManager::fetchZyloMove()
+{
+    BoardState current = m_board->getState();
+    m_zylo.state(current);
+    return m_zylo.fetchBestMove();
+}
+
+PLAYER_TYPE GameplayManager::currentPlayerType()
+{
+    if(m_player1.colour == m_board->getTurn())
+        return m_player1.type;
+    else
+        return m_player2.type;
+}
+
 
 
 void GameplayManager::traverseHistory(DIRECTION direction)

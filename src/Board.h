@@ -73,9 +73,9 @@ class Board {
         MovementQueue   movementQueue       (BoardPosition pos);
         
         // RETURNS
-        BoardState      getState    ()      { return state; };   
-        BOARD_FLAGS     getFlags    ()      { return boardFlags; };
-        COLOUR          getTurn     ()      { return state.turn(); };
-        Move            getLastMove ()      { return state.lastMove(); }
+        BoardState      getState    () const    { return state; };   
+        BOARD_FLAGS     getFlags    () const    { return boardFlags; };
+        COLOUR          getTurn     () const    { return state.turn(); };
+        Move            getLastMove () const    { return state.lastMove(); }
         
 };
