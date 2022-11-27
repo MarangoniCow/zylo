@@ -80,8 +80,8 @@ class BoardMoves {
         PieceVector     positionCheckedBy           (BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
-        PositionVector   safeMoves                   (Piece* piece);
-        PositionVector   safeTakes                   (Piece* piece);
+        PositionVector  safeMoves                   (Piece* piece);
+        PositionVector  safeTakes                   (Piece* piece);
         void            removeRevealedCheckMoves    (Piece* piece);
         void            restrictKingMoves           (COLOUR col);
         void            restrictInvalidCheckedMoves (const PieceVector& kingCheckedBy);

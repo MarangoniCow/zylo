@@ -30,16 +30,28 @@ typedef std::pair<bool, BoardPosition> PLAY_FLAG;
 ************************************************************/
 
 typedef std::vector<Piece*> PieceVector;
-
-
-
 typedef std::pair<Piece*, PieceVector> PieceChecks;
 typedef std::vector<PieceChecks> ChecksVector;
-typedef std::vector<std::pair<Piece*, RELPOS>> SightedVector;
 
 /***********************************************************
 *       Class definitions
 ************************************************************/
+
+
+struct Sightline
+{
+    Piece*  tarPiece;
+    RELPOS  relPos;
+    int     n_Blocking;
+
+    Sightline(Piece* p, RELPOS rel, int N) :
+                    tarPiece(p),
+                    relPos(rel),
+                    n_Blocking(N)
+                    {};
+};
+
+typedef std::vector<Sightline> SightedVector;
 
 struct Movements
 {
@@ -47,7 +59,7 @@ struct Movements
     PositionVector validTakes;
     PositionVector invalidMoves;
     PositionVector invalidTakes;
-    SightedVector sightedQueue;
+    SightedVector  sightedVector;
 };
 
 struct MovementState

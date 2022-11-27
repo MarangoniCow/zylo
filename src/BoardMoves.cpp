@@ -186,7 +186,7 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
             else if (tarPiece->colour() == piece->colour())
             {
                 moveQueue.invalidMoves.push_back(tarPos);
-                moveQueue.sightedQueue.push_back(std::make_pair(tarPiece, relpos_curr));
+                moveQueue.sightedVector.push_back(Sightline(tarPiece, OUTOFLINE, 0));
             }
             else
             {
@@ -194,6 +194,8 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
             }
         }
     }
+
+    int N(0);
 
     while(!moveRange.empty())
     {
@@ -208,7 +210,9 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
 
         // If there's a piece there, add it to our sighted pieces
         if(validPiece(tarPiece))
-                moveQueue.sightedQueue.push_back(std::make_pair(tarPiece, relpos_curr));
+        {
+            moveQueue.sightedVector.push_back(Sightline(tarPiece, relpos_curr, N++));
+        }
         
         // If we added a piece last time and we haven't changed the relative direction, we need to continue to the next item in the queue.
         // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
@@ -219,7 +223,9 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
             else
                 moveQueue.invalidMoves.push_back(tarPos);
             continue;
-        }       
+        }
+        else
+            N = 0;
 
         // Check for a piece in the current state
         if(!validPiece(tarPiece))
@@ -477,13 +483,14 @@ PieceVector BoardMoves::positionCheckedBy(BoardPosition pos, COLOUR oppCol)
 
 PositionVector BoardMoves::safeMoves(Piece* piece)
 {
-    // Fetch vector of curent pieces
+    
     COLOUR  col = piece->colour();
+    PieceVector& enemyPieces = (col == curTurn) ? oppPieces : curPieces;
     PositionVector validMoves = m_movements.state[piece->x()][piece->y()].validMoves;
     
 
     // Iterate through queue, removing positions from validMoves that appear in the opposing pieces list
-    for(auto opp:oppPieces)
+    for(auto opp:enemyPieces)
     {
         PositionVector& curOppValidMoves = m_movements.state[opp->x()][opp->y()].validMoves;
 
@@ -505,25 +512,29 @@ PositionVector BoardMoves::safeTakes(Piece* piece)
 {
     // Fetch vector of curent pieces
     COLOUR  col = piece->colour();
-    PositionVector validTakes = m_movements.state[piece->x()][piece->y()].validTakes;
+    PieceVector& enemyPieces = (col == curTurn) ? oppPieces : curPieces;
 
-    for(auto opp:oppPieces)
+    // Vector to fill and vector to search    
+    PositionVector newValidTakes;
+    const PositionVector& validTakes = m_movements.state[piece->x()][piece->y()].validTakes;
+
+    for(auto take:validTakes)
     {
-        PositionVector& curOppInvalidMoves = m_movements.state[opp->x()][opp->y()].invalidMoves;
-
-        for(auto temp:curOppInvalidMoves)
+        for(auto opp:enemyPieces)
         {
-            for(auto it = validTakes.begin(); it != validTakes.end(); it++)
+            SightedVector& oppSightVector = m_movements.state[opp->x()][opp->y()].sightedVector;
+
+            for(auto sight:oppSightVector)
             {
-                if(temp == *it) {
-                    validTakes.erase(it);
-                    break;
-                }
+                if(sight.tarPiece->position() == take && sight.n_Blocking == 0)
+                    goto multiContinue;
             }
         }
-    }
 
-    return validTakes;
+        newValidTakes.push_back(take);
+        multiContinue:;
+    }
+    return newValidTakes;
 }
 
 void BoardMoves::removeRevealedCheckMoves(Piece* piece)
@@ -548,14 +559,14 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
             RELPOS relpos = BoardPosition::returnRelPos(oppPos, curPos); 
 
             // 3b) Fetch the pieces that are in the line of sight of our opposing piece
-            SightedVector& oppSightline = oppMovQueue.sightedQueue;
+            SightedVector& oppSightline = oppMovQueue.sightedVector;
             PieceVector sightedPieces;
             
             // 3c) Run through this queue, check if the piece is in the same relative direction, and wipe it's queue
             for(auto it:oppSightline)
             {
-                Piece* temp = it.first;
-                RELPOS sightedPos = it.second;
+                Piece* temp = it.tarPiece;
+                RELPOS sightedPos = it.relPos;
 
                 if(sightedPos == relpos)
                     sightedPieces.push_back(temp);      
