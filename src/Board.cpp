@@ -5,6 +5,7 @@
 // INTERNAL INCLUDES
 #include "Board.h"
 #include "Piece.h"
+#include "ContainerFunctions.h"
 
 // EXTERNAL INCLUDES
 #include <iostream>
@@ -41,31 +42,13 @@ bool Board::processUpdate(BoardPosition curPos, BoardPosition tarPos)
     Piece currentPiece = state.current[curPos.x][curPos.y];
     
     // Fetch queue from current position
-    MovementQueue moveQueue = boardMoves.movementQueue(curPos);
-    
-    // Iterate through queue until the new position is found.
-    bool found = 0;
-    
-    while(!moveQueue.validTakes.empty() && !found)
-    {
-        BoardPosition temp = moveQueue.validTakes.front();
-        moveQueue.validTakes.pop();        
-        if(temp == tarPos)
-            found = 1;
-    }
+    const Movements& moves = boardMoves.getMoves(currentPiece.position());
+    bool found = elementInVector(tarPos, moves.validTakes);
 
     if(found)
         takePiece(currentPiece, tarPos);
     else
-    {
-        while(!moveQueue.validMoves.empty() && !found)
-        {
-            BoardPosition temp = moveQueue.validMoves.front();
-            moveQueue.validMoves.pop();        
-            if(temp == tarPos)
-                found = 1;
-        }
-    }       
+        found = elementInVector(tarPos, moves.validMoves);
     
     if(found)
     {
@@ -172,9 +155,4 @@ void Board::takePiece(Piece &currentPiece, const BoardPosition& newPos)
     }
 
     state.removePiece(pieceToDelete.position());
-}
-
-MovementQueue Board::movementQueue(BoardPosition pos)
-{
-    return boardMoves.movementQueue(pos);
 }

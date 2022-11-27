@@ -58,5 +58,5 @@ struct BoardPosition
     // Static methods
     static RELPOS returnRelPos(BoardPosition curPos, BoardPosition tarPos);
     static std::queue<BoardPosition> returnPositionQueue();
-    static std::queue<BoardPosition> returnRelativePositions(BoardPosition curPos, BoardPosition tarPos);
+    static std::vector<BoardPosition> returnRelativePositions(BoardPosition curPos, BoardPosition tarPos);
 };

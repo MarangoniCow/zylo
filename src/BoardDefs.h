@@ -22,6 +22,7 @@
 ************************************************************/
 
 typedef std::pair<BoardPosition, BoardPosition> Move;
+typedef std::vector<BoardPosition> PositionVector;
 typedef std::pair<bool, BoardPosition> PLAY_FLAG;
 
 /***********************************************************
@@ -34,41 +35,24 @@ typedef std::vector<Piece*> PieceVector;
 
 typedef std::pair<Piece*, PieceVector> PieceChecks;
 typedef std::vector<PieceChecks> ChecksVector;
-typedef std::queue<std::pair<Piece*, RELPOS>> SightedQueue;
+typedef std::vector<std::pair<Piece*, RELPOS>> SightedVector;
 
 /***********************************************************
 *       Class definitions
 ************************************************************/
 
-class MovementQueue
+struct Movements
 {
-public:
-
-    PositionQueue validMoves;
-    PositionQueue validTakes;
-    PositionQueue invalidMoves;
-    PositionQueue invalidTakes;
-    SightedQueue sightedQueue;
-
-public:
-
-    MovementQueue   () {};
-    MovementQueue   (PositionQueue validMoves_,
-                    PositionQueue validTakes_,
-                    PositionQueue invalidMoves_,
-                    PositionQueue invalidTakes_,
-                    SightedQueue sightedQueue_) :
-                    sightedQueue(sightedQueue_),
-                    validMoves(validMoves_),
-                    validTakes(validTakes_),
-                    invalidMoves(invalidMoves_),
-                    invalidTakes(invalidTakes_)
-                    {};
+    PositionVector validMoves;
+    PositionVector validTakes;
+    PositionVector invalidMoves;
+    PositionVector invalidTakes;
+    SightedVector sightedQueue;
 };
 
 struct MovementState
 {
-    MovementQueue	state[8][8];
+    Movements	state[8][8];
 };
 
 struct ChecksState

@@ -36,7 +36,7 @@ void Zylo::generateRandomMove(Move& move)
     std::mt19937 gen(rd()); // seed the generator
     std::uniform_int_distribution<> distr(0, curPieces.size() - 1); // define the range
 
-    MovementQueue random_queue;
+    Movements random_queue;
     BoardPosition pos;
 
     bool foundMove = 0;

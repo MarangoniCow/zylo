@@ -18,12 +18,19 @@
 #include <vector>
 
 template <typename T>
-bool elementInVector(const T& itemToMatch, const std::vector<T>& vectorToSearch)
+bool elementInVector(T& itemToMatch, const std::vector<T>& vectorToSearch)
 {
     for(auto it:vectorToSearch)
         if(itemToMatch == it)
             return true;
     return false;
+}
+
+template <typename T>
+void appendToVector(std::vector<T>& vectorToAddTo, std::vector<T>& vectorOfNewItems)
+{
+    for(auto it:vectorOfNewItems)
+        vectorToAddTo.push_back(it);
 }
 
 template <typename T>
@@ -90,24 +97,22 @@ std::queue<T> applyFunctionToQueue(std::queue<T> queueToActOn, Y (*func)(T))
 }
 
 template <typename T>
-std::queue<T> returnMatchingElements(std::queue<T> queueToSearch, std::queue<T> queueToMatch)
+std::vector<T> returnMatchingElements(const std::vector<T>& vectorToSearch, const std::vector<T>& vectorToMatch)
 {
-    std::vector<T> vectorToMatch = queueToVector(queueToMatch);
-    std::queue<T> matchedElementsQueue;
 
-    while(!queueToSearch.empty())
+    std::vector<T> matchedElements;
+
+    for(auto searchItem:vectorToSearch)
     {
-        for(auto it = vectorToMatch.begin(); it != vectorToMatch.end(); it++)
+        for(auto matchedIT = vectorToMatch.begin(); matchedIT != vectorToMatch.end(); matchedIT++)
         {
-            if(*it == queueToSearch.front())
+            if(searchItem == *matchedIT)
             {
                 // Assume no repeats
-                matchedElementsQueue.push(queueToSearch.front());
-                vectorToMatch.erase(it);
+                matchedElements.push_back(searchItem);
                 break;
             }
         }
-        queueToSearch.pop();
     }
-    return matchedElementsQueue;
+    return matchedElements;
 }

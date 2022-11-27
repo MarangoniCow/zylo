@@ -51,13 +51,13 @@ void BoardMoves::resetFlags()
 
 void BoardMoves::resetMoves()
 {
-    MovementQueue emptyMovementQueue;
-    PieceChecks emptyChecksQueue;
+    Movements emptyMovements;
+    PieceChecks emptyChecks;
 
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++) {
-            movements.state[i][j] = emptyMovementQueue;
-            checks.state[i][j] = emptyChecksQueue;
+            m_movements.state[i][j] = emptyMovements;
+            m_checks.state[i][j] = emptyChecks;
         }
     }
 }
@@ -149,7 +149,7 @@ void BoardMoves::processState()
     // Done!
 }
 
-void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue)
+void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movements& moveQueue)
 {
     // Helper/local variables to help compare changes in position 
     RELPOS relpos_curr = SAME;
@@ -181,16 +181,16 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
             // Check if the target piece exists, and check its colour
             if (!validPiece(tarPiece))
             {
-                moveQueue.validMoves.push(tarPos);
+                moveQueue.validMoves.push_back(tarPos);
             }
             else if (tarPiece->colour() == piece->colour())
             {
-                moveQueue.invalidMoves.push(tarPos);
-                moveQueue.sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
+                moveQueue.invalidMoves.push_back(tarPos);
+                moveQueue.sightedQueue.push_back(std::make_pair(tarPiece, relpos_curr));
             }
             else
             {
-                moveQueue.validTakes.push(tarPos);
+                moveQueue.validTakes.push_back(tarPos);
             }
         }
     }
@@ -208,16 +208,16 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
 
         // If there's a piece there, add it to our sighted pieces
         if(validPiece(tarPiece))
-                moveQueue.sightedQueue.push(std::make_pair(tarPiece, relpos_curr));
+                moveQueue.sightedQueue.push_back(std::make_pair(tarPiece, relpos_curr));
         
         // If we added a piece last time and we haven't changed the relative direction, we need to continue to the next item in the queue.
         // If we did add a piece last time, we need to see that piece has the same relative direction as the previous position.
         if(relpos_prev != SAME && pieceInPrev && relpos_curr == relpos_prev)
         {
             if(validPiece(tarPiece) && piece->colour() != tarPiece->colour())
-                moveQueue.invalidTakes.push(tarPos);
+                moveQueue.invalidTakes.push_back(tarPos);
             else
-                moveQueue.invalidMoves.push(tarPos);
+                moveQueue.invalidMoves.push_back(tarPos);
             continue;
         }       
 
@@ -225,7 +225,7 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
         if(!validPiece(tarPiece))
         {
             // If there's nothing there, the move is valid. We can push it to the valid move list and continue as normal.
-            moveQueue.validMoves.push(tarPos);
+            moveQueue.validMoves.push_back(tarPos);
             // There's no piece, so our if condition at the beginning won't fail.
             pieceInPrev = 0;
         }
@@ -236,13 +236,13 @@ void BoardMoves::processMoveRange(Piece* piece, PositionQueue moveRange, Movemen
             {
                 // If it's a pawn, we can't take forward
                 if(piece->type() == PAWN)
-                    moveQueue.invalidMoves.push(tarPos);
+                    moveQueue.invalidMoves.push_back(tarPos);
                 else
-                    moveQueue.validTakes.push(tarPos);
+                    moveQueue.validTakes.push_back(tarPos);
             }
             else
             {
-                moveQueue.invalidMoves.push(tarPos);
+                moveQueue.invalidMoves.push_back(tarPos);
             }
             // Regardless, we know that there's a piece in the previous location we looked. Back to the start.
             pieceInPrev = 1;
@@ -269,7 +269,7 @@ void BoardMoves::generateMovementRange()
         PositionQueue moveRange;
         piece->moveRange(moveRange);
         
-        MovementQueue& moveQueue = movements.state[pos.x][pos.y];
+        Movements& moveQueue = m_movements.state[pos.x][pos.y];
         processMoveRange(piece, moveRange, moveQueue);
 
         // Add special takes (pawn takes & enpassant)
@@ -293,32 +293,26 @@ void BoardMoves::generateChecksState()
         
         // Fetch the list of valid takes from movement state
         BoardPosition pos(piece->position());
-        PositionQueue pieceTakes = movements.state[pos.x][pos.y].validTakes;
+        PositionVector& pieceTakes = m_movements.state[pos.x][pos.y].validTakes;
 
         // Initialise a queue for pieces and the pieceChecks return (ID/queue pair)
         PieceVector pieceVector;
         PieceChecks pieceChecks;
+
+        for(auto it:pieceTakes)
+            pieceVector.push_back(pieceByPosition(it));
         
-
-        // Convert board positions to pieces    
-        while(!pieceTakes.empty())
-        {
-            pieceVector.push_back(pieceByPosition(pieceTakes.front()));
-            pieceTakes.pop();
-        }
-
         // Return
         pieceChecks.first  = piece;
         pieceChecks.second = pieceVector;
 
         // Store information for future use and return
-        checks.state[pos.x][pos.y] = pieceChecks; 
+        m_checks.state[pos.x][pos.y] = pieceChecks; 
         
         if(piece->colour() == curTurn)
             curChecks.push_back(pieceChecks);
         else
             oppChecks.push_back(pieceChecks);
-
     };
 
     for(auto piece:curPieces)
@@ -334,7 +328,7 @@ void BoardMoves::generateChecksState()
  *                    SPECIAL MOVES
  ***********************************************************/
 
-void BoardMoves::addPawnMoves(Piece* currentPiece, PositionQueue& validTakes)
+void BoardMoves::addPawnMoves(Piece* currentPiece, PositionVector& validTakes)
 {
     if(!validPiece(currentPiece))
         return;
@@ -363,7 +357,7 @@ void BoardMoves::addPawnMoves(Piece* currentPiece, PositionQueue& validTakes)
                     Piece* targetPiece = &statePtr->current[temp.x][temp.y];
                     
                     if(validPiece(targetPiece) && targetPiece->colour() != curCol)
-                        validTakes.push(temp);
+                        validTakes.push_back(temp);
                 }
 
                     // CHECK FOR EN-PASSANT: Must be on the row adjacent to backpawn line
@@ -380,7 +374,7 @@ void BoardMoves::addPawnMoves(Piece* currentPiece, PositionQueue& validTakes)
                     bool lastOnHomeRow = (lastMove.first.y - lastMove.second.y == 2*curForward);
                     
                     if(pawnAdjacent && isLastMoved && lastOnHomeRow)
-                        validTakes.push(curPos.returnUpdate(i, curForward));
+                        validTakes.push_back(curPos.returnUpdate(i, curForward));
                 }
             }
             break;     
@@ -396,7 +390,7 @@ void BoardMoves::addCastling(Piece* king)
         return;
     
     BoardPosition curPos(king->position());
-    PositionQueue* validMoves = &movements.state[curPos.x][curPos.y].validMoves;
+    PositionVector& validMoves = m_movements.state[curPos.x][curPos.y].validMoves;
     COLOUR oppCol = (king->colour() == WHITE) ? BLACK : WHITE;
  
     if(!king->moved())
@@ -419,9 +413,9 @@ void BoardMoves::addCastling(Piece* king)
         PieceVector leftCheckedBy  = positionCheckedBy(curPos.returnUpdate(-1, 0), oppCol);
 
         if (rook_condition(7, curPos.y) && clearRight && rightCheckedBy.empty())
-            validMoves->push(curPos.returnUpdate(2, 0));
+            validMoves.push_back(curPos.returnUpdate(2, 0));
         if (rook_condition(0, curPos.y) && clearLeft && leftCheckedBy.empty())
-            validMoves->push(curPos.returnUpdate(-2, 0));
+            validMoves.push_back(curPos.returnUpdate(-2, 0));
     }
 }
 
@@ -432,8 +426,8 @@ void BoardMoves::verifyMate()
     {
         for(auto it:curPieces)
         {
-            MovementQueue moveQueue = movementQueue(it);
-            if(!moveQueue.validMoves.empty() || !moveQueue.validTakes.empty())
+            Movements movements = getMoves(it->position());
+            if(!movements.validMoves.empty() || !movements.validTakes.empty())
             {
                 moveFound = 1;
                 break;
@@ -468,8 +462,8 @@ PieceVector BoardMoves::positionCheckedBy(BoardPosition pos, COLOUR oppCol)
 
     for(auto it:oppPieces)
     {
-        MovementQueue oppMoveQueue = movementQueue(it);
-        if(elementInQueue(pos, oppMoveQueue.validMoves))
+        Movements& oppMoves = m_movements.state[it->x()][it->y()];
+        if(elementInVector(pos, oppMoves.validMoves))
             oppCheckingVector.push_back(it);
 
     }
@@ -481,22 +475,20 @@ PieceVector BoardMoves::positionCheckedBy(BoardPosition pos, COLOUR oppCol)
 /*                  REFINEMENT-FUNCTIONS                
  ***********************************************************/
 
-PositionQueue BoardMoves::safeMoves(Piece* piece)
+PositionVector BoardMoves::safeMoves(Piece* piece)
 {
     // Fetch vector of curent pieces
     COLOUR  col = piece->colour();
-    MovementQueue pieceMovementQueue = movementQueue(piece);
-    std::vector<BoardPosition> validMoves = queueToVector(pieceMovementQueue.validMoves);
+    PositionVector validMoves = m_movements.state[piece->x()][piece->y()].validMoves;
     
 
     // Iterate through queue, removing positions from validMoves that appear in the opposing pieces list
-    for(auto it:oppPieces)
+    for(auto opp:oppPieces)
     {
-        PositionQueue curOppValidMoves = movementQueue(it).validMoves;
-        while(!curOppValidMoves.empty())
+        PositionVector& curOppValidMoves = m_movements.state[opp->x()][opp->y()].validMoves;
+
+        for(auto temp:curOppValidMoves)
         {
-            BoardPosition temp = curOppValidMoves.front();
-            curOppValidMoves.pop();
             for(auto it = validMoves.begin(); it != validMoves.end(); it++)
             {
                 if(temp == *it) {
@@ -506,25 +498,21 @@ PositionQueue BoardMoves::safeMoves(Piece* piece)
             }
         }
     }
-    return vectorToQueue(validMoves);
+    return validMoves;
 }
 
-PositionQueue BoardMoves::safeTakes(Piece* piece)
+PositionVector BoardMoves::safeTakes(Piece* piece)
 {
     // Fetch vector of curent pieces
     COLOUR  col = piece->colour();
-    MovementQueue pieceMovementQueue = movementQueue(piece);
-    std::vector<BoardPosition> validTakes = queueToVector(pieceMovementQueue.validTakes);
+    PositionVector validTakes = m_movements.state[piece->x()][piece->y()].validTakes;
 
-    // Iterate through queue, removing positions from validTakes that appear in the opposing pieces list
-    for(auto it:oppPieces)
+    for(auto opp:oppPieces)
     {
-        PositionQueue curOppInvalidMoves = movementQueue(oppPieces.front()).invalidMoves;
-        
-        while(!curOppInvalidMoves.empty())
+        PositionVector& curOppInvalidMoves = m_movements.state[opp->x()][opp->y()].invalidMoves;
+
+        for(auto temp:curOppInvalidMoves)
         {
-            BoardPosition temp = curOppInvalidMoves.front();
-            curOppInvalidMoves.pop();
             for(auto it = validTakes.begin(); it != validTakes.end(); it++)
             {
                 if(temp == *it) {
@@ -534,7 +522,8 @@ PositionQueue BoardMoves::safeTakes(Piece* piece)
             }
         }
     }
-    return vectorToQueue(validTakes);
+
+    return validTakes;
 }
 
 void BoardMoves::removeRevealedCheckMoves(Piece* piece)
@@ -547,10 +536,10 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
     {
         // 1) Fetch front position and movement
         BoardPosition oppPos(it->position());
-        MovementQueue oppMovQueue = movements.state[oppPos.x][oppPos.y];
+        Movements& oppMovQueue = m_movements.state[oppPos.x][oppPos.y];
 
         // 2) Search the front pieces' invalid takes queue for our position
-        bool found = elementInQueue(curPos, oppMovQueue.invalidTakes);
+        bool found = elementInVector(curPos, oppMovQueue.invalidTakes);
 
         // 3) If we've found the king as an invalid target, we need to make sure the piece blocking this line of sight doesn't move     
         if(found)
@@ -559,22 +548,20 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
             RELPOS relpos = BoardPosition::returnRelPos(oppPos, curPos); 
 
             // 3b) Fetch the pieces that are in the line of sight of our opposing piece
-            SightedQueue oppSightline = oppMovQueue.sightedQueue;
+            SightedVector& oppSightline = oppMovQueue.sightedQueue;
             PieceVector sightedPieces;
             
             // 3c) Run through this queue, check if the piece is in the same relative direction, and wipe it's queue
-            while(!oppSightline.empty())
+            for(auto it:oppSightline)
             {
-                Piece* temp = oppSightline.front().first;
-                RELPOS sightedPos = oppSightline.front().second;
-                oppSightline.pop();
-                
+                Piece* temp = it.first;
+                RELPOS sightedPos = it.second;
+
                 if(sightedPos == relpos)
-                    sightedPieces.push_back(temp);                    
+                    sightedPieces.push_back(temp);      
             }
 
-            int idx = 0;
-            
+            int idx = 0;            
             // Find the king in the vector
             for(; idx < sightedPieces.size(); idx++) {
                 if(sightedPieces[idx] == piece)
@@ -585,42 +572,36 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
             if(idx <= 2)
             {
                 Piece* temp = sightedPieces[idx - 1];
-                BoardPosition tempPos(temp->position());
-                MovementQueue moveQueue = movementQueue(temp);
+                Movements& movements = m_movements.state[temp->x()][temp->y()];
 
                 // Empty valid moves *BUG: DON'T NEED TO GET RID OF MOVEMENTS IN THE SAME RELATIVE DIRECTION*
-                PositionQueue newInvalidMoves;
-                PositionQueue stillValidMoves;
+                PositionVector newInvalidMoves;
+                PositionVector stillValidMoves;
 
-                while(!moveQueue.validMoves.empty())
+                for(auto validPos:movements.validMoves)
                 {
-                    BoardPosition validPos = moveQueue.validMoves.front();
-                    moveQueue.validMoves.pop();
                     if(BoardPosition::returnRelPos(oppPos, validPos) == BoardPosition::returnRelPos(oppPos, curPos))
-                        stillValidMoves.push(validPos);
+                        stillValidMoves.push_back(validPos);
                     else
-                        newInvalidMoves.push(validPos);
+                        newInvalidMoves.push_back(validPos);
                 }
-                movements.state[tempPos.x][tempPos.y].invalidMoves = appendToQueue(moveQueue.invalidMoves, newInvalidMoves);
-                movements.state[tempPos.x][tempPos.y].validMoves = stillValidMoves;
 
-                PositionQueue newInvalidTakes;
-                PositionQueue stillValidTakes;
+                appendToVector(movements.invalidMoves, newInvalidMoves);
+                movements.validMoves = stillValidMoves;
 
-                while(!moveQueue.validTakes.empty())
+                PositionVector newInvalidTakes;
+                PositionVector stillValidTakes;
+
+                for(auto validPos:movements.validTakes)
                 {
-                    BoardPosition validPos = moveQueue.validTakes.front();
-                    moveQueue.validTakes.pop();
-
                     if(oppPos == validPos)
-                        stillValidTakes.push(validPos);
+                        stillValidTakes.push_back(validPos);
                     else
-                        newInvalidTakes.push(validPos);                    
+                        newInvalidTakes.push_back(validPos);   
                 }
 
-                movements.state[tempPos.x][tempPos.y].invalidTakes = appendToQueue(moveQueue.invalidTakes, newInvalidTakes);
-                movements.state[tempPos.x][tempPos.y].validTakes = stillValidTakes;
-                
+                appendToVector(movements.invalidTakes, newInvalidTakes);
+                movements.validTakes = stillValidTakes;
             }
         }
     }
@@ -629,8 +610,8 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
 void BoardMoves::restrictKingMoves(COLOUR col)
 {
     BoardPosition kingPos(curKing->position());
-    movements.state[kingPos.x][kingPos.y].validMoves = safeMoves(curKing);
-    movements.state[kingPos.x][kingPos.y].validTakes = safeTakes(curKing);
+    m_movements.state[kingPos.x][kingPos.y].validMoves = safeMoves(curKing);
+    m_movements.state[kingPos.x][kingPos.y].validTakes = safeTakes(curKing);
 }
 
 void BoardMoves::restrictInvalidCheckedMoves(const PieceVector& kingCheckedBy)
@@ -649,14 +630,17 @@ void BoardMoves::restrictInvalidCheckedMoves(const PieceVector& kingCheckedBy)
     // If the checkedBy queue is greater than 1, remove all other moves
     if(kingCheckedBy.size() > 1)
     {
-        for(auto it:curPieces)
+        for(auto piece:curPieces)
         {
-            if(it->type() == KING)
+            if(piece->type() == KING)
                 continue;
             
-            BoardPosition pos = it->position();
-            emptyQueue(&movements.state[pos.x][pos.y].validMoves);
-            emptyQueue(&movements.state[pos.x][pos.y].validTakes);
+            appendToVector (m_movements.state[piece->x()][piece->y()].validMoves,
+                             m_movements.state[piece->x()][piece->y()].invalidMoves);
+            appendToVector  (m_movements.state[piece->x()][piece->y()].validTakes,
+                             m_movements.state[piece->x()][piece->y()].invalidTakes);
+            m_movements.state[piece->x()][piece->y()].validMoves.clear();
+            m_movements.state[piece->x()][piece->y()].validTakes.clear();
         }
     }
     // Else, for each piece, restrict its movement/takes to those which take the target piece
@@ -669,49 +653,35 @@ void BoardMoves::restrictInvalidCheckedMoves(const PieceVector& kingCheckedBy)
             
             BoardPosition pos = it->position();
             restrictToBlockingMoves(curKing, it, kingCheckedBy.front(),
-                                    &movements.state[pos.x][pos.y].validMoves,
-                                    &movements.state[pos.x][pos.y].validTakes);
+                                    m_movements.state[pos.x][pos.y].validMoves,
+                                    m_movements.state[pos.x][pos.y].validTakes);
         }
     }
 }
 
 void BoardMoves::restrictToBlockingMoves(Piece* pieceToProtect, Piece* pieceToMove, Piece* checkingPiece,
-                                PositionQueue* validMoves, PositionQueue* validTakes)
+                                PositionVector& validMoves, PositionVector& validTakes)
 {
     // 1) Fetch positions of all pieces
     BoardPosition posToProtect(pieceToProtect->position());
     BoardPosition posToMove(pieceToMove->position());
     BoardPosition posOfCheck(checkingPiece->position());
     
-    PositionQueue posOfCheckQueue;
-    posOfCheckQueue.push(posOfCheck);
+    PositionVector posOfCheckVector;
+    posOfCheckVector.push_back(posOfCheck);
 
     // 2) Fetch all relative positions between the check position and the position to protect
-    PositionQueue blockingPositions = BoardPosition::returnRelativePositions(posOfCheck, posToProtect);
+    PositionVector blockingPositions = BoardPosition::returnRelativePositions(posOfCheck, posToProtect);
     
     // 3) Update moves with positions that match
-    *validMoves = returnMatchingElements(blockingPositions, *validMoves);
-    *validTakes = returnMatchingElements(posOfCheckQueue, *validTakes);
+    validMoves = returnMatchingElements(blockingPositions, validMoves);
+    validTakes = returnMatchingElements(posOfCheckVector, validTakes);
 }
 
 
 /****************************************************/
 /*                      RETURNS                     */
 /****************************************************/
-
-MovementQueue BoardMoves::movementQueue(BoardPosition pos)
-{
-    return movements.state[pos.x][pos.y];
-}
-MovementQueue BoardMoves::movementQueue(Piece* piece)
-{
-    BoardPosition pos(piece->position());
-    return movementQueue(pos);
-}
-
-
-
-
 
 Piece* BoardMoves::pieceByPosition(BoardPosition pos)
 {

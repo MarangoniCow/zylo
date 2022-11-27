@@ -135,18 +135,18 @@ std::queue<BoardPosition> BoardPosition::returnPositionQueue()
     return allPositions;
 }
 
-std::queue<BoardPosition> BoardPosition::returnRelativePositions(BoardPosition curPos, BoardPosition tarPos)
+std::vector<BoardPosition> BoardPosition::returnRelativePositions(BoardPosition curPos, BoardPosition tarPos)
 {
-    std::queue<BoardPosition> returnQueue;
+    std::vector<BoardPosition> returnVector;
     RELPOS relpos = returnRelPos(curPos, tarPos);
     if(relpos != SAME && relpos != OUTOFLINE)
     {
         BoardPosition temp = curPos;
         while(temp.validPosition())
         {
-            returnQueue.push(temp);
+            returnVector.push_back(temp);
             temp = temp.returnIncrement(relpos);
         }
     }
-    return returnQueue;
+    return returnVector;
 }

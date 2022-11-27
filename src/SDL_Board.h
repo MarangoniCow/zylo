@@ -104,7 +104,7 @@ class SDL_Board
         void            renderBackground    ();
         void            renderBoard         (BoardState state);
         void            renderBoardUpdate   (BoardState state);
-        void            renderOverlay       (PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue);
+        void            renderOverlay       (const PositionVector& validQueue, const PositionVector& takeQueue, const PositionVector& invalidQueue);
         void            renderLast          (Move lastMove);
         void            renderPrevious      (BoardPosition prevPos, BoardPosition newPos);
 

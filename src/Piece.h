@@ -91,6 +91,9 @@ class Piece
         void            ID      (PIECE_ID ID);
         PIECE_ID        ID      () const;
 
+        int             x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
+        int             y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
+
         void            position(BoardPosition pos);
         BoardPosition   position() const;
   
@@ -99,10 +102,8 @@ class Piece
 
     protected:
         void	        x(int v)	{ m_flags = (m_flags & ~MaskX) | ((v << ShiftX) & MaskX); }
-		int             x() const	{ return (int)((m_flags & MaskX) >> ShiftX); }
-
         void	        y(int v)	{ m_flags = (m_flags & ~MaskY) | ((v << ShiftY) & MaskY); }
-		int             y() const	{ return (int)((m_flags & MaskY) >> ShiftY); }
+		
 
         void   pawnRange  (PositionQueue& moveQueue);
         void   rookRange  (PositionQueue& moveQueue);

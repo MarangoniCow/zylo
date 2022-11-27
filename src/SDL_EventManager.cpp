@@ -73,7 +73,7 @@ void SDL_EventManager::BoardEvents()
     {
         case OVERLAY:
         {
-            MovementQueue moveQueue = board->movementQueue(curPos);
+            const Movements& moveQueue = board->getMoves(curPos);
             gameWindow->renderOverlay(moveQueue.validMoves, moveQueue.validTakes, moveQueue.invalidMoves);
             break;
         }

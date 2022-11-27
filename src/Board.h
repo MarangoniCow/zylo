@@ -70,7 +70,7 @@ class Board {
         bool            processUpdate       (BoardPosition oldPos, BoardPosition newPos);
         void            processPromotion    (PIECE_TYPE newType);
 
-        MovementQueue   movementQueue       (BoardPosition pos);
+        const Movements& getMoves(BoardPosition pos) const { return boardMoves.getMoves(pos); }
         
         // RETURNS
         BoardState      getState    () const    { return state; };   

@@ -199,29 +199,17 @@ void SDL_Board::renderBoard(BoardState state)
 }
 
 
-void SDL_Board::renderOverlay(PositionQueue validQueue, PositionQueue takeQueue, PositionQueue invalidQueue)
+void SDL_Board::renderOverlay(const PositionVector& movesVector, const PositionVector& takesVector, const PositionVector& invalidsVector)
 {
 
     // Iterate through movement queue and load overlays
-    while(!validQueue.empty())
-    {
-        BoardPosition targetSquare = validQueue.front();
-        validQueue.pop();
+    for(auto targetSquare:movesVector)
         loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_GREEN);
-    }
-    while(!takeQueue.empty())
-    {
-        BoardPosition targetSquare = takeQueue.front();
-        takeQueue.pop();
+    for(auto targetSquare:takesVector)
         loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_RED);
-    }
-    while(!invalidQueue.empty())
-    {
-        BoardPosition targetSquare = invalidQueue.front();
-        invalidQueue.pop();
+    for(auto targetSquare:invalidsVector)
         loadOverlay(targetSquare.x, targetSquare.y, OVERLAY_WHITE);
-    }
-
+        
     SDL_RenderPresent(windowRenderer);
 }
 

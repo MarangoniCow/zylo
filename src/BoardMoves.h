@@ -30,8 +30,8 @@ class BoardMoves {
         PLAY_FLAG kingCheckmate;
 
         // Movement and checks state
-		MovementState   movements;
-        ChecksState     checks;
+		MovementState   m_movements;
+        ChecksState     m_checks;
 
         // Common memeber variables regularly accessed
         ChecksVector curChecks;
@@ -59,7 +59,7 @@ class BoardMoves {
         void            generateChecksState         ();
 
         // Private methods: Special takes/moves (castling)
-        void            addPawnMoves                (Piece* piece, PositionQueue& validTake);
+        void            addPawnMoves                (Piece* piece, PositionVector& validTake);
         void            addCastling                 (Piece* piece);
         void            verifyMate                  ();
 
@@ -73,31 +73,29 @@ class BoardMoves {
 
         // MAIN METHODS
         void            processState                ();
-        void            processMoveRange            (Piece* piece, PositionQueue moveRange, MovementQueue& moveQueue);
+        void            processMoveRange            (Piece* piece, PositionQueue moveRange, Movements& moveQueue);
  
         // CHECK-RELATED FUNCTIONS
         void            pieceCheckedBy              (Piece* piece, const ChecksVector& oppChecks, PieceVector& checkedByVector); 
         PieceVector     positionCheckedBy           (BoardPosition pos, COLOUR oppCol);
 
         // REFINEMENTS
-        PositionQueue   safeMoves                   (Piece* piece);
-        PositionQueue   safeTakes                   (Piece* piece);
+        PositionVector   safeMoves                   (Piece* piece);
+        PositionVector   safeTakes                   (Piece* piece);
         void            removeRevealedCheckMoves    (Piece* piece);
         void            restrictKingMoves           (COLOUR col);
         void            restrictInvalidCheckedMoves (const PieceVector& kingCheckedBy);
         void            restrictToBlockingMoves     (Piece* pieceToProtect, Piece* pieceToMove, Piece* targetPiece,
-                                                     PositionQueue* validMoves, PositionQueue* validTakes);
+                                                     PositionVector& validMoves, PositionVector& validTakes);
 
-        // RETURNS
-        MovementQueue   movementQueue               (Piece* piece);
-        MovementQueue   movementQueue               (BoardPosition pos);
-
+        // GETTERS
 		const PieceVector&      getCurrentPieces () const   { return curPieces; }
         const PieceVector&      getOpposingPieces() const   { return curPieces; }
 
-        const MovementState&    getMovementState () const   { return movements; }
-        const ChecksState&      getChecksState   () const   { return checks; }
-		
+        const ChecksState&      getChecksState   () const   { return m_checks; }
+        const MovementState&    getMovementState () const   { return m_movements; }
+
+        const Movements&        getMoves            (const BoardPosition pos) const { return m_movements.state[pos.x][pos.y]; }
 		
 
     protected:
