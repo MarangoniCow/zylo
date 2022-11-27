@@ -9,6 +9,7 @@
 #include "Board.h"
 #include "Piece.h"
 #include "GameplayManager.h"
+#include "ZyloState.h"
 
 
 // EXTERNAL DEPENDENCIES
@@ -99,6 +100,10 @@ void SDL_EventManager::BoardEvents()
         }
         default: {}
     }
+
+    // Just a quick output for the current board state value
+    ZyloState zyloState(manager->board()->getState());
+    std::cout << zyloState.fetchStateRating() << std::endl;
 
     // I have no idea how to program the automated part of this, literally none, so we'll start with this.
     // Some overhead, but I don't know how to encapsulate these ideas properly.

@@ -173,7 +173,7 @@
     <ClCompile Include="..\src\SDL_EventManager.cpp" />
     <ClCompile Include="..\src\SDL_Pieces.cpp" />
     <ClCompile Include="..\src\Zylo.cpp" />
-    <ClCompile Include="..\src\ZyloBoard.cpp" />
+    <ClCompile Include="..\src\ZyloState.cpp" />
     <ClCompile Include="..\src\ZyloPiece.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +191,7 @@
     <ClInclude Include="..\src\SDL_EventManager.h" />
     <ClInclude Include="..\src\SDL_Pieces.h" />
     <ClInclude Include="..\src\Zylo.h" />
-    <ClInclude Include="..\src\ZyloBoard.h" />
+    <ClInclude Include="..\src\ZyloState.h" />
     <ClInclude Include="..\src\ZyloPiece.h" />
     <ClInclude Include="..\src\ZyloWeightings.h" />
   </ItemGroup>

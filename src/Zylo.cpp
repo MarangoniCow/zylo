@@ -5,7 +5,7 @@
 // INTERNAL INCLUDES
 #include "Zylo.h"
 #include "ZyloPiece.h"
-#include "ZyloBoard.h"
+#include "ZyloState.h"
 #include "Board.h"
 #include "BoardDefs.h"
 

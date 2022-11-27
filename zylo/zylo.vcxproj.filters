@@ -51,7 +51,7 @@
     <ClCompile Include="..\src\ContainerFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ZyloBoard.cpp">
+    <ClCompile Include="..\src\ZyloState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ZyloPiece.cpp">
@@ -101,7 +101,7 @@
     <ClInclude Include="..\src\Zylo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ZyloBoard.h">
+    <ClInclude Include="..\src\ZyloState.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ZyloPiece.h">

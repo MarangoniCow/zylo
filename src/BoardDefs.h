@@ -29,6 +29,8 @@ typedef std::pair<bool, BoardPosition> PLAY_FLAG;
 *       Piece types
 ************************************************************/
 
+
+
 typedef std::vector<Piece*> PieceVector;
 typedef std::pair<Piece*, PieceVector> PieceChecks;
 typedef std::vector<PieceChecks> ChecksVector;

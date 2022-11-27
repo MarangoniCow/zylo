@@ -1,23 +1,31 @@
 /***********************************************************
  *                      ZYLOBOARD
  * 
- * Class which deals with evaluating value of a particular
- * board state
+ * Class which deals with evaluating the value of a BoardState
+ * 
  **********************************************************/
 
 #pragma once
 
 // INTERNAL INCLUDES
+#include "ZyloDefs.h"
 #include "Board.h"
 #include "BoardMoves.h"
 #include "Piece.h"
 
 // EXTERNAL INCLUDES
 
-class ZyloBoard
+class ZyloState
 {
-    private:
+    protected:
+        BoardState m_state;
+
+    protected:
+        CP      sumPieceValues();
     
     public:
-        ZyloBoard() {};
+        ZyloState(const BoardState& state) : m_state(state) {};
+
+        void    changeState(const BoardState& state)       { m_state = state; }
+        CP      fetchStateRating();        
 };

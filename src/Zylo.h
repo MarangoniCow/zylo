@@ -10,7 +10,7 @@
 
 // INTERNAL INCLUDES
 #include "ZyloPiece.h"
-#include "ZyloBoard.h"
+#include "ZyloState.h"
 #include "ZyloWeightings.h"
 #include "Board.h"
 
