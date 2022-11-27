@@ -3,8 +3,22 @@
  ***********************************************************/
 
 // INTERNAL INCLUDES
-#include "Board.h"
-#include "BoardMoves.h"
-#include "Piece.h"
+#include "ZyloWeightings.h"
+#include "ZyloPiece.h"
 
 // EXTERNAL INCLUDES
+
+CP ZyloPiece::getPieceRating(Piece piece) 
+{
+    return multiplicativeMethod(piece);
+}
+
+CP ZyloPiece::multiplicativeMethod(Piece piece)
+{
+    return ZyloWeightings::PieceWeight(piece.type())*ZyloWeightings::PositionWeight(piece.type(), piece.position());
+}
+
+CP ZyloPiece::additiveMethod(Piece piece)
+{
+    return ZyloWeightings::PieceWeight(piece.type()) + ZyloWeightings::PositionWeight(piece.type(), piece.position());
+}

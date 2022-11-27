@@ -10,13 +10,19 @@
 #include "Board.h"
 #include "BoardMoves.h"
 #include "Piece.h"
+#include "ZyloDefs.h"
 
 // EXTERNAL INCLUDES
 
 class ZyloPiece
 {
+    // Static class
     private:
+        ZyloPiece();
 
+    protected:
+        static CP multiplicativeMethod  (Piece piece);
+        static CP additiveMethod        (Piece piece);
     public:
-        ZyloPiece() {};
+        static CP getPieceRating(Piece piece);
 };
