@@ -83,6 +83,7 @@ class SDL_Board
         SDL_Window*     window;                             // Window handle
         SDL_Renderer*   windowRenderer;                     // Window renderer
         int             SDL_coordinates[8][8][2];           // Chess board coordinates list: 8 by 8 coordiates (top left to bottom right) and x,y window coordinates of square
+        COLOUR          m_orientation;                      // Board orientation
 
 
         // INTERNAL LOADING METHODS
@@ -107,7 +108,8 @@ class SDL_Board
         void            renderOverlay       (const PositionVector& validQueue, const PositionVector& takeQueue, const PositionVector& invalidQueue);
         void            renderLast          (Move lastMove);
         void            renderPrevious      (BoardPosition prevPos, BoardPosition newPos);
+        void            setOrientation      (COLOUR col);
 
         // STATIC METHODS
-        static BoardPosition SDL_to_Coords  (int SDL_x, int SDL_y);
+        BoardPosition SDL_to_Coords  (int SDL_x, int SDL_y);
 };

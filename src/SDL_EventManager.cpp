@@ -101,10 +101,6 @@ void SDL_EventManager::BoardEvents()
         default: {}
     }
 
-    // Just a quick output for the current board state value
-    ZyloState zyloState(manager->board()->getState());
-    std::cout << zyloState.fetchStateRating() << std::endl;
-
     // I have no idea how to program the automated part of this, literally none, so we'll start with this.
     // Some overhead, but I don't know how to encapsulate these ideas properly.
     if(manager->currentPlayerType() == ZYLO)
@@ -123,7 +119,7 @@ CLICK_TYPE SDL_EventManager::processWindowClick()
     // Fetch screen coordinates and translate into board coordinates
     int SDL_x, SDL_y;
     SDL_GetMouseState(&SDL_x, &SDL_y);
-    clickPos = SDL_Board::SDL_to_Coords(SDL_x, SDL_y);
+    clickPos = gameWindow->SDL_to_Coords(SDL_x, SDL_y);
 
     // If a valid board location...
     if(clickPos.validPosition())     

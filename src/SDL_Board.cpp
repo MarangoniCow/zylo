@@ -34,19 +34,9 @@ SDL_Board::SDL_Board()
     if(window == NULL)
         std::cout << "Window creation error: " << SDL_GetError() << std::endl;
 
-    // Set SDL coordinates: Define the top left hand corner of the board
-    int board_bottom_coord_x = BOARD_X; 
-    int board_bottom_coord_y = 7*SQUARE_HEIGHT + BOARD_Y;
-    
-    // Loop over and finish
-    for(int i = 0; i < 8; i++)
-    {
-        for(int j = 0; j < 8; j++)
-        {
-            SDL_coordinates[i][j][0] = board_bottom_coord_x + i*SQUARE_WIDTH; 
-            SDL_coordinates[i][j][1] = board_bottom_coord_y - j*SQUARE_HEIGHT; 
-        }
-    }
+    // Set coordinates with white at the bottom
+    setOrientation(BLACK);
+
 
     // Initialise renderer
     windowRenderer = nullptr;
@@ -235,9 +225,46 @@ BoardPosition SDL_Board::SDL_to_Coords(int SDL_x, int SDL_y)
     BoardPosition pos;
     pos.x = (SDL_x - BOARD_X)/SQUARE_WIDTH;
     pos.y = 7 - (SDL_y - BOARD_Y)/SQUARE_HEIGHT;
+
+    if(m_orientation == BLACK)
+    {
+        pos.x = 7 - pos.x;
+        pos.y = 7 - pos.y;
+    }
     return pos;
 }
 
+void SDL_Board::setOrientation(COLOUR col)
+{
+
+    // Set SDL coordinates: Define the top left hand corner of the board
+    int board_bottom_coord_x = BOARD_X; 
+    int board_bottom_coord_y = 7*SQUARE_HEIGHT + BOARD_Y;
+    int x, y;
+
+    // Save orientation
+    m_orientation = col;
+    
+    // Loop over and finish
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            if(col == WHITE)
+            {
+                x = i;
+                y = j;
+            }
+            else
+            {
+                x = 7 - i;
+                y = 7 - j;
+            }
+            SDL_coordinates[x][y][0] = board_bottom_coord_x + i*SQUARE_WIDTH; 
+            SDL_coordinates[x][y][1] = board_bottom_coord_y - j*SQUARE_HEIGHT; 
+        }
+    }
+}
 
 
 
