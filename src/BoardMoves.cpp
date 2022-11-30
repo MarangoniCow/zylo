@@ -121,8 +121,9 @@ void BoardMoves::processState()
 
     // 3) Remove revealed check moves
     removeRevealedCheckMoves(curKing);
+    removeRevealedCheckMoves(oppKing);
     
-    // 4) Check if the King is in check
+    // 4) Check if the King is in check (current king only)
     PieceVector kingCheckedBy;
     pieceCheckedBy(curKing, oppChecks, kingCheckedBy);
     
@@ -133,15 +134,19 @@ void BoardMoves::processState()
         kingCheck.second = curKing->position();
 
         restrictInvalidCheckedMoves(kingCheckedBy);
+        addCastling(oppKing);
     }
     else
     {
         // Add castling for the King
         addCastling(curKing);
+        addCastling(oppKing);
     }
 
+    
     // 5) Restrict movements that put the king in check
     restrictKingMoves(curTurn);
+    restrictKingMoves(oppTurn);
 
     // 6) Check if we have checkmate
     verifyMate();
