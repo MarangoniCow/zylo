@@ -10,15 +10,10 @@
 
 CP ZyloPiece::getPieceRating(Piece piece) 
 {
-    return multiplicativeMethod(piece);
-}
-
-CP ZyloPiece::multiplicativeMethod(Piece piece)
-{
-    return ZyloWeightings::PieceWeight(piece.type())*ZyloWeightings::PositionWeight(piece.type(), piece.position());
+    return ZyloWeightings::PositionWeight(piece);
 }
 
 CP ZyloPiece::additiveMethod(Piece piece)
 {
-    return ZyloWeightings::PieceWeight(piece.type()) + ZyloWeightings::PositionWeight(piece.type(), piece.position());
+    return ZyloWeightings::PieceWeight(piece.type()) + ZyloWeightings::PositionWeight(piece);
 }

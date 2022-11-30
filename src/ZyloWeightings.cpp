@@ -24,10 +24,11 @@ CP ZyloWeightings::PieceWeight(PIECE_TYPE type)
     }
 }
 
-CP ZyloWeightings::PositionWeight(PIECE_TYPE type, BoardPosition pos)
+CP ZyloWeightings::PositionWeight(Piece piece)
 {
-    if(!pos.validPosition())
-        return 0;
+    BoardPosition pos(piece.position());
+    if(piece.colour() == WHITE)
+        return PositionalWeightings::pawn[pos.x][pos.y];
     else
-        return PositionalWeightings::defaults[pos.x][pos.y];
+        return PositionalWeightings::pawn[7 - pos.x][7 - pos.y];
 }

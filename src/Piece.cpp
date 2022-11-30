@@ -56,6 +56,8 @@ PIECE_ID Piece::ID() const
 
 void Piece::position(BoardPosition pos)
 {
+    if(!pos.validPosition())
+        return;
     x(pos.x);
     y(pos.y);
     moved(true);

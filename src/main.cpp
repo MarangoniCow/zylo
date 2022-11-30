@@ -10,6 +10,7 @@
 
 
 // INTERNAL DEPENDENCIES
+#include "ZyloState.h"
 #include "SDL_EventManager.h"
 #include "SDL_Board.h"
 #include "GameplayManager.h"
@@ -29,6 +30,7 @@ int main () {
     std::cout << "Welcome to Zylo!" << std::endl;
 
     std::cout << "Initialising with a local player as white and Zylo as black" << std::endl;
+
 
     // Initialise players
     Player localWhite(LOCAL, WHITE);

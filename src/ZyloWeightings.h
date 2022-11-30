@@ -22,7 +22,7 @@ class ZyloWeightings
 
     public:
         static CP PieceWeight(PIECE_TYPE type);
-        static CP PositionWeight(PIECE_TYPE type, BoardPosition pos);
+        static CP PositionWeight(Piece piece);
 };
 
 namespace PieceWeightings
@@ -37,24 +37,26 @@ namespace PieceWeightings
 
 namespace PositionalWeightings
 {
-
-    const double defaults[8][8] =           {   {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1}
+    // First row of values corresponds to state[0][0-7]
+    // Second row of values corresponds to state[1][0-7]
+    // Etc, etc
+    const double defaults[8][8] =           {   {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
+                                                {0, 0, 0, 0, 0, 0, 0, 0},
                                             };
     
-    const double biasMiddle[8][8]       =  {    {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 2, 2, 2, 2, 1, 1},
-                                                {1, 1, 3, 3, 3, 3, 1, 1},
-                                                {1, 1, 3, 3, 3, 3, 1, 1},
-                                                {1, 1, 2, 2, 2, 2, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1},
-                                                {1, 1, 1, 1, 1, 1, 1, 1}
+    const double pawn[8][8]       =         {   {0, 0, 0.1,  0.2,  0,   0, 0, 0},
+                                                {0, 0, 0.25, 0,    0,   0, 0, 0},
+                                                {0, 0, 0.1,  0.15, 0,   0, 0, 0},
+                                                {0, 0, 0.15, 0.25, 0.2, 0, 0, 0},
+                                                {0, 0, 0.15, 0.25, 0.2, 0, 0, 0},
+                                                {0, 0, 0.1,  0.15, 0,   0, 0, 0},
+                                                {0, 0, 0.25, 0,    0,   0, 0, 0},
+                                                {0, 0, 0.1,  0.2,  0,   0, 0, 0}
                                             };
 };

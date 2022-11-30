@@ -21,7 +21,7 @@ class ZyloState
         BoardState m_state;
 
     protected:
-        CP      sumPieceValues();
+        CP      sumPieceValues(COLOUR col);
     
     public:
         ZyloState(const BoardState& state) : m_state(state) {};

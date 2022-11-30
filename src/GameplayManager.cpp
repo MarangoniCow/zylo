@@ -37,6 +37,12 @@ GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPo
 
         if (!m_board->processUpdate(prevClick, curClick))
             return INVALID;
+        else
+        {
+            // Just a quick output for the current board state value
+            ZyloState zyloState(m_board->getState());
+            std::cout << zyloState.fetchStateRating() << std::endl;
+        }
 
 
         // 4) Check if we're at the turn head, if not, truncate future history and append anyway

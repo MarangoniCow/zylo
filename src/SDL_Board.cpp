@@ -35,7 +35,7 @@ SDL_Board::SDL_Board()
         std::cout << "Window creation error: " << SDL_GetError() << std::endl;
 
     // Set coordinates with white at the bottom
-    setOrientation(BLACK);
+    setOrientation(WHITE);
 
 
     // Initialise renderer

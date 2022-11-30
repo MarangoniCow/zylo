@@ -142,7 +142,7 @@ std::vector<BoardPosition> BoardPosition::returnRelativePositions(BoardPosition 
     if(relpos != SAME && relpos != OUTOFLINE)
     {
         BoardPosition temp = curPos;
-        while(temp.validPosition())
+        while(temp.validPosition() && temp != tarPos)
         {
             returnVector.push_back(temp);
             temp = temp.returnIncrement(relpos);
