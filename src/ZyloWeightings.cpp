@@ -4,8 +4,9 @@
 
 
 #include "ZyloWeightings.h"
+#include "PositionalWeightings.h"
 
-CP ZyloWeightings::PieceWeight(PIECE_TYPE type)
+CP ZyloWeightings::PieceWeight(PIECE_TYPE type, PHASE phase)
 {
     switch(type)
     {
@@ -24,7 +25,7 @@ CP ZyloWeightings::PieceWeight(PIECE_TYPE type)
     }
 }
 
-CP ZyloWeightings::PositionWeight(Piece piece)
+CP ZyloWeightings::PositionWeight(Piece piece, PHASE phase)
 {
     BoardPosition pos(piece.position());
     if(piece.colour() == BLACK)
@@ -36,17 +37,17 @@ CP ZyloWeightings::PositionWeight(Piece piece)
     switch(piece.type())
     {
         case PAWN:
-            return PositionalWeightings::pawn[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::pawn[pos.x][pos.y]; 
         case ROOK:
-            return PositionalWeightings::rook[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::rook[pos.x][pos.y]; 
         case KNIGHT:
-            return PositionalWeightings::knight[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::knight[pos.x][pos.y]; 
         case BISHOP:
-            return PositionalWeightings::bishop[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::bishop[pos.x][pos.y]; 
         case QUEEN:
-            return PositionalWeightings::queen[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::queen[pos.x][pos.y]; 
         case KING:
-            return PositionalWeightings::king[pos.x][pos.y]; 
+            return PositionalWeightings::OPEN::king[pos.x][pos.y]; 
         default:
             return 0;
     }

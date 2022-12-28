@@ -4,6 +4,8 @@
  * Collection of definitions for use throughout Zylo
  * 
  ***********************************************************/
+#pragma once
+
 
 // EXTERNAL INCLUDES
 #include <vector>
@@ -17,9 +19,10 @@ typedef std::vector<Move> MoveVector;
 
 enum PHASE
 {
-    PHASE_NONE,
+    PHASE_NONE = 0,
     PHASE_OPEN,
     PHASE_MID,
-    PHASE_END
+    PHASE_END,
+    PHASE_MAX
 };
 

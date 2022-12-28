@@ -15,5 +15,5 @@ CP ZyloPiece::getPieceRating(Piece piece)
 
 CP ZyloPiece::additiveMethod(Piece piece)
 {
-    return ZyloWeightings::PieceWeight(piece.type()) + ZyloWeightings::PositionWeight(piece);
+    return ZyloWeightings::PieceWeight(piece.type(), PHASE_NONE) + ZyloWeightings::PositionWeight(piece, PHASE_NONE);
 }
