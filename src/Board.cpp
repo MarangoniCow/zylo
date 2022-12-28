@@ -105,7 +105,7 @@ void Board::movePiece(Piece &currentPiece, const BoardPosition& newPos)
             if(curPos.x - newPos.x == -2)
             {
                 BoardPosition oldRookPos(7, newPos.y);
-                BoardPosition newRookPos = oldRookPos.returnUpdate(-2, 0);
+                BoardPosition newRookPos = curPos.returnUpdate(1, 0);
                 Piece temp = state.current[oldRookPos.x][oldRookPos.y];
                 state.movePiece(temp, newRookPos);
             }
@@ -113,7 +113,7 @@ void Board::movePiece(Piece &currentPiece, const BoardPosition& newPos)
             else if(curPos.x - newPos.x == 2)
             {
                 BoardPosition oldRookPos(0, newPos.y);
-                BoardPosition newRookPos = oldRookPos.returnUpdate(2, 0);
+                BoardPosition newRookPos = curPos.returnUpdate(-1, 0);
                 Piece temp = state.current[oldRookPos.x][oldRookPos.y];
                 state.movePiece(temp, newRookPos);
             }

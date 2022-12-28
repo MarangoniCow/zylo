@@ -13,9 +13,9 @@ BOARD_EVENT
 GameplayManager::processBoardClick(const BoardPosition &prevClick, const BoardPosition &curClick)
 {
     // 0) Define locals
-    bool no_previous_click = curClick.validPosition() && !prevClick.validPosition();
-    bool previous_click_right_colour = m_board->getState().pieceExists(prevClick, m_board->getTurn());
-    bool current_click_right_colour  = m_board->getState().pieceExists(curClick, m_board->getTurn());
+    bool no_previous_click              = curClick.validPosition() && !prevClick.validPosition();
+    bool previous_click_right_colour    = m_board->getState().pieceExists(prevClick, m_board->getTurn());
+    bool current_click_right_colour     = m_board->getState().pieceExists(curClick, m_board->getTurn());
 
 
     // 1) If there isn't a previous click reigsterered, we can only return an overlay of the current position
