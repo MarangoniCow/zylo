@@ -90,7 +90,7 @@ class BoardMoves {
 
         // GETTERS
 		const PieceVector&      getCurrentPieces () const   { return curPieces; }
-        const PieceVector&      getOpposingPieces() const   { return curPieces; }
+        const PieceVector&      getOpposingPieces() const   { return oppPieces; }
 
         const ChecksState&      getChecksState   () const   { return m_checks; }
         const MovementState&    getMovementState () const   { return m_movements; }

@@ -10,7 +10,7 @@
 
 CP ZyloPiece::getPieceRating(Piece piece) 
 {
-    return ZyloWeightings::PositionWeight(piece);
+    return additiveMethod(piece);
 }
 
 CP ZyloPiece::additiveMethod(Piece piece)

@@ -21,42 +21,16 @@ class ZyloWeightings
         ZyloWeightings();
 
     public:
-        static CP PieceWeight(PIECE_TYPE type);
-        static CP PositionWeight(Piece piece);
+        static CP PieceWeight(PIECE_TYPE type, PHASE phase);
+        static CP PositionWeight(Piece piece, PHASE phase);
 };
 
 namespace PieceWeightings
 {
-    const CP Pawn   = 1;
-    const CP Knight = 3;
-    const CP Bishop = 3;
-    const CP Rook   = 5;
-    const CP Queen  = 9;
+    const CP Pawn   = 100;
+    const CP Knight = 300;
+    const CP Bishop = 300;
+    const CP Rook   = 500;
+    const CP Queen  = 1000;
 };
 
-
-namespace PositionalWeightings
-{
-    // First row of values corresponds to state[0][0-7]
-    // Second row of values corresponds to state[1][0-7]
-    // Etc, etc
-    const double defaults[8][8] =           {   {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                            };
-    
-    const double pawn[8][8]       =         {   {0, 0, 0.1,  0.2,  0,   0, 0, 0},
-                                                {0, 0, 0.25, 0,    0,   0, 0, 0},
-                                                {0, 0, 0.1,  0.15, 0,   0, 0, 0},
-                                                {0, 0, 0.15, 0.25, 0.2, 0, 0, 0},
-                                                {0, 0, 0.15, 0.25, 0.2, 0, 0, 0},
-                                                {0, 0, 0.1,  0.15, 0,   0, 0, 0},
-                                                {0, 0, 0.25, 0,    0,   0, 0, 0},
-                                                {0, 0, 0.1,  0.2,  0,   0, 0, 0}
-                                            };
-};

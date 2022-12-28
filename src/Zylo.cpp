@@ -8,6 +8,7 @@
 #include "ZyloState.h"
 #include "Board.h"
 #include "BoardDefs.h"
+#include "ContainerFunctions.h"
 
 // EXTERNAL INCLUDES
 #include <cmath>
@@ -18,18 +19,32 @@
 Move Zylo::fetchBestMove()
 {
     Move move;
-    generateRandomMove(move);
-    return move;
+    m_zyloMoves.state(m_stateHead);
+    m_zyloMoves.processState();
+    const MoveVector& moveVector = m_zyloMoves.fetchMoves();
+
+    std::vector<CP> moveScores;
+    moveScores.resize(moveVector.size());
+
+    ZyloState zyloState;
+
+    for(int i = 0; i < moveVector.size(); i++)
+    {
+        BoardState newState = m_stateHead;
+        newState.movePiece(moveVector[i]);
+        zyloState.changeState(newState);
+        moveScores[i] = zyloState.fetchStateRating();
+    }
+
+    int idx;
+    if(m_stateHead.turn() == WHITE)
+        idx = vectorMaxPosition(moveScores);
+    else
+        idx = vectorMinPosition(moveScores);
+        
+
+
+    return moveVector[idx];
 }
 
-void Zylo::generateRandomMove(Move& move)
-{
-    // Evaluate the current state
-    evaluateState(m_state);
-}
 
-void Zylo::evaluateState(BoardState& state)
-{
-    m_moves.changeState(&state);
-    m_moves.processState();
-}

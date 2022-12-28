@@ -27,8 +27,27 @@ CP ZyloWeightings::PieceWeight(PIECE_TYPE type)
 CP ZyloWeightings::PositionWeight(Piece piece)
 {
     BoardPosition pos(piece.position());
-    if(piece.colour() == WHITE)
-        return PositionalWeightings::pawn[pos.x][pos.y];
-    else
-        return PositionalWeightings::pawn[7 - pos.x][7 - pos.y];
+    if(piece.colour() == BLACK)
+    {
+        pos.x = 7 - pos.x;
+        pos.y = 7 - pos.y;
+    }
+
+    switch(piece.type())
+    {
+        case PAWN:
+            return PositionalWeightings::pawn[pos.x][pos.y]; 
+        case ROOK:
+            return PositionalWeightings::rook[pos.x][pos.y]; 
+        case KNIGHT:
+            return PositionalWeightings::knight[pos.x][pos.y]; 
+        case BISHOP:
+            return PositionalWeightings::bishop[pos.x][pos.y]; 
+        case QUEEN:
+            return PositionalWeightings::queen[pos.x][pos.y]; 
+        case KING:
+            return PositionalWeightings::king[pos.x][pos.y]; 
+        default:
+            return 0;
+    }
 }

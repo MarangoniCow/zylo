@@ -105,6 +105,7 @@ void SDL_EventManager::BoardEvents()
     // Some overhead, but I don't know how to encapsulate these ideas properly.
     if(manager->currentPlayerType() == ZYLO)
     {
+        // SDL_Delay(1000);
         Move move = manager->fetchZyloMove();
         prevPos = move.first;
         curPos  = move.second;

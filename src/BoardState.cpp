@@ -87,6 +87,13 @@ BoardState::movePiece(Piece& piece, const BoardPosition& newPos)
 	removePiece(oldPos);
 }
 
+void
+BoardState::movePiece(Move move)
+{
+	Piece piece = current[move.first.x][move.first.y];
+    movePiece(piece, move.second);
+}
+
 
 /******************** BOOL METHODS *******************/
  bool BoardState::pieceExists (BoardPosition pos) const

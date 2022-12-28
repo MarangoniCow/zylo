@@ -16,6 +16,51 @@
 #include <utility>
 #include <queue>
 #include <vector>
+#include <stdexcept>
+
+
+template <typename T>
+unsigned int vectorMaxPosition(const std::vector<T>& vectorToSearch)
+{
+
+    if(vectorToSearch.size() == 0)
+        throw std::invalid_argument( "received empty vector" );
+
+    unsigned int idx = 0;
+    T maxItem = vectorToSearch[idx];
+
+    for(int i = 1; i < vectorToSearch.size(); i++)
+    {
+        if(maxItem < vectorToSearch[i])
+        {
+            idx = i;
+            maxItem = vectorToSearch[i];
+        }
+    }
+    return idx;
+}
+
+template <typename T>
+unsigned int vectorMinPosition(const std::vector<T>& vectorToSearch)
+{
+
+    if(vectorToSearch.size() == 0)
+        throw std::invalid_argument( "received empty vector" );
+
+    unsigned int idx = 0;
+    T minItem = vectorToSearch[idx];
+
+    for(int i = 1; i < vectorToSearch.size(); i++)
+    {
+        if(minItem > vectorToSearch[i])
+        {
+            idx = i;
+            minItem = vectorToSearch[i];
+        }
+            
+    }
+    return idx;
+}
 
 template <typename T>
 bool elementInVector(T& itemToMatch, const std::vector<T>& vectorToSearch)

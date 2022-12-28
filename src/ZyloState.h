@@ -24,6 +24,7 @@ class ZyloState
         CP      sumPieceValues(COLOUR col);
     
     public:
+        ZyloState() {};
         ZyloState(const BoardState& state) : m_state(state) {};
 
         void    changeState(const BoardState& state)       { m_state = state; }
