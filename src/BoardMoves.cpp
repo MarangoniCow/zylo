@@ -492,12 +492,16 @@ PositionVector BoardMoves::safeMoves(Piece* piece)
     COLOUR  col = piece->colour();
     PieceVector& enemyPieces = (col == curTurn) ? oppPieces : curPieces;
     PositionVector validMoves = m_movements.state[piece->x()][piece->y()].validMoves;
+    BoardPosition curPos = piece->position();
     
 
     // Iterate through queue, removing positions from validMoves that appear in the opposing pieces list
     for(auto opp:enemyPieces)
     {
         PositionVector& curOppValidMoves = m_movements.state[opp->x()][opp->y()].validMoves;
+        PositionVector& curOppInvalidMoves = m_movements.state[opp->x()][opp->y()].invalidMoves;
+        BoardPosition oppPos = opp->position();
+        RELPOS curRelPos = BoardPosition::returnRelPos(oppPos, curPos);
 
         for(auto temp:curOppValidMoves)
         {
@@ -509,7 +513,22 @@ PositionVector BoardMoves::safeMoves(Piece* piece)
                 }
             }
         }
+
+        // We also need to remove invalid moves that are in the same direction as the checking piece
+        for(auto temp:curOppInvalidMoves)
+        {
+            for(auto it = validMoves.begin(); it != validMoves.end(); it++)
+            {
+                if(temp == *it && BoardPosition::returnRelPos(oppPos, temp) == curRelPos) {
+                    validMoves.erase(it);
+                    break;
+                }
+            }
+        }
     }
+
+    
+
     return validMoves;
 }
 
