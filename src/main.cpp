@@ -34,7 +34,7 @@ int main () {
 
     // Initialise players
     Player localWhite(LOCAL, WHITE);
-    Player zyloBlack(ZYLO, BLACK);
+    Player zyloBlack(LOCAL, BLACK);
 
     // Initalise board and board logic
     Board board;

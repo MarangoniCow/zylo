@@ -566,8 +566,10 @@ void BoardMoves::removeRevealedCheckMoves(Piece* piece)
     // Fetch the piece colour
     COLOUR col = piece->colour();
     BoardPosition curPos(piece->position());
+    const PieceVector& pieceVector = (col == curTurn) ? curPieces : oppPieces;
 
-    for(auto it:oppPieces)
+
+    for(auto it:pieceVector)
     {
         // 1) Fetch front position and movement
         BoardPosition oppPos(it->position());
@@ -691,6 +693,28 @@ void BoardMoves::restrictInvalidCheckedMoves(const PieceVector& kingCheckedBy)
                                     m_movements.state[pos.x][pos.y].validMoves,
                                     m_movements.state[pos.x][pos.y].validTakes);
         }
+
+        // If the king is in check, need to remove movements in the same direction as the checking piece
+        BoardPosition curPos = curKing->position();
+        PositionVector& kingValidMoves = m_movements.state[curKing->x()][curKing->y()].validMoves;
+        for(auto piece:kingCheckedBy)
+        {
+            BoardPosition oppPos = piece->position();
+            RELPOS oppRelPos    = BoardPosition::returnRelPos(oppPos, curPos);
+            const Movements& oppMoves = getMoves(oppPos);
+
+            for(auto pos:oppMoves.invalidMoves)
+            {
+                for(auto it = kingValidMoves.begin(); it != kingValidMoves.end(); it++)
+                {
+                    if(pos == *it && oppRelPos == BoardPosition::returnRelPos(oppPos, pos))
+                    {
+                        kingValidMoves.erase(it);
+                        break;
+                    }
+                }
+            }
+        }        
     }
 }
 
