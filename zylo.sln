@@ -5,8 +5,6 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zylo", "zylo\zylo.vcxproj", "{C9B35577-5C17-4DD9-9940-C13B3CD42F2A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxplatform", "..\SwiftLibs\xplatform\xplatform.vcxproj", "{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -35,22 +33,6 @@ Global
 		{C9B35577-5C17-4DD9-9940-C13B3CD42F2A}.ReleaseMfc|x64.Build.0 = Release|x64
 		{C9B35577-5C17-4DD9-9940-C13B3CD42F2A}.ReleaseMfc|x86.ActiveCfg = Release|Win32
 		{C9B35577-5C17-4DD9-9940-C13B3CD42F2A}.ReleaseMfc|x86.Build.0 = Release|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Debug|x64.ActiveCfg = Debug|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Debug|x64.Build.0 = Debug|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Debug|x86.ActiveCfg = Debug|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Debug|x86.Build.0 = Debug|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.DebugMfc|x64.ActiveCfg = DebugMfc|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.DebugMfc|x64.Build.0 = DebugMfc|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.DebugMfc|x86.ActiveCfg = DebugMfc|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.DebugMfc|x86.Build.0 = DebugMfc|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Release|x64.ActiveCfg = Release|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Release|x64.Build.0 = Release|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Release|x86.ActiveCfg = Release|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.Release|x86.Build.0 = Release|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.ReleaseMfc|x64.ActiveCfg = ReleaseMfc|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.ReleaseMfc|x64.Build.0 = ReleaseMfc|x64
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.ReleaseMfc|x86.ActiveCfg = ReleaseMfc|Win32
-		{2AACDBBA-B9FB-4AC0-AF24-6B4AC77D01BB}.ReleaseMfc|x86.Build.0 = ReleaseMfc|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

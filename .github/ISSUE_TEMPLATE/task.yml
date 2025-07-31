@@ -1,0 +1,27 @@
+name: Task
+description: General development task or ticket
+title: "[TASK] "
+labels: ["task"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Short description of the task.
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What needs to be done? Any context?
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      options:
+        - label: Code implemented
+        - label: Tests written and passing
+        - label: Documentation updated
