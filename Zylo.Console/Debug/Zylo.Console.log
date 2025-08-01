@@ -1,0 +1,2 @@
+﻿  Zylo.Console.cpp
+C:\Users\matth\source\repos\MarangoniCow\zylo\Zylo.Console\Zylo.Console.cpp(5,10): error C1083: Cannot open include file: 'hello.h': No such file or directory
